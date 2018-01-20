@@ -41,3 +41,7 @@ You can run both commands in one step.
 **2018-01-20**
 
 - [x] Start project
+
+# Used resources
+
+- [x] [Visual Studio Image Library 2017](https://www.microsoft.com/en-my/download/details.aspx?id=35825)

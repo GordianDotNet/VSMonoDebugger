@@ -71,7 +71,7 @@
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
         <!--<CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>-->
-        <!--<Icon guid="guidImages" id="publish" />-->
+        <Icon guid="StartRemoteDebugger_16x" id="imgDeployAndDebug" />
         <Strings>
           <ButtonText>Deploy and Debug (SSH)</ButtonText>
         </Strings>
@@ -81,7 +81,7 @@
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
         <!--<CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>-->
-        <!--<Icon guid="guidImages" id="publish" />-->
+        <Icon guid="BatchCheckIn_16x" id="imgDeployOnly" />
         <Strings>
           <ButtonText>Deploy only (SSH)</ButtonText>
         </Strings>
@@ -91,7 +91,7 @@
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
         <!--<CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>-->
-        <!--<Icon guid="guidImages" id="publish" />-->
+        <Icon guid="DebugTemplate_16x" id="imgDebugOnly" />
         <Strings>
           <ButtonText>Debug only (SSH)</ButtonText>
         </Strings>
@@ -99,7 +99,7 @@
 
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdOpenLogFile" priority="0x0510" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel2" />
-        <!--<Icon guid="guidImages" id="bmpPic1" />-->
+        <Icon guid="DownloadLog_16x" id="imgShowLogfile" />
         <Strings>
           <ButtonText>Open Logfile</ButtonText>
         </Strings>
@@ -109,9 +109,9 @@
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel2" />
         <!--<CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>-->
-        <!--<Icon guid="guidImages" id="publish" />-->
+        <Icon guid="Settings_16x" id="imgSettings" />
         <Strings>
-          <ButtonText>Configuration... (SSH)</ButtonText>
+          <ButtonText>Settings...</ButtonText>
         </Strings>
       </Button>
     </Buttons>
@@ -123,7 +123,12 @@
             bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
             inside a button definition. An important aspect of this declaration is that the element id
             must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
-      <Bitmap guid="guidImages" href="Resources\MyIcons.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough"/>
+      <Bitmap guid="guidImages" href="Resources\VSMonoDebuggerCommands.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough"/>
+      <Bitmap guid="BatchCheckIn_16x" href="Resources\BatchCheckIn_16x.png" usedList="imgDeployOnly"/>
+      <Bitmap guid="DebugTemplate_16x" href="Resources\DebugTemplate_16x.png" usedList="imgDebugOnly"/>
+      <Bitmap guid="DownloadLog_16x" href="Resources\DownloadLog_16x.png" usedList="imgShowLogfile"/>
+      <Bitmap guid="Settings_16x" href="Resources\Settings_16x.png" usedList="imgSettings"/>
+      <Bitmap guid="StartRemoteDebugger_16x" href="Resources\StartRemoteDebugger_16x.png" usedList="imgDeployAndDebug"/>
     </Bitmaps>
   </Commands>
 
@@ -141,6 +146,26 @@
       <IDSymbol name="cmdDebugOverSSH" value="0x1003" />
       <IDSymbol name="cmdOpenLogFile" value="0x1004" />
       <IDSymbol name="cmdOpenSSHDebugConfig" value="0x1005" />
+    </GuidSymbol>
+
+    <GuidSymbol name="BatchCheckIn_16x" value="{A6146350-5354-4ABE-B452-FB63881C9293}" >
+      <IDSymbol name="imgDeployOnly" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="DebugTemplate_16x" value="{6BEC4581-8F59-4A3F-BA52-723454EF06D4}" >
+      <IDSymbol name="imgDebugOnly" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="DownloadLog_16x" value="{E48E1F6F-B26C-460A-86DF-69904236B876}" >
+      <IDSymbol name="imgShowLogfile" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="Settings_16x" value="{F0E24D10-A061-470F-8162-892ED3BB1ABF}" >
+      <IDSymbol name="imgSettings" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="StartRemoteDebugger_16x" value="{95F6FDC3-DA9F-4266-BD63-1A02ECCCBCDF}" >
+      <IDSymbol name="imgDeployAndDebug" value="1" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{4b8073cd-56e9-4e1e-91b9-728cebf52038}" >
