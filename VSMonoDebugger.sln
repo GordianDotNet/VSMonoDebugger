@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VSMonoDebugger", "VSMonoDebugger\VSMonoDebugger.csproj", "{22C92105-2F32-4744-BE03-A63AABB8B51F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{ED334AD2-06F8-415C-95CD-A7605DE16A19}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22C92105-2F32-4744-BE03-A63AABB8B51F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22C92105-2F32-4744-BE03-A63AABB8B51F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22C92105-2F32-4744-BE03-A63AABB8B51F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22C92105-2F32-4744-BE03-A63AABB8B51F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {86B601B0-6D85-4633-A947-DCF5BBC8BDDB}
+	EndGlobalSection
+EndGlobal
