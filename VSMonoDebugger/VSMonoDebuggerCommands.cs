@@ -23,7 +23,7 @@ namespace VSMonoDebugger
             public const int cmdDeployOverSSH = 0x1002;
             public const int cmdDebugOverSSH = 0x1003;
             public const int cmdOpenLogFile = 0x1004;
-            public const int cmdOpenSSHDebugConfig = 0x1005;
+            public const int cmdOpenDebugSettings = 0x1005;
         }
         #endregion
 
@@ -63,7 +63,7 @@ namespace VSMonoDebugger
                 AddMenuItem(commandService, CommandIds.cmdDebugOverSSH, CheckMenu, MenuItemCallback);
 
                 AddMenuItem(commandService, CommandIds.cmdOpenLogFile, CheckMenu, MenuItemCallback);
-                AddMenuItem(commandService, CommandIds.cmdOpenSSHDebugConfig, CheckMenu, MenuItemCallback);
+                AddMenuItem(commandService, CommandIds.cmdOpenDebugSettings, CheckMenu, MenuItemCallback);
             }
         }
 

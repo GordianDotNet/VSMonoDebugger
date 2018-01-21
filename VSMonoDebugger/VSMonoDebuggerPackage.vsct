@@ -105,7 +105,7 @@
         </Strings>
       </Button>
 
-      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdOpenSSHDebugConfig" priority="0x0520" type="Button">
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdOpenDebugSettings" priority="0x0520" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel2" />
         <!--<CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>DefaultInvisible</CommandFlag>-->
@@ -145,7 +145,7 @@
       <IDSymbol name="cmdDeployOverSSH" value="0x1002" />
       <IDSymbol name="cmdDebugOverSSH" value="0x1003" />
       <IDSymbol name="cmdOpenLogFile" value="0x1004" />
-      <IDSymbol name="cmdOpenSSHDebugConfig" value="0x1005" />
+      <IDSymbol name="cmdOpenDebugSettings" value="0x1005" />
     </GuidSymbol>
 
     <GuidSymbol name="BatchCheckIn_16x" value="{A6146350-5354-4ABE-B452-FB63881C9293}" >
