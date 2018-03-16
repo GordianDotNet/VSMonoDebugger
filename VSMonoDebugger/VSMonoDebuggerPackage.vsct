@@ -69,8 +69,8 @@
 
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDeployAndDebugOverSSH" priority="0x0400" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
-        <!--<CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>-->
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <!--<CommandFlag>DefaultInvisible</CommandFlag>-->
         <Icon guid="StartRemoteDebugger_16x" id="imgDeployAndDebug" />
         <Strings>
           <ButtonText>Deploy and Debug (SSH)</ButtonText>
@@ -79,8 +79,8 @@
 
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDeployOverSSH" priority="0x0410" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
-        <!--<CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>-->
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <!--<CommandFlag>DefaultInvisible</CommandFlag>-->
         <Icon guid="BatchCheckIn_16x" id="imgDeployOnly" />
         <Strings>
           <ButtonText>Deploy only (SSH)</ButtonText>
@@ -89,8 +89,8 @@
 
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDebugOverSSH" priority="0x0420" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
-        <!--<CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>-->
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <!--<CommandFlag>DefaultInvisible</CommandFlag>-->
         <Icon guid="DebugTemplate_16x" id="imgDebugOnly" />
         <Strings>
           <ButtonText>Debug only (SSH)</ButtonText>

@@ -19,6 +19,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
 using VSMonoDebugger.Services;
 using VSMonoDebugger.Settings;
+using Mono.Debugging.VisualStudio;
 
 namespace VSMonoDebugger
 {
@@ -29,12 +30,14 @@ namespace VSMonoDebugger
         /// </summary>
         public readonly static string VS_PROJECTKIND_SOLUTION_FOLDER = "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}";
 
+        private readonly Package _package;
         private readonly DTE _dte;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public MonoVisualStudioExtension(DTE dTE)
+        public MonoVisualStudioExtension(Package package)
         {
-            _dte = dTE;
+            _package = package;
+            _dte = package.GetService<DTE>();
         }
 
         internal async Task BuildSolutionAsync()
@@ -60,6 +63,12 @@ namespace VSMonoDebugger
         {
             Project startupProject = GetStartupProject();
             return GetAssemblyPath(startupProject);
+        }
+
+        public bool IsStartupProjectAvailable()
+        {
+            var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;
+            return sb.StartupProjects != null && ((Array)sb.StartupProjects).Cast<string>().Count() > 0;
         }
 
         private Project GetStartupProject()

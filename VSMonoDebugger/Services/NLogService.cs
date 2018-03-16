@@ -15,18 +15,11 @@ namespace VSMonoDebugger.Services
     {
         public static string LoggerPath { get; private set; }
 
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static void TraceEnteringMethod([CallerMemberName] string callerMember = "", [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
         {
-            logger.Trace($"Entering: {callerMember} - {Path.GetFileName(callerFilePath)}({callerLineNumber})");
-
-            //MethodBase mth = new StackTrace().GetFrame(1).GetMethod();
-            //if (mth.ReflectedType != null)
-            //{
-            //    string className = mth.ReflectedType.Name;
-            //    logger.Trace(className + " (entering) :  " + callerMember);
-            //}
+            Logger.Trace($"Entering: {callerMember} - {Path.GetFileName(callerFilePath)}({callerLineNumber})");
         }
 
         public static void Setup(string logFilename)
@@ -55,8 +48,6 @@ namespace VSMonoDebugger.Services
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, console));
 
             LogManager.Configuration = config;
-
-            logger = LogManager.GetCurrentClassLogger();
         }
     }
 }

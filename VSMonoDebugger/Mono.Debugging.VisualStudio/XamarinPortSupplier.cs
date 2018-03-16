@@ -1,5 +1,4 @@
 ﻿using Microsoft.VisualStudio.Debugger.Interop;
-using MonoRemoteDebugger.Debugger.VisualStudio;
 using System;
 using System.Runtime.InteropServices;
 using VSMonoDebugger.Services;

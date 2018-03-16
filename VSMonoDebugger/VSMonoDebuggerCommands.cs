@@ -9,7 +9,7 @@ namespace VSMonoDebugger
     /// <summary>
     /// Command handler
     /// </summary>
-    internal sealed class VSMonoDebuggerCommands
+    internal sealed partial class VSMonoDebuggerCommands
     {
         #region CommandID from VSMonoDebuggerPackage.vsct
         public sealed class CommandIds
@@ -54,19 +54,10 @@ namespace VSMonoDebugger
             OleMenuCommandService commandService = this.ServiceProvider.GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (commandService != null)
             {
-                //var menuCommandID = new CommandID(CommandSet, CommandIds.MonoMainMenu);
-                //var menuItem = new MenuCommand(this.MenuItemCallback, menuCommandID);
-                //commandService.AddCommand(menuItem);
-
-                AddMenuItem(commandService, CommandIds.cmdDeployAndDebugOverSSH, CheckMenu, MenuItemCallback);
-                AddMenuItem(commandService, CommandIds.cmdDeployOverSSH, CheckMenu, MenuItemCallback);
-                AddMenuItem(commandService, CommandIds.cmdDebugOverSSH, CheckMenu, MenuItemCallback);
-
-                AddMenuItem(commandService, CommandIds.cmdOpenLogFile, CheckMenu, MenuItemCallback);
-                AddMenuItem(commandService, CommandIds.cmdOpenDebugSettings, CheckMenu, MenuItemCallback);
+                InstallMenu(commandService);
             }
         }
-
+        
         private OleMenuCommand AddMenuItem(OleMenuCommandService mcs, int cmdCode, EventHandler check, EventHandler action)
         {
             var commandID = new CommandID(CommandSet, cmdCode);
@@ -75,16 +66,7 @@ namespace VSMonoDebugger
             mcs.AddCommand(menuCommand);
             return menuCommand;
         }
-
-        private void CheckMenu(object sender, EventArgs e)
-        {
-            var menuCommand = sender as OleMenuCommand;
-            if (menuCommand != null)
-            {
-                menuCommand.Enabled = true;
-            }
-        }
-
+        
         /// <summary>
         /// Gets the instance of the command.
         /// </summary>
@@ -112,6 +94,7 @@ namespace VSMonoDebugger
         public static void Initialize(Package package)
         {
             Instance = new VSMonoDebuggerCommands(package);
+            _monoExtension = new MonoVisualStudioExtension(package);
         }
 
         /// <summary>

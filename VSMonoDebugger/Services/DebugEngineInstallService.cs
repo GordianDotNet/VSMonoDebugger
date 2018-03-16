@@ -1,5 +1,10 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Diagnostics;
+using System.Reflection;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
+using Mono.Debugging.VisualStudio;
 
 namespace VSMonoDebugger.Services
 {
@@ -8,6 +13,39 @@ namespace VSMonoDebugger.Services
         private const string ENGINE_PATH = @"AD7Metrics\Engine\";
         private const string PORTSUPPLIER_PATH = @"AD7Metrics\PortSupplier\";
         private const string CLSID_PATH = @"CLSID\";
+
+        public static void TryRegisterAssembly()
+        {
+            RegistryKey regKey = Registry.ClassesRoot.OpenSubKey($@"CLSID\{{{DebugEngineGuids.EngineGuid.ToString()}}}");
+
+            if (regKey != null)
+                return; // Already registered
+
+            string location = typeof(XamarinEngine).Assembly.Location;
+
+            string regasm = @"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\RegAsm.exe";
+            if (!Environment.Is64BitOperatingSystem)
+            {
+                regasm = @"C:\Windows\Microsoft.NET\Framework\v4.0.30319\RegAsm.exe";
+            }
+
+            var regasmProcessStartInfo = new ProcessStartInfo(regasm, location);
+            regasmProcessStartInfo.Verb = "runas";
+            regasmProcessStartInfo.RedirectStandardOutput = true;
+            regasmProcessStartInfo.UseShellExecute = false;
+            regasmProcessStartInfo.CreateNoWindow = true;
+
+            System.Diagnostics.Process process = System.Diagnostics.Process.Start(regasmProcessStartInfo);
+            while (!process.HasExited)
+            {
+                string txt = process.StandardOutput.ReadToEnd();
+            }
+
+            using (RegistryKey config = VSRegistry.RegistryRoot(__VsLocalRegistryType.RegType_Configuration))
+            {
+                RegisterDebugEngine(location, config);
+            }            
+        }
 
         public static void RegisterDebugEngine(string engineDllLocation, RegistryKey rootKey)
         {

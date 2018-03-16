@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 using VSMonoDebugger.Services;
+using VSMonoDebugger.Settings;
 
 namespace VSMonoDebugger
 {
@@ -50,9 +51,7 @@ namespace VSMonoDebugger
             // Inside this method you can place any initialization code that does not require
             // any Visual Studio service because at this point the package object is created but
             // not sited yet inside Visual Studio environment. The place to do all the other
-            // initialization is the Initialize method.
-
-            NLogService.Setup($"{nameof(VSMonoDebuggerPackage)}.log");
+            // initialization is the Initialize method.           
         }
 
         #region Package Members
@@ -64,7 +63,32 @@ namespace VSMonoDebugger
         protected override void Initialize()
         {
             base.Initialize();
-            VSMonoDebuggerCommands.Initialize(this);
+            
+            try
+            {
+                NLogService.Setup($"{nameof(VSMonoDebuggerPackage)}.log");
+                UserSettingsManager.Initialize(this);
+
+                DebugEngineInstallService.TryRegisterAssembly();
+
+                VSMonoDebuggerCommands.Initialize(this);
+            }
+            catch (UnauthorizedAccessException uex)
+            {
+                VsShellUtilities.ShowMessageBox(
+                this,
+                "Failed finish installation of MonoRemoteDebugger - Please run Visual Studio once as Administrator...",
+                $"{nameof(VSMonoDebuggerPackage)} - Register mono debug engine",
+                OLEMSGICON.OLEMSGICON_CRITICAL,
+                OLEMSGBUTTON.OLEMSGBUTTON_OK,
+                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
+
+                NLogService.Logger.Error(uex);
+            }
+            catch (Exception ex)
+            {
+                NLogService.Logger.Error(ex);
+            }
         }
 
         #endregion
