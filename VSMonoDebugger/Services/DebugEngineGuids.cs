@@ -15,7 +15,7 @@ namespace VSMonoDebugger.Services
 
         //public const string MonoEngineString = "D78CF801-CE2A-499B-BF1F-C81742877A34";
         public const string AD7EngineString = "8BF3AB9F-3864-449A-93AB-E7B0935FC8F5";
-        public const string XamarinEngineString = "9E1626AE-7DB7-4138-AC41-641D55CF9A4A";//"2A959627-3467-44AA-95FE-62E366914991";
+        public const string XamarinEngineString = "9E1626AE-7DB7-4138-AC41-641D55CF9A4A";
 
         //public const string MonoProgramProviderString = "00171DED-5920-4ACD-93C2-BD9E4FA10CA0";
         public const string AD7ProgramProviderString = "CA171DED-5920-4ACD-93C2-BD9E4FA10CA0";

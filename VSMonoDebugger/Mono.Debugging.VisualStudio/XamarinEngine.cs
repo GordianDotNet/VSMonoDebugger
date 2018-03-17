@@ -29,58 +29,66 @@ namespace Mono.Debugging.VisualStudio
 
         private string SerializeDebuggerOptions(string jsonDebugOptions)
         {
-            NLogService.TraceEnteringMethod();
-            var debugOptions = DebugOptions.DeserializeFromJson(jsonDebugOptions);
-            
-            _session = new SoftDebuggerSession();
-            _session.TargetReady += (sender, eventArgs) =>
+            try
             {
-                Debug.WriteLine("TargetReady!");
-            };
-            _session.ExceptionHandler = exception => true;
-            _session.TargetExited += (sender, x) =>
-            {
-                Debug.WriteLine("TargetExited!");
-            };
-            _session.TargetUnhandledException += (sender, x) =>
-            {
-                Debug.WriteLine("TargetUnhandledException!");
-            };
-            _session.LogWriter = (stderr, text) => Debug.WriteLine(text);
-            _session.OutputWriter = (stderr, text) => Debug.WriteLine(text);
-            _session.TargetThreadStarted += (sender, x) => Debug.WriteLine("TargetThreadStarted!");
-            _session.TargetThreadStopped += (sender, x) =>
-            {
-                Debug.WriteLine("TargetThreadStopped!");
-            };
-            _session.TargetStopped += (sender, x) => Debug.WriteLine(x.Type);
-            _session.TargetStarted += (sender, x) => Debug.WriteLine("TargetStarted");
-            _session.TargetSignaled += (sender, x) => Debug.WriteLine(x.Type);
-            _session.TargetInterrupted += (sender, x) => Debug.WriteLine(x.Type);
-            _session.TargetExceptionThrown += (sender, x) =>
-            {
-                Debug.WriteLine("TargetExceptionThrown!");
-            };
-            _session.TargetHitBreakpoint += (sender, x) =>
-            {
-                Debug.WriteLine("TargetHitBreakpoint!");
-            };
-            _session.TargetEvent += _session_TargetEvent;
+                NLogService.TraceEnteringMethod();
+                var debugOptions = DebugOptions.DeserializeFromJson(jsonDebugOptions);
 
-            var startupProject = StartupProject;
-            _startInfo = new StartInfo(
-                new SoftDebuggerConnectArgs(debugOptions.TargetExeFileName, debugOptions.GetHostIP(), debugOptions.GetMonoDebugPort()),
-                new DebuggingOptions() { EvaluationTimeout = 30000, MemberEvaluationTimeout = 30000, ModificationTimeout = 30000, SocketTimeout = 30000 },
-                startupProject
-                );
+                _session = new SoftDebuggerSession();
+                _session.TargetReady += (sender, eventArgs) =>
+                {
+                    Debug.WriteLine("TargetReady!");
+                };
+                _session.ExceptionHandler = exception => true;
+                _session.TargetExited += (sender, x) =>
+                {
+                    Debug.WriteLine("TargetExited!");
+                };
+                _session.TargetUnhandledException += (sender, x) =>
+                {
+                    Debug.WriteLine("TargetUnhandledException!");
+                };
+                _session.LogWriter = (stderr, text) => Debug.WriteLine(text);
+                _session.OutputWriter = (stderr, text) => Debug.WriteLine(text);
+                _session.TargetThreadStarted += (sender, x) => Debug.WriteLine("TargetThreadStarted!");
+                _session.TargetThreadStopped += (sender, x) =>
+                {
+                    Debug.WriteLine("TargetThreadStopped!");
+                };
+                _session.TargetStopped += (sender, x) => Debug.WriteLine(x.Type);
+                _session.TargetStarted += (sender, x) => Debug.WriteLine("TargetStarted");
+                _session.TargetSignaled += (sender, x) => Debug.WriteLine(x.Type);
+                _session.TargetInterrupted += (sender, x) => Debug.WriteLine(x.Type);
+                _session.TargetExceptionThrown += (sender, x) =>
+                {
+                    Debug.WriteLine("TargetExceptionThrown!");
+                };
+                _session.TargetHitBreakpoint += (sender, x) =>
+                {
+                    Debug.WriteLine("TargetHitBreakpoint!");
+                };
+                _session.TargetEvent += _session_TargetEvent;
 
-            SessionMarshalling sessionMarshalling = new SessionMarshalling(_session, _startInfo);
-            using (MemoryStream ms = new MemoryStream())
+                var startupProject = StartupProject;
+                _startInfo = new StartInfo(
+                    new SoftDebuggerConnectArgs(debugOptions.TargetExeFileName, debugOptions.GetHostIP(), debugOptions.GetMonoDebugPort()),
+                    new DebuggingOptions() { EvaluationTimeout = 30000, MemberEvaluationTimeout = 30000, ModificationTimeout = 30000, SocketTimeout = 30000 },
+                    startupProject
+                    );
+
+                SessionMarshalling sessionMarshalling = new SessionMarshalling(_session, _startInfo);
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    BinaryFormatter bf = new BinaryFormatter();
+                    ObjRef oref = RemotingServices.Marshal(sessionMarshalling);
+                    bf.Serialize(ms, oref);
+                    return Convert.ToBase64String(ms.ToArray());
+                }
+            }
+            catch (Exception ex)
             {
-                BinaryFormatter bf = new BinaryFormatter();
-                ObjRef oref = RemotingServices.Marshal(sessionMarshalling);
-                bf.Serialize(ms, oref);
-                return Convert.ToBase64String(ms.ToArray());
+                NLogService.Logger.Error(ex);
+                throw;
             }
         }
         
