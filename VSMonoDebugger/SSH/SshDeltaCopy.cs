@@ -297,7 +297,7 @@ namespace SshFileSync
 
         private void InternalConnect(string host, int port, string username, string password, string workingDirectory)
         {
-            if (_isConnected)
+            if (_isConnected && _sftpClient == null)
             {
                 ChangeWorkingDirectory(workingDirectory);
                 return;
@@ -347,6 +347,7 @@ namespace SshFileSync
 
             if (_sftpClient != null)
             {
+                //var list = _sftpClient.ListDirectory(".");
                 _sftpClient.ChangeDirectory(destinationDirectory);
                 _scpDestinationDirectory = "";
             }
