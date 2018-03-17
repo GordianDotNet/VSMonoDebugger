@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using Newtonsoft.Json;
 
 namespace VSMonoDebugger.Settings
@@ -32,7 +33,11 @@ namespace VSMonoDebugger.Settings
             var hostIp = IPAddress.Loopback;
             if (UseSSH)
             {
-                hostIp = IPAddress.Parse(UserSettings.SSHHostIP);
+                if (!IPAddress.TryParse(UserSettings.SSHHostIP, out hostIp))
+                {
+                    // try dns
+                    hostIp = Dns.GetHostAddresses(UserSettings.SSHHostIP).First();
+                }
             }
             else
             {
