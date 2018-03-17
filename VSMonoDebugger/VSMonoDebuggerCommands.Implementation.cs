@@ -27,7 +27,7 @@ namespace VSMonoDebugger
             AddMenuItem(commandService, CommandIds.cmdDebugOverSSH, CheckStartupProjects, DebugOverSSHClicked);
 
             AddMenuItem(commandService, CommandIds.cmdOpenLogFile, CheckOpenLogFile, OpenLogFile);
-            AddMenuItem(commandService, CommandIds.cmdOpenDebugSettings, CheckStartupProjects, OpenSSHDebugConfigDlg);
+            AddMenuItem(commandService, CommandIds.cmdOpenDebugSettings, null, OpenSSHDebugConfigDlg);
         }
 
         private void CheckOpenLogFile(object sender, EventArgs e)
@@ -59,10 +59,10 @@ namespace VSMonoDebugger
             var menuCommand = sender as OleMenuCommand;
             if (menuCommand != null)
             {
-                menuCommand.Visible = _monoExtension.IsStartupProjectAvailable();
+                menuCommand.Enabled = _monoExtension.IsStartupProjectAvailable();
             }
         }
-
+        
         private async void DeployAndDebugOverSSHClicked(object sender, EventArgs e)
         {
             await DeployAndRunCommandOverSSH(true, true);

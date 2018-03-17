@@ -62,7 +62,10 @@ namespace VSMonoDebugger
         {
             var commandID = new CommandID(CommandSet, cmdCode);
             var menuCommand = new OleMenuCommand(action, commandID);
-            menuCommand.BeforeQueryStatus += check;
+            if (check != null)
+            {
+                menuCommand.BeforeQueryStatus += check;
+            }
             mcs.AddCommand(menuCommand);
             return menuCommand;
         }

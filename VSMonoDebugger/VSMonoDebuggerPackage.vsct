@@ -35,6 +35,7 @@
       <Menu guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenu" priority="0x100" type="Menu">
         <!-- Groups on the Visual Studio Menu Bar: https://msdn.microsoft.com/en-us/library/cc826118.aspx -->
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_BUILDDEBUGRUN" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Strings>
           <ButtonText>Mono</ButtonText>
           <CommandName>Mono</CommandName>
@@ -70,7 +71,7 @@
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDeployAndDebugOverSSH" priority="0x0400" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
         <CommandFlag>DynamicVisibility</CommandFlag>
-        <!--<CommandFlag>DefaultInvisible</CommandFlag>-->
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Icon guid="StartRemoteDebugger_16x" id="imgDeployAndDebug" />
         <Strings>
           <ButtonText>Deploy and Debug (SSH)</ButtonText>
@@ -80,7 +81,7 @@
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDeployOverSSH" priority="0x0410" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
         <CommandFlag>DynamicVisibility</CommandFlag>
-        <!--<CommandFlag>DefaultInvisible</CommandFlag>-->
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Icon guid="BatchCheckIn_16x" id="imgDeployOnly" />
         <Strings>
           <ButtonText>Deploy only (SSH)</ButtonText>
@@ -90,7 +91,7 @@
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDebugOverSSH" priority="0x0420" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
         <CommandFlag>DynamicVisibility</CommandFlag>
-        <!--<CommandFlag>DefaultInvisible</CommandFlag>-->
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Icon guid="DebugTemplate_16x" id="imgDebugOnly" />
         <Strings>
           <ButtonText>Debug only (SSH)</ButtonText>
@@ -100,6 +101,8 @@
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdOpenLogFile" priority="0x0510" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel2" />
         <Icon guid="DownloadLog_16x" id="imgShowLogfile" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
         <Strings>
           <ButtonText>Open Logfile</ButtonText>
         </Strings>
@@ -107,8 +110,7 @@
 
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdOpenDebugSettings" priority="0x0520" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel2" />
-        <!--<CommandFlag>DynamicVisibility</CommandFlag>
-        <CommandFlag>DefaultInvisible</CommandFlag>-->
+        <CommandFlag>DynamicVisibility</CommandFlag>
         <Icon guid="Settings_16x" id="imgSettings" />
         <Strings>
           <ButtonText>Settings...</ButtonText>
