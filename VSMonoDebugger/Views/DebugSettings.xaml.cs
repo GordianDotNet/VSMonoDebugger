@@ -13,6 +13,7 @@ namespace VSMonoDebugger.Views
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
             ViewModel = new DebugSettingsModel();
+            SshPasswordBox.Password = ViewModel.SSHPassword;
             DataContext = ViewModel;
             Closing += (o, e) => ViewModel.SaveDebugSettings();
         }
@@ -27,6 +28,14 @@ namespace VSMonoDebugger.Views
         private void Cancel(object sender, RoutedEventArgs e)
         {
             DialogResult = false;
+        }
+
+        private void SshPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel != null)
+            {
+                ViewModel.SSHPassword = SshPasswordBox.Password;
+            }
         }
     }
 }

@@ -28,6 +28,18 @@ namespace VSMonoDebugger.Views
             UserSettingsManager.Instance.Save(settings);
         }
 
+        public string SSHFullUrl
+        {
+            get
+            {
+                return $"{SSHUsername}@{SSHHostIP}:{SSHPort}";
+            }
+            set
+            {
+
+            }
+        }
+
         public string SSHHostIP
         {
             get
@@ -38,6 +50,7 @@ namespace VSMonoDebugger.Views
             {
                 _settings.SSHHostIP = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(SSHFullUrl));
             }
         }
 
@@ -51,6 +64,7 @@ namespace VSMonoDebugger.Views
             {
                 _settings.SSHPort = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(SSHFullUrl));
             }
         }
 
@@ -64,6 +78,7 @@ namespace VSMonoDebugger.Views
             {
                 _settings.SSHUsername = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(SSHFullUrl));
             }
         }
 
@@ -71,12 +86,15 @@ namespace VSMonoDebugger.Views
         {
             get
             {
+                // TODO add encryption
                 return _settings.SSHPassword;
             }
             set
             {
+                // TODO add decryption
                 _settings.SSHPassword = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(SSHFullUrl));
             }
         }
 

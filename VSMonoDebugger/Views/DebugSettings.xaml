@@ -14,6 +14,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -21,23 +22,25 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Remote Host IP:" VerticalAlignment="Center" Margin="5" />
-        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHHostIP}" Margin="5" />
+        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHFullUrl}" Margin="5" IsReadOnly="True" Background="LightGray"/>
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Remote Host Port:" VerticalAlignment="Center" Margin="5" />
-        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHPort}" Margin="5" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Remote Host IP:" VerticalAlignment="Center" Margin="5" />
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHHostIP}" Margin="5" />
 
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="SSH User:" VerticalAlignment="Center" Margin="5" />
-        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHUsername}"  Margin="5" />
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="Remote Host Port:" VerticalAlignment="Center" Margin="5" />
+        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHPort}" Margin="5" />
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="SSH Password:" VerticalAlignment="Center"  Margin="5" />
-        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHPassword}" Margin="5" />
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="SSH User:" VerticalAlignment="Center" Margin="5" />
+        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHUsername}"  Margin="5" />
 
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Mono Debug Port:" VerticalAlignment="Center" Margin="5" />
-        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHMonoDebugPort}" Margin="5" />
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="SSH Password:" VerticalAlignment="Center"  Margin="5" />
+        <PasswordBox  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SshPasswordBox" PasswordChanged="SshPasswordBox_PasswordChanged" Margin="5" />
 
-        <TextBlock Grid.Row="5" Grid.Column="0" Text="Remote Deploy Path:" VerticalAlignment="Center" Margin="5" />
-        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHDeployPath}" Margin="5" />
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Mono Debug Port:" VerticalAlignment="Center" Margin="5" />
+        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHMonoDebugPort}" Margin="5" />
+
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="Remote Deploy Path:" VerticalAlignment="Center" Margin="5" />
+        <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHDeployPath}" Margin="5" />
 
         <!--<TextBlock Grid.Row="6" Grid.Column="0" Text="pdb2mdb command:" VerticalAlignment="Center" Margin="5" />
         <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SSHPdb2mdbCommand}" Margin="5" />-->
