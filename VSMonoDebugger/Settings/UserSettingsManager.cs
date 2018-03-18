@@ -1,7 +1,7 @@
-﻿using System;
-using Microsoft.VisualStudio.Settings;
+﻿using Microsoft.VisualStudio.Settings;
 using Microsoft.VisualStudio.Shell.Settings;
 using NLog;
+using System;
 
 namespace VSMonoDebugger.Settings
 {
@@ -22,16 +22,16 @@ namespace VSMonoDebugger.Settings
             get { return manager; }
         }
 
-        public UserSettings Load()
+        public UserSettingsContainer Load()
         {
-            var result = new UserSettings();
+            var result = new UserSettingsContainer();
 
             if (store.CollectionExists(SETTINGS_STORE_NAME))
             {
                 try
                 {
                     string content = store.GetString(SETTINGS_STORE_NAME, "Settings");
-                    result = UserSettings.DeserializeFromJson(content);
+                    result = UserSettingsContainer.DeserializeFromJson(content);
                     return result;
                 }
                 catch (Exception ex)
@@ -43,7 +43,7 @@ namespace VSMonoDebugger.Settings
             return result;
         }
 
-        public void Save(UserSettings settings)
+        public void Save(UserSettingsContainer settings)
         {
             string json = settings.SerializeToJson();
             if (!store.CollectionExists(SETTINGS_STORE_NAME))

@@ -1,18 +1,13 @@
 ﻿using Microsoft.VisualStudio.Shell;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using VSMonoDebugger.Services;
-using VSMonoDebugger.SSH;
-using System.Diagnostics;
-using EnvDTE;
-using VSMonoDebugger.Views;
-using VSMonoDebugger.Settings;
 using SshFileSync;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
+using VSMonoDebugger.Services;
+using VSMonoDebugger.Settings;
+using VSMonoDebugger.SSH;
+using VSMonoDebugger.Views;
 
 namespace VSMonoDebugger
 {
@@ -62,7 +57,7 @@ namespace VSMonoDebugger
                 menuCommand.Enabled = _monoExtension.IsStartupProjectAvailable();
             }
         }
-        
+
         private async void DeployAndDebugOverSSHClicked(object sender, EventArgs e)
         {
             await DeployAndRunCommandOverSSH(true, true);
@@ -100,7 +95,8 @@ namespace VSMonoDebugger
                     return true;
                 }
 
-                var settings = UserSettingsManager.Instance.Load();
+                var allDeviceSettings = UserSettingsManager.Instance.Load();
+                var settings = allDeviceSettings.CurrentUserSettings;
 
                 if (deploy)
                 {

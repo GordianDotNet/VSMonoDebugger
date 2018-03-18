@@ -63,11 +63,13 @@
     <Compile Include="Services\HostOutputWindowEx.cs" />
     <Compile Include="Services\NLogService.cs" />
     <Compile Include="Services\MonoVisualStudioExtension.cs" />
+    <Compile Include="Settings\UserSettingsContainer.cs" />
     <Compile Include="Settings\UserSettingsManager.cs" />
     <Compile Include="Settings\DebugOptions.cs" />
     <Compile Include="Settings\UserSettings.cs" />
     <Compile Include="SSH\SSHDebugger.cs" />
     <Compile Include="SSH\SshDeltaCopy.cs" />
+    <Compile Include="Views\BaseViewModel.cs" />
     <Compile Include="Views\DebugSettings.xaml.cs">
       <DependentUpon>DebugSettings.xaml</DependentUpon>
     </Compile>

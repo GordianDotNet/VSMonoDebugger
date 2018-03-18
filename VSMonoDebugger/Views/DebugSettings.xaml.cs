@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Linq;
+using System.Windows;
 
 namespace VSMonoDebugger.Views
 {
@@ -13,15 +14,15 @@ namespace VSMonoDebugger.Views
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
             ViewModel = new DebugSettingsModel();
-            SshPasswordBox.Password = ViewModel.SSHPassword;
             DataContext = ViewModel;
-            Closing += (o, e) => ViewModel.SaveDebugSettings();
+            //Closing += (o, e) => ViewModel.SaveDebugSettings();
         }
 
         public DebugSettingsModel ViewModel { get; set; }
 
         private void Save(object sender, RoutedEventArgs e)
         {
+            ViewModel.SaveDebugSettings();
             DialogResult = true;
         }
 
@@ -32,9 +33,37 @@ namespace VSMonoDebugger.Views
 
         private void SshPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
+            if (ViewModel?.SettingsContainer?.CurrentUserSettings != null)
+            {
+                ViewModel.SettingsContainer.CurrentUserSettings.SSHPassword = SshPasswordBox.Password;
+            }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            if (ViewModel?.SettingsContainer?.CurrentUserSettings?.SSHPassword != null)
+            {
+                SshPasswordBox.Password = ViewModel?.SettingsContainer?.CurrentUserSettings?.SSHPassword;
+            }
+        }
+
+        private void Add(object sender, RoutedEventArgs e)
+        {
             if (ViewModel != null)
             {
-                ViewModel.SSHPassword = SshPasswordBox.Password;
+                var newUserSettings = new Settings.UserSettings();
+                ViewModel.SettingsContainer.DeviceConnections.Add(newUserSettings);
+                ViewModel.SettingsContainer.SelectedId = newUserSettings.Id;
+            }
+        }
+
+        private void Delete(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel?.SettingsContainer?.DeviceConnections?.Count > 1)
+            {
+                var currentUserSettings = ViewModel.SettingsContainer.CurrentUserSettings;
+                ViewModel.SettingsContainer.DeviceConnections.Remove(currentUserSettings);
+                ViewModel.SettingsContainer.SelectedId = ViewModel.SettingsContainer.DeviceConnections.First().Id;
             }
         }
     }
