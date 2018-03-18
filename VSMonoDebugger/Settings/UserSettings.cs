@@ -34,6 +34,7 @@ namespace VSMonoDebugger.Settings
             SSHMonoDebugPort = DEFAULT_DEBUGGER_AGENT_PORT;
             SSHPdb2mdbCommand = "mono /usr/lib/mono/4.5/pdb2mdb.exe";
             SSHDebugConnectionTimeout = 20;
+            RedirectOutputOption = RedirectOutputOptions.RedirectStandardOutput;
         }
 
         public string Id { get => _id; set { _id = value; NotifyPropertyChanged(); } }
@@ -50,6 +51,9 @@ namespace VSMonoDebugger.Settings
         public string SSHPdb2mdbCommand { get => _sSHPdb2mdbCommand; set { _sSHPdb2mdbCommand = value; NotifyPropertyChanged(); } }
         public int SSHDebugConnectionTimeout { get => _sSHDebugConnectionTimeout; set { _sSHDebugConnectionTimeout = value; NotifyPropertyChanged(); } }
 
+        private RedirectOutputOptions _redirectOutputOption;
+        public RedirectOutputOptions RedirectOutputOption { get => _redirectOutputOption; set { _redirectOutputOption = value; NotifyPropertyChanged(); } }
+
         public string SSHFullUrl
         {
             get
@@ -61,5 +65,14 @@ namespace VSMonoDebugger.Settings
                 NotifyPropertyChanged();
             }
         }
+    }
+
+    [Flags]
+    public enum RedirectOutputOptions
+    {
+        None = 0,
+        RedirectStandardOutput = 1,
+        RedirectErrorOutput = 2,
+        RedirectAll = RedirectStandardOutput | RedirectErrorOutput
     }
 }

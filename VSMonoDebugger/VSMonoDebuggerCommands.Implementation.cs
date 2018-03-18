@@ -128,18 +128,18 @@ namespace VSMonoDebugger
                 {
                     if (deploy)
                     {
-                        monoRemoteSshDebugTask = await SSHDebugger.DeployAndDebugAsync(options, debugOptions, HostOutputWindowEx.WriteLineLaunchError);
+                        monoRemoteSshDebugTask = await SSHDebugger.DeployAndDebugAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchError, settings.RedirectOutputOption);
                     }
                     else
                     {
-                        monoRemoteSshDebugTask = await SSHDebugger.DebugAsync(options, debugOptions, HostOutputWindowEx.WriteLineLaunchError);
+                        monoRemoteSshDebugTask = await SSHDebugger.DebugAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchError, settings.RedirectOutputOption);
                     }
 
                     _monoExtension.AttachDebuggerToRunningProcess(debugOptions);
                 }
                 else
                 {
-                    monoRemoteSshDebugTask = await SSHDebugger.DeployAsync(options, debugOptions, HostOutputWindowEx.WriteLineLaunchError);
+                    monoRemoteSshDebugTask = await SSHDebugger.DeployAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchError, settings.RedirectOutputOption);
                 }
 
                 await monoRemoteSshDebugTask;
@@ -148,6 +148,7 @@ namespace VSMonoDebugger
             }
             catch (Exception ex)
             {
+                HostOutputWindowEx.WriteLineLaunchError(ex.Message);
                 NLogService.Logger.Error(ex);
                 // TODO MessageBox
                 MessageBox.Show(ex.Message, "MonoRemoteDebugger", MessageBoxButton.OK, MessageBoxImage.Error);

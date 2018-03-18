@@ -15,6 +15,11 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -32,7 +37,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding SettingsContainer.DeviceConnections}" DisplayMemberPath="SSHFullUrl"  SelectedValue="{Binding SettingsContainer.SelectedId, Mode=TwoWay}" SelectedValuePath="Id" Margin="5" SelectionChanged="ComboBox_SelectionChanged"/>
+            <ComboBox Grid.Row="0" Grid.Column="0" ItemsSource="{Binding SettingsContainer.DeviceConnections}" DisplayMemberPath="SSHFullUrl"  SelectedValue="{Binding SettingsContainer.SelectedId, Mode=TwoWay}" SelectedValuePath="Id" Margin="5" SelectionChanged="DeviceConnections_SelectionChanged"/>
             <Button Grid.Row="0" Grid.Column="1" Click="Add" Margin="5" >New</Button>
             <Button Grid.Row="0" Grid.Column="2" Click="Delete" Margin="5" >Remove</Button>
         </Grid>
@@ -61,7 +66,10 @@
         <TextBlock Grid.Row="7" Grid.Column="0" Text="Debug connection Timeout:" VerticalAlignment="Center" Margin="5" />
         <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHDebugConnectionTimeout}" Margin="5" />
 
-        <Button Grid.Row="8" Grid.Column="0" MinWidth="100" Click="Save" Margin="5" >Save</Button>
-        <Button Grid.Row="8" Grid.Column="1" MinWidth="100" Click="Cancel" Margin="5" >Cancel</Button>
+        <TextBlock Grid.Row="8" Grid.Column="0" Text="Redirect output:" VerticalAlignment="Center" Margin="5" />
+        <ComboBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding AllRedirectOutputOptions}" SelectedValue="{Binding SettingsContainer.CurrentUserSettings.RedirectOutputOption, Mode=TwoWay}" Margin="5" SelectionChanged="RedirectOutputOption_SelectionChanged"/>
+
+        <Button Grid.Row="10" Grid.Column="0" MinWidth="100" Click="Save" Margin="5" >Save</Button>
+        <Button Grid.Row="10" Grid.Column="1" MinWidth="100" Click="Cancel" Margin="5" >Cancel</Button>
     </Grid>
 </Window>

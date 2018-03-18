@@ -39,7 +39,7 @@ namespace VSMonoDebugger.Views
             }
         }
 
-        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void DeviceConnections_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
             if (ViewModel?.SettingsContainer?.CurrentUserSettings?.SSHPassword != null)
             {
@@ -65,6 +65,11 @@ namespace VSMonoDebugger.Views
                 ViewModel.SettingsContainer.DeviceConnections.Remove(currentUserSettings);
                 ViewModel.SettingsContainer.SelectedId = ViewModel.SettingsContainer.DeviceConnections.First().Id;
             }
+        }
+
+        private void RedirectOutputOption_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+
         }
     }
 }
