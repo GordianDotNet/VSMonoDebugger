@@ -1,5 +1,5 @@
 ﻿/* 
-20171022: Version 1.4.0
+20180325: Version 1.5.0
 
 MIT License
 
@@ -73,7 +73,7 @@ namespace SshFileSync
                     return $"{Host}#{Port}#{Username}";
                 }
             }
-            
+
             public Options()
             { }
 
@@ -297,9 +297,13 @@ namespace SshFileSync
 
         private void InternalConnect(string host, int port, string username, string password, string workingDirectory)
         {
-            if (_isConnected && _sftpClient == null)
+            if (_isConnected)
             {
-                ChangeWorkingDirectory(workingDirectory);
+                // Change the working directory only if we use ScpClient.
+                if (_scpClient != null)
+                {
+                    ChangeWorkingDirectory(workingDirectory);
+                }
                 return;
             }
 
@@ -347,7 +351,6 @@ namespace SshFileSync
 
             if (_sftpClient != null)
             {
-                //var list = _sftpClient.ListDirectory(".");
                 _sftpClient.ChangeDirectory(destinationDirectory);
                 _scpDestinationDirectory = "";
             }
@@ -443,8 +446,6 @@ namespace SshFileSync
             }
             catch (Exception ex)
             {
-                // TODO log verbose messages differently
-                var msg = ex.Message;
                 PrintTime($"Remote file cache '{_uploadCacheFileName}' not found! We are uploading all files!");
             }
 
