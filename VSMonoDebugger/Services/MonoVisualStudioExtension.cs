@@ -258,6 +258,16 @@ namespace VSMonoDebugger
             var targetExeFileName = Path.GetFileName(startupAssemblyPath);
             var outputDirectory = Path.GetDirectoryName(startupAssemblyPath);
             var startArguments = GetStartArguments();
+            var preDebugScript = settings.PreDebugScriptWithParameters
+                .Replace(settings.MONO_DEBUG_PORT, settings.SSHMonoDebugPort.ToString())
+                .Replace(settings.TARGET_EXE_FILENAME, targetExeFileName)
+                .Replace(settings.START_ARGUMENTS, startArguments)
+                .Replace("\r\n", "\n");
+            var debugScript = settings.DebugScriptWithParameters
+                .Replace(settings.MONO_DEBUG_PORT, settings.SSHMonoDebugPort.ToString())
+                .Replace(settings.TARGET_EXE_FILENAME, targetExeFileName)
+                .Replace(settings.START_ARGUMENTS, startArguments)
+                .Replace("\r\n", "\n");
 
             var debugOptions = new DebugOptions()
             {
@@ -266,7 +276,9 @@ namespace VSMonoDebugger
                 UserSettings = settings,
                 OutputDirectory = outputDirectory,
                 TargetExeFileName = targetExeFileName,
-                StartArguments = startArguments
+                StartArguments = startArguments,
+                PreDebugScript = preDebugScript,
+                DebugScript = debugScript,
             };
 
             return debugOptions;

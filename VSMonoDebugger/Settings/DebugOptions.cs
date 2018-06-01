@@ -12,6 +12,8 @@ namespace VSMonoDebugger.Settings
         public string TargetExeFileName { get; set; }
         public string StartArguments { get; set; }
         public string StartupAssemblyPath { get; set; }
+        public string PreDebugScript { get; set; }
+        public string DebugScript { get; set; }
 
         public DebugOptions()
         { }
@@ -45,7 +47,7 @@ namespace VSMonoDebugger.Settings
             }
             return hostIp;
         }
-
+        
         public int GetMonoDebugPort()
         {
             return UseSSH ? UserSettings.SSHMonoDebugPort : UserSettings.DEFAULT_DEBUGGER_AGENT_PORT;            

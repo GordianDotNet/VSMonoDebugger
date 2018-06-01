@@ -71,5 +71,21 @@ namespace VSMonoDebugger.Views
         {
 
         }
+
+        private void SetDefaultPreDebugScript(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel?.SettingsContainer?.CurrentUserSettings != null)
+            {
+                ViewModel.SettingsContainer.CurrentUserSettings.PreDebugScriptWithParameters = "";
+            }
+        }
+
+        private void SetDefaultDebugScript(object sender, RoutedEventArgs e)
+        {
+            if (ViewModel?.SettingsContainer?.CurrentUserSettings != null)
+            {
+                ViewModel.SettingsContainer.CurrentUserSettings.DebugScriptWithParameters = "";
+            }
+        }
     }
 }
