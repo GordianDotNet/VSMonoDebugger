@@ -27,7 +27,7 @@ namespace VSMonoDebugger.Settings
             }
         }
 
-        private ObservableCollection<UserSettings> _deviceConnections;
+        private ObservableCollection<UserSettings> _deviceConnections = new ObservableCollection<UserSettings>();
 
         public ObservableCollection<UserSettings> DeviceConnections
         {
