@@ -52,7 +52,7 @@ namespace VSMonoDebugger.Settings
             {
                 if (_currentUserSettings == null || _currentUserSettings.Id != SelectedId)
                 {
-                    _currentUserSettings = DeviceConnections?.Where(x => x.Id == SelectedId).FirstOrDefault();
+                    _currentUserSettings = DeviceConnections?.Where(x => x.Id == SelectedId).FirstOrDefault() ?? new UserSettings();
                 }
                 return _currentUserSettings;
             }
