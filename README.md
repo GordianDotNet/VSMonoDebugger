@@ -1,7 +1,7 @@
 VSMonoDebugger
 ============
 
-Enables Visual Studio 2017 to deploy and debug mono application on remote linux machines via SSH.
+Enables Visual Studio 2017 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.
 
 # Usage
 
@@ -10,7 +10,7 @@ You have to save a valid SSH connection first!
 
 > Menu "Mono"/"Settings..."
 
-![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings.png)
+![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings1.png)
 
 - [1] Selects the connection to use for deploying and debugging
 - [2] You can create a additional SSH connection
@@ -25,6 +25,17 @@ You have to save a valid SSH connection first!
 - [11] Console outputs can be output in the Visual Studio Output window
 - [12] All changes are saved after you click on "Save"
 - [13] All changes are discarded if you click on "Cancel"
+- [14] Change the default debugging scripts on tab "Debug scripts". (ex.: to add sudo)
+
+![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings2.png)
+- [1] Change the Pre-Debug script to kill old mono debug sessions
+- [2] The default Pre-Debug script is loaded if you click on "Set default Pre-Debug script" or the input is empty
+- [3] Change the Debug script to start a mono debug session
+- [4] The default Debug script is loaded if you click on "Set default Debug script" or the input is empty
+- [5] For further script information click on "Script information"
+
+![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings3.png)
+- [1] Information about all supported parameters
 
 ### Deploy
 You can deploy your "Startup project" output to the remote machine via SSH configured under "Settings".
@@ -51,10 +62,24 @@ You can run both commands in one step.
 
 - [ ] Support prerequisite Microsoft.VisualStudio.Component.MonoDebugger without copying the dlls
 - [ ] Support settings in an [Options Page](https://msdn.microsoft.com/en-us/library/bb166195.aspx)
-- [ ] Script to stop running mono debug process has dependencies (workaround depends on installed packages)
 - [ ] Not all project types are supported (startup project must be set)
+- [ ] Code has to be refactored for better error logging
+
+# Solved Issues
+
+- [x] Script to stop running mono debug process has dependencies (workaround depends on installed packages)
+###### Suported since version 0.7.5 via "custom debug scripts"
 
 # Version History
+
+## 0.7.5
+**2018-07-11**
+
+- [x] Bugfix: NullReference in UserSettingsContainer fixed
+- [x] Bugfix: Visual Studio 2017 doesn't include Newtonsoft.Json.dll anymore. See [newtonsoftjsondll-not-included-in-vsix](https://social.msdn.microsoft.com/Forums/sqlserver/en-US/550ddfdc-027c-41ba-9b32-31e6391bc038/newtonsoftjsondll-not-included-in-vsix?forum=vsx)
+- [x] Bugfix: Load default UserSettings without username and password instead of NullReferenceException
+- [x] Feature: Support custom debug scripts. (ex. to support sudo or additional preparations.)
+- [x] Feature: Error logging and handling improved for StartDebuggerAsync if a script has syntax errors.
 
 ## 0.7.0
 **2018-03-18**
@@ -76,3 +101,4 @@ You can run both commands in one step.
 - [x] [Visual Studio Image Library 2017](https://www.microsoft.com/en-my/download/details.aspx?id=35825)
 - [x] [Mono.Debugging.VisualStudio.4.9.10-pre](Mono.Debugging.VisualStudio.4.9.10-pre/README.txt)
 - [x] [pdb2mdb source code](https://github.com/mono/mono/tree/master/mcs/tools/pdb2mdb)
+- [x] [Newtonsoft.Json.dll Version 10.0.3.21018](https://www.newtonsoft.com/json)

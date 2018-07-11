@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("VSMonoDebugger")]
-[assembly: AssemblyDescription("Enables Visual Studio 2017 to deploy and debug mono application on remote linux machines via SSH")]
+[assembly: AssemblyDescription("Enables Visual Studio 2017 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("VSMonoDebugger")]
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.7.2.0")]
-[assembly: AssemblyFileVersion("0.7.2.0")]
+[assembly: AssemblyVersion("0.7.5.0")]
+[assembly: AssemblyFileVersion("0.7.5.0")]
