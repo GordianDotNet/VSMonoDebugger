@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using SshFileSync;
+using VSMonoDebugger.Services;
 using VSMonoDebugger.Settings;
 
 namespace VSMonoDebugger.SSH
@@ -31,6 +32,8 @@ namespace VSMonoDebugger.SSH
 
         private static Task<Task> StartDebuggerAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, bool deploy, bool debug, Action<string> writeOutput, RedirectOutputOptions redirectOutputOption)
         {
+            NLogService.TraceEnteringMethod();
+
             return Task.Factory.StartNew(async () =>
             {
                 var errorHelpText = new StringBuilder();
@@ -46,6 +49,8 @@ namespace VSMonoDebugger.SSH
 
                         if (deploy)
                         {
+                            NLogService.Logger.Info($"StartDebuggerAsync - deploy");
+
                             errorHelpText.AppendLine($"SSH: Start deployment from '{options.SourceDirectory}' to '{options.DestinationDirectory}'.");
                             sshDeltaCopy.DeployDirectory(options.SourceDirectory, options.DestinationDirectory);
                             errorHelpText.AppendLine($"SSH Deployment was successful.");
@@ -56,12 +61,23 @@ namespace VSMonoDebugger.SSH
 
                         if (debug)
                         {
+                            NLogService.Logger.Info($"StartDebuggerAsync - debug");
+
                             errorHelpText.AppendLine($"SSH: Stop previous mono processes.");
 
                             var killCommandTextOld = $"kill $(lsof -i | grep 'mono' | grep '\\*:{debugOptions.UserSettings.SSHMonoDebugPort}' | awk '{{print $2}}')";//$"kill $(ps w | grep '[m]ono --debugger-agent=address' | awk '{{print $1}}')";
                             var killCommandText = debugOptions.PreDebugScript;
                             var killCommand = sshDeltaCopy.RunSSHCommand(killCommandText, false);
                             writeLineOutput(killCommand.Result);
+
+                            NLogService.Logger.Info($"Run PreDebugScript: {killCommandText}");
+
+                            if (killCommand.ExitStatus != 0 || !string.IsNullOrWhiteSpace(killCommand.Error))
+                            {
+                                var error = $"SSH script error in PreDebugScript:\n{killCommand.CommandText}\n{killCommand.Error}";
+                                //errorHelpText.AppendLine(error);
+                                NLogService.Logger.Error(error);
+                            }
 
                             //errorHelpText.AppendLine($"SSH: Stop previous mono processes. Second try.");
 
@@ -76,8 +92,21 @@ namespace VSMonoDebugger.SSH
                             errorHelpText.AppendLine($"SSH: Start mono debugger");
                             errorHelpText.AppendLine(monoDebugCommand);
 
+                            NLogService.Logger.Info($"Run DebugScript: {monoDebugCommand}");
+
+                            // TODO if DebugScript fails no error is shown - very bad!
+                            writeOutput(errorHelpText.ToString());
                             var cmd = sshDeltaCopy.CreateSSHCommand(monoDebugCommand);
                             await RunCommandAndRedirectOutput(cmd, writeOutput, redirectOutputOption);
+
+                            if (cmd.ExitStatus != 0 || !string.IsNullOrWhiteSpace(cmd.Error))
+                            {
+                                var error = $"SSH script error in DebugScript:\n{cmd.CommandText}\n{cmd.Error}";
+                                //errorHelpText.AppendLine(error);
+                                NLogService.Logger.Error(error);
+
+                                throw new Exception(error);
+                            }
 
                             //var monoDebugCommandResult = await Task.Factory.FromAsync(cmd.BeginExecute(), result => cmd.Result);
                             //msgOutput(monoDebugCommandResult);

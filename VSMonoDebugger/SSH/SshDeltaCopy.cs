@@ -1,5 +1,5 @@
 ﻿/* 
-20180325: Version 1.5.0
+20180711: Version 1.5.1-beta
 
 MIT License
 
@@ -247,9 +247,16 @@ namespace SshFileSync
             PrintTime($"Running SSH command ...\n{commandText}");
 
             SshCommand cmd = _sshClient.RunCommand(commandText);
-            if (throwOnError && cmd.ExitStatus != 0)
+
+            if (cmd.ExitStatus != 0 || !string.IsNullOrWhiteSpace(cmd.Error))
             {
-                throw new Exception(cmd.Error);
+                var error = $"SSH command error: {cmd.ExitStatus}\n{cmd.CommandText}\n{cmd.Error}";
+                PrintError(error);
+
+                if (throwOnError)
+                {
+                    throw new Exception(error);
+                }
             }
 
             PrintTime($"SSH command result:\n{cmd.Result}");
@@ -605,6 +612,11 @@ namespace SshFileSync
             {
                 LogOutput?.Invoke($"Exception: {ex.Message}");
             }
+        }
+
+        private void PrintError(string error)
+        {
+            LogOutput?.Invoke(error);
         }
 
         private static IEnumerable<string> GetFiles(string path)
