@@ -78,7 +78,7 @@ namespace VSMonoDebugger
             {
                 VsShellUtilities.ShowMessageBox(
                 this,
-                "Failed finish installation of MonoRemoteDebugger - Please run Visual Studio once as Administrator...",
+                "Failed finish installation of VSMonoDebugger - Please run Visual Studio once as Administrator...",
                 $"{nameof(VSMonoDebuggerPackage)} - Register mono debug engine",
                 OLEMSGICON.OLEMSGICON_CRITICAL,
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,

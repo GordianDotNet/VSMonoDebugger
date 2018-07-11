@@ -45,7 +45,7 @@ namespace VSMonoDebugger
                 // TODO MessageBox
                 MessageBox.Show(
                     $"Logfile {NLogService.LoggerPath} not found!",
-                    "MonoRemoteDebugger", MessageBoxButton.OK, MessageBoxImage.Error);
+                    "VSMonoDebugger", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -151,7 +151,7 @@ namespace VSMonoDebugger
                 HostOutputWindowEx.WriteLineLaunchError(ex.Message);
                 NLogService.Logger.Error(ex);
                 // TODO MessageBox
-                MessageBox.Show(ex.Message, "MonoRemoteDebugger", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.Message, "VSMonoDebugger", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             return false;
