@@ -110,7 +110,7 @@ namespace VSMonoDebugger.Settings
         {
             get
             {
-                return $"mono --debugger-agent=address=0.0.0.0:{MONO_DEBUG_PORT},transport=dt_socket,server=y --debug=mdb-optimizations {TARGET_EXE_FILENAME} {START_ARGUMENTS} &;";
+                return $"mono --debugger-agent=address=0.0.0.0:{MONO_DEBUG_PORT},transport=dt_socket,server=y --debug=mdb-optimizations {TARGET_EXE_FILENAME} {START_ARGUMENTS} &";
             }
         }
 
