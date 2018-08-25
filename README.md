@@ -58,19 +58,41 @@ You can run both commands in one step.
 
 > Menu "Mono"/"Deploy and Debug (SSH)"
 
+### Attach to mono debugger (without SSH)
+You can debug a mono process that is already waiting for a debugger. SSH is not necessary. Only one TCP connection is required. The mono process must be started manually with the necessary arguments.
+
+> Menu "Mono"/"Attach to mono debugger (without SSH)"
+
+### Build Startup Project with MDB Files
+You can build the startup project and all dependent projects. Additionally the mdb files are created. This is necessary for the support "Attach to mono debugger (without SSH)", because the mdb files must be present in every output directory of dependent projects.
+
+> Menu "Mono"/"Build Startup Project with MDB Files"
+
 # Known Issues
 
 - [ ] Support prerequisite Microsoft.VisualStudio.Component.MonoDebugger without copying the dlls
 - [ ] Support settings in an [Options Page](https://msdn.microsoft.com/en-us/library/bb166195.aspx)
 - [ ] Not all project types are supported (startup project must be set)
 - [ ] Code has to be refactored for better error logging
+- [ ] Why can't the Mono.Cecil.Pdb.NativePdbReaderProvider type be found in Visual Studio to support pdb files?
 
 # Solved Issues
 
 - [x] Script to stop running mono debug process has dependencies (workaround depends on installed packages)
+- [x] Support break points in referenced projects. *.mdb files are searched locally in each output directory, so we need mdb files in each project output directory (see Mono.Cecil.Cil.DefaultSymbolReaderProvider.GetSymbolReader()).
+
 ###### Suported since version 0.7.5 via "custom debug scripts"
 
 # Version History
+
+## 0.7.6
+**2018-08-25**
+
+- [x] Bugfix: Support break points in referenced projects. *.mdb files are searched locally in each output directory, so we need mdb files in each project output directory. 
+- [x] Feature: Build only startup project instead of whole solution and show error window automatically
+- [x] Feature: Add new menu item "Attach to mono debugger (without SSH)"
+- [x] Feature: Add new menu item "Build Startup Project with MDB Files"
+
 
 ## 0.7.5
 **2018-07-11**
