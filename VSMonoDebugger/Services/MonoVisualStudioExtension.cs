@@ -49,7 +49,7 @@ namespace VSMonoDebugger
                 var failedBuilds = BuildStartupProject();
                 if (failedBuilds > 0)
                 {
-                    Window window = _dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+                    Window window = _dte.Windows.Item("{34E76E81-EE4A-11D0-AE2E-00A0C90FFFC3}");//EnvDTE.Constants.vsWindowKindOutput
                     OutputWindow outputWindow = (OutputWindow)window.Object;
                     outputWindow.ActivePane.Activate();
                     outputWindow.ActivePane.OutputString($"{failedBuilds} project(s) failed to build. See error and output window!");
@@ -72,7 +72,7 @@ namespace VSMonoDebugger
                 var activeConfigurationName = activeConfiguration.Name;
                 var startProjectName = startProject.FullName;
                 LogInfo($"BuildProject {startProject.FullName} {activeConfiguration.Name}");
-                sb.BuildProject(activeConfiguration.Name, startProject.FullName, true);
+                sb.BuildProject(activeConfiguration.Name, startProject.FullName, true);                
             }
             catch (Exception ex)
             {
@@ -316,6 +316,80 @@ namespace VSMonoDebugger
             };
 
             return debugOptions;
+        }
+
+        public async Task CreateMdbForAllDependantProjects(Action<string> msgOutput)
+        {
+            var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;
+
+            var startProject = GetStartupProject();
+            var dependantProjects = CollectAllDependentProjects(startProject);
+            var outputDirectories = CollectOutputDirectories(sb);
+
+            foreach (var projectName in dependantProjects.Keys)
+            {
+                try
+                {
+                    if (outputDirectories.ContainsKey(projectName))
+                    {
+                        var outputDir = outputDirectories[projectName];
+                        LogInfo($"{projectName} - OutputDir: {outputDir}");
+
+                        await ConvertPdb2Mdb(outputDir, msgOutput);
+                    }
+                    else
+                    {
+                        LogInfo($"{projectName} - OutputDir: NOT FOUND!");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    LogError(ex);
+                }
+            }
+        }
+
+        private Dictionary<string, string> CollectOutputDirectories(SolutionBuild2 sb)
+        {
+            var outputPaths = new Dictionary<string, string>();
+            foreach (BuildDependency dep in sb.BuildDependencies)
+            {
+                string fullPath = dep.Project.Properties.Item("FullPath").Value.ToString();
+                string outputPath = dep.Project.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value.ToString();
+                string outputDir = Path.Combine(fullPath, outputPath);
+                outputPaths[dep.Project.FullName] = outputDir;
+            }
+            return outputPaths;
+        }
+
+        public Dictionary<string, Project> CollectAllDependentProjects(Project currentProject, Dictionary<string, Project> projects = null)
+        {
+            projects = projects ?? new Dictionary<string, Project>();
+
+            if (currentProject == null || projects.ContainsKey(currentProject.FullName))
+            {
+                return projects;
+            }
+
+            projects.Add(currentProject.FullName, currentProject);
+
+            var vsproject = currentProject.Object as VSLangProj.VSProject;
+
+            foreach (VSLangProj.Reference reference in vsproject.References)
+            {
+                if (reference.SourceProject == null)
+                {
+                    // This is an assembly reference
+                }
+                else
+                {
+                    // This is a project reference
+                    var dependentProject = reference.SourceProject;
+                    CollectAllDependentProjects(dependentProject, projects);
+                }
+            }
+
+            return projects;
         }
 
         public Task ConvertPdb2Mdb(string outputDirectory, Action<string> msgOutput)

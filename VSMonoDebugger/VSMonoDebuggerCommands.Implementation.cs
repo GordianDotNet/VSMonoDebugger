@@ -118,7 +118,7 @@ namespace VSMonoDebugger
                 if (debuggerMode.HasFlag(DebuggerMode.DeployOverSSH))
                 {
                     await _monoExtension.BuildStartupProjectAsync();
-                    await _monoExtension.ConvertPdb2Mdb(options.SourceDirectory, HostOutputWindowEx.WriteLineLaunchError);
+                    await _monoExtension.CreateMdbForAllDependantProjects(HostOutputWindowEx.WriteLineLaunchError);
                 }
 
                 var monoRemoteSshDebugTask = System.Threading.Tasks.Task.CompletedTask;
@@ -184,7 +184,7 @@ namespace VSMonoDebugger
                 CreateDebugOptions(out settings, out debugOptions, out options);
 
                 await _monoExtension.BuildStartupProjectAsync();
-                await _monoExtension.ConvertPdb2Mdb(options.SourceDirectory, HostOutputWindowEx.WriteLineLaunchError);
+                await _monoExtension.CreateMdbForAllDependantProjects(HostOutputWindowEx.WriteLineLaunchError);
 
                 return true;
             }
