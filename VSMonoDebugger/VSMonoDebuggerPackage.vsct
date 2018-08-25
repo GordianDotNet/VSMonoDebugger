@@ -98,6 +98,26 @@
         </Strings>
       </Button>
 
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdAttachToMonoDebuggerWithoutSSH" priority="0x0430" type="Button">
+        <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Icon guid="Process_16x" id="imgAttachToMonoDebuggerWithoutSSH" />
+        <Strings>
+          <ButtonText>Attach to mono debugger (without SSH)</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdBuildProjectWithMDBFiles" priority="0x0430" type="Button">
+        <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>DefaultDisabled</CommandFlag>
+        <Icon guid="BuildSelection_16x" id="imgBuildProjectWithMDBFiles" />
+        <Strings>
+          <ButtonText>Build Startup Project with MDB Files</ButtonText>
+        </Strings>
+      </Button>
+
       <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdOpenLogFile" priority="0x0510" type="Button">
         <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel2" />
         <Icon guid="DownloadLog_16x" id="imgShowLogfile" />
@@ -131,6 +151,8 @@
       <Bitmap guid="DownloadLog_16x" href="Resources\DownloadLog_16x.png" usedList="imgShowLogfile"/>
       <Bitmap guid="Settings_16x" href="Resources\Settings_16x.png" usedList="imgSettings"/>
       <Bitmap guid="StartRemoteDebugger_16x" href="Resources\StartRemoteDebugger_16x.png" usedList="imgDeployAndDebug"/>
+      <Bitmap guid="Process_16x" href="Resources\Process_16x.png" usedList="imgAttachToMonoDebuggerWithoutSSH"/>
+      <Bitmap guid="BuildSelection_16x" href="Resources\BuildSelection_16x.png" usedList="imgBuildProjectWithMDBFiles"/>
     </Bitmaps>
   </Commands>
 
@@ -148,6 +170,8 @@
       <IDSymbol name="cmdDebugOverSSH" value="0x1003" />
       <IDSymbol name="cmdOpenLogFile" value="0x1004" />
       <IDSymbol name="cmdOpenDebugSettings" value="0x1005" />
+      <IDSymbol name="cmdAttachToMonoDebuggerWithoutSSH" value="0x1006" />
+      <IDSymbol name="cmdBuildProjectWithMDBFiles" value="0x1007" />
     </GuidSymbol>
 
     <GuidSymbol name="BatchCheckIn_16x" value="{A6146350-5354-4ABE-B452-FB63881C9293}" >
@@ -168,6 +192,14 @@
 
     <GuidSymbol name="StartRemoteDebugger_16x" value="{95F6FDC3-DA9F-4266-BD63-1A02ECCCBCDF}" >
       <IDSymbol name="imgDeployAndDebug" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="Process_16x" value="{20E883F0-E7EE-4444-B9B4-67F2892B3D0D}" >
+      <IDSymbol name="imgAttachToMonoDebuggerWithoutSSH" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="BuildSelection_16x" value="{C6D5524B-6CCF-4FC9-9BCF-A057BFB2AFA6}" >
+      <IDSymbol name="imgBuildProjectWithMDBFiles" value="1" />
     </GuidSymbol>
 
     <GuidSymbol name="guidImages" value="{4b8073cd-56e9-4e1e-91b9-728cebf52038}" >

@@ -24,6 +24,8 @@ namespace VSMonoDebugger
             public const int cmdDebugOverSSH = 0x1003;
             public const int cmdOpenLogFile = 0x1004;
             public const int cmdOpenDebugSettings = 0x1005;
+            public const int cmdAttachToMonoDebuggerWithoutSSH = 0x1006;
+            public const int cmdBuildProjectWithMDBFiles = 0x1007;
         }
         #endregion
 

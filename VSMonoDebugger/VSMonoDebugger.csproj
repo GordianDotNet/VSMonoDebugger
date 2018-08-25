@@ -100,8 +100,10 @@
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="Resources\BatchCheckIn_16x.png" />
+    <Content Include="Resources\BuildSelection_16x.png" />
     <Content Include="Resources\DebugTemplate_16x.png" />
     <Content Include="Resources\DownloadLog_16x.png" />
+    <Content Include="Resources\Process_16x.png" />
     <Content Include="Resources\Settings_16x.png" />
     <Content Include="Resources\StartRemoteDebugger_16x.png" />
     <Content Include="Resources\VSMonoDebuggerCommands.png" />
