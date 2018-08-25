@@ -75,13 +75,12 @@ You can build the startup project and all dependent projects. Additionally the m
 - [ ] Not all project types are supported (startup project must be set)
 - [ ] Code has to be refactored for better error logging
 - [ ] Why can't the Mono.Cecil.Pdb.NativePdbReaderProvider type be found in Visual Studio to support pdb files?
+- [ ] When using the ProvideAutoLoad attribute, your package (VSMonoDebugger.VSMonoDebuggerPackage) class should derive from AsyncPackage instead of Package to improve performance. Read more about using AsyncPackage here: https://aka.ms/asyncpackage.
 
 # Solved Issues
 
 - [x] Script to stop running mono debug process has dependencies (workaround depends on installed packages)
 - [x] Support break points in referenced projects. *.mdb files are searched locally in each output directory, so we need mdb files in each project output directory (see Mono.Cecil.Cil.DefaultSymbolReaderProvider.GetSymbolReader()).
-
-###### Suported since version 0.7.5 via "custom debug scripts"
 
 # Version History
 
