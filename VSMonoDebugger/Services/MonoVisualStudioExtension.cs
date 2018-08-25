@@ -32,29 +32,63 @@ namespace VSMonoDebugger
 
         private readonly Package _package;
         private readonly DTE _dte;
+        private readonly ErrorListProvider _errorListProvider;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public MonoVisualStudioExtension(Package package)
         {
             _package = package;
             _dte = package.GetService<DTE>();
+            _errorListProvider = new ErrorListProvider(package);
         }
 
-        internal async Task BuildSolutionAsync()
+        internal async Task BuildStartupProjectAsync()
         {
             await System.Threading.Tasks.Task.Factory.StartNew(() =>
             {
-                var failedBuilds = BuildSolution();
+                var failedBuilds = BuildStartupProject();
                 if (failedBuilds > 0)
                 {
-                    throw new Exception($"Build failed! Project failed to build: {failedBuilds}.");
+                    Window window = _dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+                    OutputWindow outputWindow = (OutputWindow)window.Object;
+                    outputWindow.ActivePane.Activate();
+                    outputWindow.ActivePane.OutputString($"{failedBuilds} project(s) failed to build. See error and output window!");
+
+                    _errorListProvider.Show();
+
+                    throw new Exception($"{failedBuilds} project(s) failed to build. See error and output window!");
                 }
             });
         }
 
-        internal int BuildSolution()
+        internal int BuildStartupProject()
         {
             var sb = (SolutionBuild2) _dte.Solution.SolutionBuild;
+
+            try
+            {
+                var startProject = GetStartupProject();
+                var activeConfiguration = _dte.Solution.SolutionBuild.ActiveConfiguration;
+                var activeConfigurationName = activeConfiguration.Name;
+                var startProjectName = startProject.FullName;
+                LogInfo($"BuildProject {startProject.FullName} {activeConfiguration.Name}");
+                sb.BuildProject(activeConfiguration.Name, startProject.FullName, true);
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+                LogInfo($"BuildProject failed - Fallback: BuildSolution");
+                // Build complete solution (fallback solution)
+                return BuildSolution();
+            }
+
+            return sb.LastBuildInfo;
+        }
+
+        internal int BuildSolution()
+        {
+            var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;
+            LogInfo($"BuildSolution");
             sb.Build(true);
             return sb.LastBuildInfo;
         }
@@ -323,6 +357,17 @@ namespace VSMonoDebugger
 
                 msgOutput?.Invoke($"End ConvertPdb2Mdb.");
             });
+        }
+
+        public void LogInfo(string message)
+        {
+            logger.Log(new LogEventInfo(LogLevel.Info, "MonoVisualStudioExtension", message));
+
+        }
+
+        public void LogError(Exception ex)
+        {
+            logger.Error(ex);
         }
     }
 }
