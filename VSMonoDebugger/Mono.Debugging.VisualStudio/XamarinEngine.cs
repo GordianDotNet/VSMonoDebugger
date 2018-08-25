@@ -69,10 +69,17 @@ namespace Mono.Debugging.VisualStudio
                 };
                 _session.TargetEvent += _session_TargetEvent;
 
+                var connectionTimeout = debugOptions.UserSettings.SSHDebugConnectionTimeout;
+                var evaluationTimeout = 30000;
                 var startupProject = StartupProject;
                 _startInfo = new StartInfo(
                     new SoftDebuggerConnectArgs(debugOptions.TargetExeFileName, debugOptions.GetHostIP(), debugOptions.GetMonoDebugPort()),
-                    new DebuggingOptions() { EvaluationTimeout = 30000, MemberEvaluationTimeout = 30000, ModificationTimeout = 30000, SocketTimeout = 30000 },
+                    new DebuggingOptions() {
+                        EvaluationTimeout = evaluationTimeout,
+                        MemberEvaluationTimeout = evaluationTimeout,
+                        ModificationTimeout = evaluationTimeout,
+                        SocketTimeout = connectionTimeout
+                    },
                     startupProject
                     );
 
