@@ -110,6 +110,8 @@ namespace VSMonoDebugger
             // TODO stop monoRemoteSshDebugTask properly
             try
             {
+                NLogService.Logger.Info($"===== {nameof(DeployAndRunCommandOverSSH)} =====");
+
                 UserSettings settings;
                 DebugOptions debugOptions;
                 SshDeltaCopy.Options options;
@@ -178,6 +180,8 @@ namespace VSMonoDebugger
         {
             try
             {
+                NLogService.Logger.Info($"===== {nameof(BuildProjectWithMDBFiles)} =====");
+
                 UserSettings settings;
                 DebugOptions debugOptions;
                 SshDeltaCopy.Options options;

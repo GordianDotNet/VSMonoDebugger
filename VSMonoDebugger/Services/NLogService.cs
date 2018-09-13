@@ -40,6 +40,7 @@ namespace VSMonoDebugger.Services
             config.AddTarget("file", target);
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, target));
 
+            // TODO add better logger options
             var fileTarget = new FileTarget { FileName = LoggerPath };
             config.AddTarget("file", fileTarget);
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Trace, fileTarget));
