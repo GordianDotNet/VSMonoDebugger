@@ -108,24 +108,33 @@ namespace VSMonoDebugger
         private Project GetStartupProject()
         {
             var sb = (SolutionBuild2) _dte.Solution.SolutionBuild;
-            string project = ((Array) sb.StartupProjects).Cast<string>().First();
+            var startupProjects = ((Array) sb.StartupProjects).Cast<string>().ToList();
 
             try
             {
                 var projects = Projects(_dte.Solution);
-                foreach (var p in projects)
+                foreach (var project in projects)
                 {
-                    if (p.UniqueName == project)
-                        return p;
+                    if (startupProjects.Contains(project.UniqueName))
+                    {
+                        if (IsCSharpProject(project))
+                        {
+                            // We are only support one C# project at once
+                            return project;
+                        }
+                        else
+                        {
+                            LogInfo($"Only C# projects are supported as startup project! ProjectName = {project.Name} Language = {project.CodeModel.Language}");
+                        }
+                    }
                 }
-                //startupProject = _dte.Solution.Item(project);
             }
             catch (ArgumentException aex)
             {
-                throw new ArgumentException($"The parameter '{project}' is incorrect.", aex);
+                throw new ArgumentException($"No startup project extracted! The parameter StartupProjects = '{string.Join(",", startupProjects.ToArray())}' is incorrect.", aex);
             }
 
-            throw new ArgumentException($"The parameter '{project}' is incorrect.");
+            throw new ArgumentException($"No startup project found! Checked projects in StartupProjects = '{string.Join(",", startupProjects.ToArray())}'");
         }
 
         public static IList<Project> Projects(Solution solution)
@@ -180,18 +189,30 @@ namespace VSMonoDebugger
 
         internal string GetAssemblyPath(Project vsProject)
         {
-            string fullPath = vsProject.Properties.Item("FullPath").Value.ToString();
-            string outputPath =
-                vsProject.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value.ToString();
-            string outputDir = Path.Combine(fullPath, outputPath);
+            if (!IsCSharpProject(vsProject))
+            {
+                throw new ArgumentException($"Only C# projects are supported as startup project! ProjectName = {vsProject.Name} Language = {vsProject.CodeModel.Language}");
+            }
+
+            var outputDir = GetFullOutputPath(vsProject);
+            if (outputDir == null)
+            {
+                outputDir = string.Empty;
+                LogInfo($"GetFullOutputPath returned null! Using fallback: '{outputDir}'");
+            }
             string outputFileName = vsProject.Properties.Item("OutputFileName").Value.ToString();
             if (string.IsNullOrEmpty(outputFileName))
             {
                 outputFileName = $"{vsProject.Name}.exe";
-                Debug.WriteLine($"OutputFileName for project {vsProject.Name} is empty! Using fallback: {outputFileName}");
+                LogInfo($"OutputFileName for project {vsProject.Name} is empty! Using fallback: {outputFileName}");
             }
             string assemblyPath = Path.Combine(outputDir, outputFileName);
             return assemblyPath;
+        }
+
+        private static bool IsCSharpProject(Project vsProject)
+        {
+            return vsProject.CodeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp;
         }
 
         internal string GetStartArguments()
@@ -323,8 +344,8 @@ namespace VSMonoDebugger
             var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;
 
             var startProject = GetStartupProject();
-            var dependantProjects = CollectAllDependentProjects(startProject);
-            var outputDirectories = CollectOutputDirectories(sb);
+            var dependantProjects = CollectAllDependentProjects(startProject, msgOutput);
+            var outputDirectories = CollectOutputDirectories(sb, msgOutput);
 
             foreach (var projectName in dependantProjects.Keys)
             {
@@ -349,20 +370,69 @@ namespace VSMonoDebugger
             }
         }
 
-        private Dictionary<string, string> CollectOutputDirectories(SolutionBuild2 sb)
+        private Dictionary<string, string> CollectOutputDirectories(SolutionBuild2 sb, Action<string> msgOutput)
         {
             var outputPaths = new Dictionary<string, string>();
             foreach (BuildDependency dep in sb.BuildDependencies)
             {
-                string fullPath = dep.Project.Properties.Item("FullPath").Value.ToString();
-                string outputPath = dep.Project.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value.ToString();
-                string outputDir = Path.Combine(fullPath, outputPath);
+                msgOutput($"### CollectOutputDirectories: Propertes of project '{dep.Project.Name}'");
+                LogInfo($"### CollectOutputDirectories: Propertes of project '{dep.Project.Name}'");
+
+                if (!IsCSharpProject(dep.Project))
+                {
+                    msgOutput($"Only C# projects are supported project! ProjectName = {dep.Project.Name} Language = {dep.Project.CodeModel.Language}");
+                    LogInfo($"Only C# projects are supported project! ProjectName = {dep.Project.Name} Language = {dep.Project.CodeModel.Language}");
+                    continue;
+                }
+
+                var outputDir = GetFullOutputPath(dep.Project);
+                if (string.IsNullOrEmpty(outputDir))
+                {
+                    continue;
+                }
+                msgOutput($"OutputFullPath = {outputDir}");
+                LogInfo($"OutputFullPath = {outputDir}");
                 outputPaths[dep.Project.FullName] = outputDir;
             }
             return outputPaths;
         }
 
-        public Dictionary<string, Project> CollectAllDependentProjects(Project currentProject, Dictionary<string, Project> projects = null)
+        private string GetFullOutputPath(Project project)
+        {
+            var fullPath = string.Empty;
+            var outputPath = string.Empty;
+            foreach (Property property in project.Properties)
+            {
+                try
+                {
+                    //LogInfo($"Name: {property.Name} = {property.Value}");
+                    if (property.Name == "FullPath" || (property.Name == "" && string.IsNullOrEmpty(fullPath)))
+                    {
+                        fullPath = property.Value?.ToString();
+                    }
+                }
+                catch
+                {
+                    //LogInfo($"Name: {property.Name} = --ERROR--");
+                }
+
+            }
+
+            try
+            {
+                outputPath = project.ConfigurationManager.ActiveConfiguration.Properties.Item("OutputPath").Value.ToString();
+            }
+            catch
+            {
+                LogInfo($"OutputPath not available!");
+                return null;
+            }
+
+            var outputDir = Path.Combine(fullPath, outputPath);
+            return outputDir;
+        }
+
+        public Dictionary<string, Project> CollectAllDependentProjects(Project currentProject, Action<string> msgOutput, Dictionary<string, Project> projects = null)
         {
             projects = projects ?? new Dictionary<string, Project>();
 
@@ -385,7 +455,7 @@ namespace VSMonoDebugger
                 {
                     // This is a project reference
                     var dependentProject = reference.SourceProject;
-                    CollectAllDependentProjects(dependentProject, projects);
+                    CollectAllDependentProjects(dependentProject, msgOutput, projects);
                 }
             }
 
