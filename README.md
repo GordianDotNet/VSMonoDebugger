@@ -75,12 +75,19 @@ You can build the startup project and all dependent projects. Additionally the m
 - [ ] Code has to be refactored for better error logging
 - [ ] Why can't the Mono.Cecil.Pdb.NativePdbReaderProvider type be found in Visual Studio to support pdb files?
 - [ ] When using the ProvideAutoLoad attribute, your package (VSMonoDebugger.VSMonoDebuggerPackage) class should derive from AsyncPackage instead of Package to improve performance. Read more about using AsyncPackage here: https://aka.ms/asyncpackage.
+- [ ] Support [ssh private keys](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604) to authenticate
 
 # Solved Issues
 
 - [x] Script to stop running mono debug process has dependencies (workaround depends on installed packages)
 - [x] Support break points in referenced projects. *.mdb files are searched locally in each output directory, so we need mdb files in each project output directory (see Mono.Cecil.Cil.DefaultSymbolReaderProvider.GetSymbolReader()).
 - [x] Ignore unsupported project types (like C++, VB, F#)
+- [x] Under Ubuntu replace the Pre-Debug script with `pkill -f mono` to kill old mono debug sessions.
+And give your user root rights for `pkill` and `mono` [see: Run a specific program as root without a password promt](https://unix.stackexchange.com/questions/18830/how-to-run-a-specific-program-as-root-without-a-password-prompt)
+```
+# User alias specification
+yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
+```
 
 # Version History
 
