@@ -18,14 +18,15 @@ You have to save a valid SSH connection first!
 - [4] Enter the remote SSH IP or host name
 - [5] Enter the SSH port
 - [6] Enter the SSH username
-- [7] Enter the SSH password (if there is no password => leave the field empty)
-- [8] Mono opens a debug session over this port
-- [9] This is where the project output is deployed
-- [10] Timeout to connect to the debug session
-- [11] Console outputs can be output in the Visual Studio Output window
-- [12] All changes are saved after you click on "Save"
-- [13] All changes are discarded if you click on "Cancel"
-- [14] Change the default debugging scripts on tab "Debug scripts". (ex.: to add sudo)
+- [7] Enter the SSH password or private key file passphrase (if there is no password => leave the field empty)
+- [8] Enter/set the filepath to a private key file (if there is no ssh private key authentication => leave the field empty)
+- [9] Mono opens a debug session over this port
+- [10] This is where the project output is deployed
+- [11] Timeout to connect to the debug session
+- [12] Console outputs can be output in the Visual Studio Output window
+- [13] All changes are saved after you click on "Save"
+- [14] All changes are discarded if you click on "Cancel"
+- [15] Change the default debugging scripts on tab "Debug scripts". (ex.: to add sudo)
 
 ![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings2.png)
 - [1] Change the Pre-Debug script to kill old mono debug sessions
@@ -75,7 +76,6 @@ You can build the startup project and all dependent projects. Additionally the m
 - [ ] Code has to be refactored for better error logging
 - [ ] Why can't the Mono.Cecil.Pdb.NativePdbReaderProvider type be found in Visual Studio to support pdb files?
 - [ ] When using the ProvideAutoLoad attribute, your package (VSMonoDebugger.VSMonoDebuggerPackage) class should derive from AsyncPackage instead of Package to improve performance. Read more about using AsyncPackage here: https://aka.ms/asyncpackage.
-- [ ] Support [ssh private keys](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604) to authenticate
 
 # Solved Issues
 
@@ -88,8 +88,14 @@ And give your user root rights for `pkill` and `mono` [see: Run a specific progr
 # User alias specification
 yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 ```
+- [x] Support [ssh private key authentication](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604) to authenticate
 
 # Version History
+
+## 0.7.8
+**2018-09-24**
+
+- [x] Feature: Support ssh private key authentication
 
 ## 0.7.7
 **2018-09-13**
