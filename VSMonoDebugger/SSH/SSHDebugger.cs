@@ -65,7 +65,6 @@ namespace VSMonoDebugger.SSH
 
                             errorHelpText.AppendLine($"SSH: Stop previous mono processes.");
 
-                            var killCommandTextOld = $"kill $(lsof -i | grep 'mono' | grep '\\*:{debugOptions.UserSettings.SSHMonoDebugPort}' | awk '{{print $2}}')";//$"kill $(ps w | grep '[m]ono --debugger-agent=address' | awk '{{print $1}}')";
                             var killCommandText = debugOptions.PreDebugScript;
                             var killCommand = sshDeltaCopy.RunSSHCommand(killCommandText, false);
                             writeLineOutput(killCommand.Result);
@@ -78,15 +77,7 @@ namespace VSMonoDebugger.SSH
                                 //errorHelpText.AppendLine(error);
                                 NLogService.Logger.Error(error);
                             }
-
-                            //errorHelpText.AppendLine($"SSH: Stop previous mono processes. Second try.");
-
-                            //// If lsof is unknown and ps aux has an bug (https://bugs.launchpad.net/linaro-oe/+bug/1192942)
-                            //killCommandText = $"kill $(ps w | grep '[m]ono --debugger-agent=address' | awk '{{print $1}}')";
-                            //var killCommand2 = sshDeltaCopy.RunSSHCommand(killCommandText, false);
-                            //writeLineOutput(killCommand2.Result);
-
-                            var monoDebugCommandOld = $"mono --debugger-agent=address=0.0.0.0:{debugOptions.UserSettings.SSHMonoDebugPort},transport=dt_socket,server=y --debug=mdb-optimizations {debugOptions.TargetExeFileName} {debugOptions.StartArguments} &";
+                            
                             var monoDebugCommand = debugOptions.DebugScript;
 
                             errorHelpText.AppendLine($"SSH: Start mono debugger");

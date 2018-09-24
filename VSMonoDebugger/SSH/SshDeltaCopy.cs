@@ -1,5 +1,5 @@
 ﻿/* 
-20180711: Version 1.5.1-beta
+20180711: Version 1.5.2-beta
 
 MIT License
 
@@ -60,6 +60,7 @@ namespace SshFileSync
             public int Port = DEFAULT_PORT;
             public string Username = string.Empty;
             public string Password = string.Empty;
+            public string PrivateKeyFile = string.Empty;
             public string DestinationDirectory = string.Empty;
             public string SourceDirectory = string.Empty;
             public bool RemoveOldFiles = true;
@@ -241,7 +242,7 @@ namespace SshFileSync
 
         public SshCommand RunSSHCommand(string userCommandText, bool throwOnError = true)
         {
-            InternalConnect(_sshDeltaCopyOptions.Host, _sshDeltaCopyOptions.Port, _sshDeltaCopyOptions.Username, _sshDeltaCopyOptions.Password, _sshDeltaCopyOptions.DestinationDirectory);
+            InternalConnect(_sshDeltaCopyOptions.Host, _sshDeltaCopyOptions.Port, _sshDeltaCopyOptions.Username, _sshDeltaCopyOptions.Password, _sshDeltaCopyOptions.PrivateKeyFile, _sshDeltaCopyOptions.DestinationDirectory);
 
             var commandText = $"cd \"{_sshDeltaCopyOptions.DestinationDirectory}\";{userCommandText}";
             PrintTime($"Running SSH command ...\n{commandText}");
@@ -266,7 +267,7 @@ namespace SshFileSync
 
         public SshCommand CreateSSHCommand(string userCommandText)
         {
-            InternalConnect(_sshDeltaCopyOptions.Host, _sshDeltaCopyOptions.Port, _sshDeltaCopyOptions.Username, _sshDeltaCopyOptions.Password, _sshDeltaCopyOptions.DestinationDirectory);
+            InternalConnect(_sshDeltaCopyOptions.Host, _sshDeltaCopyOptions.Port, _sshDeltaCopyOptions.Username, _sshDeltaCopyOptions.Password, _sshDeltaCopyOptions.PrivateKeyFile, _sshDeltaCopyOptions.DestinationDirectory);
 
             var commandText = $"cd \"{_sshDeltaCopyOptions.DestinationDirectory}\";{userCommandText}";
 
@@ -275,7 +276,7 @@ namespace SshFileSync
 
         public void DeployDirectory(string sourceDirectory, string destinationDirectory)
         {
-            InternalConnect(_sshDeltaCopyOptions.Host, _sshDeltaCopyOptions.Port, _sshDeltaCopyOptions.Username, _sshDeltaCopyOptions.Password, destinationDirectory);
+            InternalConnect(_sshDeltaCopyOptions.Host, _sshDeltaCopyOptions.Port, _sshDeltaCopyOptions.Username, _sshDeltaCopyOptions.Password, _sshDeltaCopyOptions.PrivateKeyFile, destinationDirectory);
 
             PrintTime($"Copy{(_sshDeltaCopyOptions.RemoveOldFiles ? " and remove" : string.Empty)} all changed files from '{sourceDirectory}' to '{destinationDirectory}'");
 
@@ -302,7 +303,7 @@ namespace SshFileSync
             PrintTime($"Finished!");
         }
 
-        private void InternalConnect(string host, int port, string username, string password, string workingDirectory)
+        private void InternalConnect(string host, int port, string username, string password, string privateKeyFile, string workingDirectory)
         {
             if (_isConnected)
             {
@@ -321,13 +322,28 @@ namespace SshFileSync
             // Start connection ...
             PrintTime($"Connecting to {username}@{host}:{port} ...");
 
-            _sshClient = new SshClient(host, port, username, password);
+
+            PrivateKeyFile keyFile = null;
+            try
+            {
+                if (privateKeyFile != null)
+                {
+                    keyFile = new PrivateKeyFile(privateKeyFile, password);
+                    PrintTime($"Using private key file: {privateKeyFile}");
+                }
+            }
+            catch (Exception ex)
+            {
+                PrintError($"Decoding of private key file {privateKeyFile} failed: {ex.Message}");
+            }
+
+            _sshClient = (keyFile == null) ? new SshClient(host, port, username, password) : new SshClient(host, port, username, keyFile);
             _sshClient.Connect();
 
             try
             {
                 // Use SFTP for file transfers
-                var sftpClient = new SftpClient(host, port, username, password);
+                var sftpClient = (keyFile == null) ? new SftpClient(host, port, username, password) : new SftpClient(host, port, username, keyFile);
                 sftpClient.Connect();
                 _sftpClient = sftpClient;
             }
@@ -335,7 +351,7 @@ namespace SshFileSync
             {
                 // Use SCP if SFTP fails
                 PrintTime($"Error: {ex.Message} Is SFTP supported for {username}@{host}:{port}? We are using SCP instead!");
-                _scpClient = new ScpClient(host, port, username, password);
+                _scpClient = (keyFile == null) ? new ScpClient(host, port, username, password) : new ScpClient(host, port, username, keyFile);
                 _scpClient.Connect();
             }
 

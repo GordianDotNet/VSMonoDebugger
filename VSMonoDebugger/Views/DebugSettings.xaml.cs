@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Windows;
+using System.Windows.Forms;
 
 namespace VSMonoDebugger.Views
 {
@@ -85,6 +87,39 @@ namespace VSMonoDebugger.Views
             if (ViewModel?.SettingsContainer?.CurrentUserSettings != null)
             {
                 ViewModel.SettingsContainer.CurrentUserSettings.DebugScriptWithParameters = "";
+            }
+        }
+        
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            var currentFilename = ViewModel?.SettingsContainer?.CurrentUserSettings?.SSHPrivateKeyFile;
+            if (!string.IsNullOrWhiteSpace(currentFilename))
+            {
+                try
+                {
+                    if (Directory.Exists(Path.GetDirectoryName(currentFilename)))
+                    {
+                        openFileDialog.InitialDirectory = Path.GetDirectoryName(currentFilename);
+                    }
+
+                    if (File.Exists(currentFilename))
+                    {
+                        openFileDialog.FileName = Path.GetFileName(currentFilename);
+                    }                    
+                }
+                catch
+                {
+                    // ignore and use default
+                }
+            }
+
+            if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                if (ViewModel?.SettingsContainer?.CurrentUserSettings != null)
+                {
+                    ViewModel.SettingsContainer.CurrentUserSettings.SSHPrivateKeyFile = openFileDialog.FileName;
+                }
             }
         }
     }

@@ -18,6 +18,7 @@ namespace VSMonoDebugger.Settings
         private int _sSHMonoDebugPort;
         private string _sSHPdb2mdbCommand;
         private int _sSHDebugConnectionTimeout;
+        private string _sSHPrivateKeyFile;
 
         public UserSettings()
         {
@@ -35,6 +36,7 @@ namespace VSMonoDebugger.Settings
             SSHPdb2mdbCommand = "mono /usr/lib/mono/4.5/pdb2mdb.exe";
             SSHDebugConnectionTimeout = 20;
             RedirectOutputOption = RedirectOutputOptions.RedirectStandardOutput;
+            _sSHPrivateKeyFile = string.Empty;
         }
 
         public string Id { get => _id; set { _id = value; NotifyPropertyChanged(); } }
@@ -46,6 +48,7 @@ namespace VSMonoDebugger.Settings
         public int SSHPort { get => _sSHPort; set { _sSHPort = value; NotifyPropertyChanged(); NotifyPropertyChanged(nameof(SSHFullUrl)); } }
         public string SSHUsername { get => _sSHUsername; set { _sSHUsername = value; NotifyPropertyChanged(); NotifyPropertyChanged(nameof(SSHFullUrl)); } }
         public string SSHPassword { get => _sSHPassword; set { _sSHPassword = value; NotifyPropertyChanged(); } }
+        public string SSHPrivateKeyFile { get => _sSHPrivateKeyFile; set { _sSHPrivateKeyFile = value; NotifyPropertyChanged(); } }
         public string SSHDeployPath { get => _sSHDeployPath; set { _sSHDeployPath = value; NotifyPropertyChanged(); } }
         public int SSHMonoDebugPort { get => _sSHMonoDebugPort; set { _sSHMonoDebugPort = value; NotifyPropertyChanged(); } }
         public string SSHPdb2mdbCommand { get => _sSHPdb2mdbCommand; set { _sSHPdb2mdbCommand = value; NotifyPropertyChanged(); } }

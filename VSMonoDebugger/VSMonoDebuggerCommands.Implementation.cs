@@ -168,6 +168,7 @@ namespace VSMonoDebugger
                 Port = settings.SSHPort,
                 Username = settings.SSHUsername,
                 Password = settings.SSHPassword,
+                PrivateKeyFile = settings.SSHPrivateKeyFile,
                 SourceDirectory = debugOptions.OutputDirectory,
                 DestinationDirectory = settings.SSHDeployPath,
                 RemoveOldFiles = true,

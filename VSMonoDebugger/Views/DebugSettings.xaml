@@ -1,7 +1,7 @@
 ﻿<Window x:Class="VSMonoDebugger.Views.DebugSettings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="VSMonoDebugger Settings" Width="550" Height="400" ResizeMode="CanResizeWithGrip" MinHeight="375" MinWidth="375"
+        Title="VSMonoDebugger Settings" Width="550" Height="420" ResizeMode="CanResizeWithGrip" MinHeight="375" MinWidth="375"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
     <Grid Margin="5,15,5,5">
         <Grid.RowDefinitions>
@@ -67,23 +67,33 @@
                     <TextBlock Grid.Row="3" Grid.Column="0" Text="SSH User:" VerticalAlignment="Center" Margin="5" />
                     <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHUsername}"  Margin="5" />
 
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="SSH Password:" VerticalAlignment="Center"  Margin="5" />
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="SSH Password / key file passphrase:" VerticalAlignment="Center"  Margin="5" />
                     <PasswordBox  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SshPasswordBox" PasswordChanged="SshPasswordBox_PasswordChanged" Margin="5" />
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Mono Debug Port:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHMonoDebugPort}" Margin="5" />
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="SSH private key file (optional):" VerticalAlignment="Center"  Margin="5" />
+                    <Grid Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="{Binding SettingsContainer.CurrentUserSettings.SSHPrivateKeyFile}" x:Name="SshPrivateKeyFile" Margin="5,5,0,5"/>
+                        <Button Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" Click="Button_Click" Margin="0,5,5,5">...</Button>
+                    </Grid>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Remote Deploy Path:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHDeployPath}" Margin="5" />
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Mono Debug Port:" VerticalAlignment="Center" Margin="5" />
+                    <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHMonoDebugPort}" Margin="5" />
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Remote Deploy Path:" VerticalAlignment="Center" Margin="5" />
+                    <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHDeployPath}" Margin="5" />
 
                     <!--<TextBlock Grid.Row="6" Grid.Column="0" Text="pdb2mdb command:" VerticalAlignment="Center" Margin="5" />
         <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHPdb2mdbCommand}" Margin="5" />-->
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Debug connection Timeout:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHDebugConnectionTimeout}" Margin="5" />
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Debug connection Timeout:" VerticalAlignment="Center" Margin="5" />
+                    <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHDebugConnectionTimeout}" Margin="5" />
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Redirect output:" VerticalAlignment="Center" Margin="5" />
-                    <ComboBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding AllRedirectOutputOptions}" SelectedValue="{Binding SettingsContainer.CurrentUserSettings.RedirectOutputOption, Mode=TwoWay}" Margin="5" SelectionChanged="RedirectOutputOption_SelectionChanged"/>
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Redirect output:" VerticalAlignment="Center" Margin="5" />
+                    <ComboBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding AllRedirectOutputOptions}" SelectedValue="{Binding SettingsContainer.CurrentUserSettings.RedirectOutputOption, Mode=TwoWay}" Margin="5" SelectionChanged="RedirectOutputOption_SelectionChanged"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Debug script">
