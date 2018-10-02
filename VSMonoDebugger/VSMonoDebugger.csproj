@@ -87,6 +87,10 @@
     <Compile Include="VSMonoDebuggerCommands.Implementation.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BindingRedirects.pkgdef">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="LICENSE.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
