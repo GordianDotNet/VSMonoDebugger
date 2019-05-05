@@ -1,29 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-    <Metadata>
-        <Identity Id="VSMonoDebugger.0d6242b8-2f22-4dc8-bfeb-30216f040d0b" Version="0.7.10" Language="en-US" Publisher="GordianDotNet" />
-        <DisplayName>VSMonoDebugger</DisplayName>
-        <Description xml:space="preserve">Enables Visual Studio 2017 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.</Description>
-        <MoreInfo>https://github.com/GordianDotNet/VSMonoDebugger</MoreInfo>
-        <License>LICENSE.txt</License>
-        <GettingStartedGuide>https://github.com/GordianDotNet/VSMonoDebugger</GettingStartedGuide>
-        <ReleaseNotes>https://github.com/GordianDotNet/VSMonoDebugger</ReleaseNotes>
-        <Icon>MonoIcon.png</Icon>
-        <Tags>SSH Linux Mono debugger deploy debug remote</Tags>
-    </Metadata>
-    <Installation>
-        <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0]" />
-    </Installation>
-    <Dependencies>
-        <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6.1,)" d:InstallSource="Download" />
-        <Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" d:Source="Installed" Version="[15.0]" />
-    </Dependencies>
-    <Prerequisites>
-        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,16.0)" DisplayName="Visual Studio core editor" />
-    </Prerequisites>
-    <Assets>
-        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-        <Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="Newtonsoft.Json.dll" AssemblyName="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed" />
-        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="File" Path="BindingRedirects.pkgdef" />
-    </Assets>
+	<Metadata>
+		<Identity Id="VSMonoDebugger.0d6242b8-2f22-4dc8-bfeb-30216f040d0b" Version="0.8.0" Language="en-US" Publisher="GordianDotNet" />
+		<DisplayName>VSMonoDebugger</DisplayName>
+		<Description xml:space="preserve">Enables Visual Studio 2017 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.</Description>
+		<MoreInfo>https://github.com/GordianDotNet/VSMonoDebugger</MoreInfo>
+		<License>LICENSE.txt</License>
+		<GettingStartedGuide>https://github.com/GordianDotNet/VSMonoDebugger</GettingStartedGuide>
+		<ReleaseNotes>https://github.com/GordianDotNet/VSMonoDebugger</ReleaseNotes>
+		<Icon>MonoIcon.png</Icon>
+		<Tags>SSH Linux Mono debugger deploy debug remote</Tags>
+	</Metadata>
+	<Installation>
+		<InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,16.0]" />
+	</Installation>
+	<Dependencies>
+		<Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.6.1,)" d:InstallSource="Download" />
+		<Dependency Id="Microsoft.VisualStudio.MPF.15.0" DisplayName="Visual Studio MPF 15.0" d:Source="Installed" Version="[15.0]" />
+	</Dependencies>
+	<Prerequisites>
+		<Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
+	</Prerequisites>
+	<Assets>
+		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+		<Asset Type="Microsoft.VisualStudio.Assembly" d:Source="File" Path="Newtonsoft.Json.dll" AssemblyName="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed" />
+		<Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="File" Path="BindingRedirects.pkgdef" />
+	</Assets>
 </PackageManifest>
