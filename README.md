@@ -5,6 +5,11 @@ Enables Visual Studio 2017 to deploy and debug a .Net application on a remote Li
 
 # Usage
 
+### Visual Studio 2019 Support
+In Visual Studio 2019, extension menus are handled differently. "Mono" can now be found in the "Extensions" menu.
+
+![Visual Studio 2019 Extensions Menu](VSMonoDebugger/Resources/VisualStudio2019ExtensionMenu.png)
+
 ### Settings
 You have to save a valid SSH connection first!
 
@@ -71,11 +76,14 @@ You can build the startup project and all dependent projects. Additionally the m
 
 # Known Issues
 
-- [ ] Support prerequisite Microsoft.VisualStudio.Component.MonoDebugger without copying the dlls
+- [ ] Support prerequisite Microsoft.VisualStudio.Component.MonoDebugger without copying the dlls (Makes problems with Xamarin's debugger)
+**If you are using Xamarin and debugging fails, please disable VSMonoDebugger!**
+
 - [ ] Support settings in an [Options Page](https://msdn.microsoft.com/en-us/library/bb166195.aspx)
 - [ ] Code has to be refactored for better error logging
 - [ ] Why can't the Mono.Cecil.Pdb.NativePdbReaderProvider type be found in Visual Studio to support pdb files?
 - [ ] When using the ProvideAutoLoad attribute, your package (VSMonoDebugger.VSMonoDebuggerPackage) class should derive from AsyncPackage instead of Package to improve performance. Read more about using AsyncPackage here: https://aka.ms/asyncpackage.
+**Visual Studio 2019 shows a warning**
 
 # Solved Issues
 
@@ -91,6 +99,12 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 - [x] Support [ssh private key authentication](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604) to authenticate
 
 # Version History
+
+## 0.8.0
+**2019-05-05**
+
+- [x] Feature: Support Visual Studio 2019
+- [x] Bugfix: Include System.Diagnostics.Tracer.dll - is not installed on some systems  
 
 ## 0.7.8
 **2018-09-24**

@@ -78,7 +78,9 @@
     <Compile Include="VSMonoDebuggerPackage.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Key.snk" />
     <None Include="packages.config" />
     <None Include="source.extension.vsixmanifest">
@@ -110,8 +112,13 @@
     <Content Include="Resources\Process_16x.png" />
     <Content Include="Resources\Settings_16x.png" />
     <Content Include="Resources\StartRemoteDebugger_16x.png" />
+    <Content Include="Resources\VisualStudio2019ExtensionMenu.png" />
     <Content Include="Resources\VSMonoDebuggerCommands.png" />
     <Content Include="Resources\VSMonoDebuggerPackage.ico" />
+    <Content Include="System.Diagnostics.Tracer.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <VSCTCompile Include="VSMonoDebuggerPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
@@ -281,8 +288,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
     <Reference Include="System.Diagnostics.Tracer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=173d89ffae9ce988, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Mono.Debugging.VisualStudio.4.9.10-pre\System.Diagnostics.Tracer.dll</HintPath>
+      <HintPath>..\packages\System.Diagnostics.Tracer.2.0.8\lib\net45\System.Diagnostics.Tracer.dll</HintPath>
     </Reference>
     <Reference Include="VSLangProj, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\VSLangProj.7.0.3301\lib\net10\VSLangProj.dll</HintPath>
