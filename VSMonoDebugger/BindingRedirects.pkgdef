@@ -82,3 +82,10 @@
 "oldVersion"="0.0.0.0-99.9.9.9"
 "newVersion"="2.5.0.0"
 "codeBase"="$PackageFolder$\Clide.dll"
+[$RootKey$\RuntimeConfiguration\dependentAssembly\bindingRedirection\{BAA0D892-4F5E-4C0F-8135-12F12B73523B}]
+"name"="System.Diagnostics.Tracer"
+"publicKeyToken"="173d89ffae9ce988"
+"culture"="neutral"
+"oldVersion"="0.0.0.0-99.9.9.9"
+"newVersion"="2.0.0.0"
+"codeBase"="$PackageFolder$\System.Diagnostics.Tracer.dll"
