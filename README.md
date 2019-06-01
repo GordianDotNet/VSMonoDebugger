@@ -1,7 +1,7 @@
 VSMonoDebugger
 ============
 
-Enables Visual Studio 2017 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.
+Enables Visual Studio 2017 and 2019 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.
 
 # Usage
 
