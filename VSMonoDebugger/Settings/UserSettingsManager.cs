@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Settings;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Settings;
 using NLog;
 using System;
@@ -53,11 +54,18 @@ namespace VSMonoDebugger.Settings
             store.SetString(SETTINGS_STORE_NAME, "Settings", json);
         }
 
-        public static void Initialize(IServiceProvider serviceProvider)
+        public static void Initialize(Package package)
         {
-            var settingsManager = new ShellSettingsManager(serviceProvider);
-            var configurationSettingsStore = settingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-            Instance.store = configurationSettingsStore;
+            if (package != null)
+            {
+                var settingsManager = new ShellSettingsManager(package);
+                var configurationSettingsStore = settingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
+                Instance.store = configurationSettingsStore;
+            }
+            else
+            {
+                throw new ArgumentNullException("package argument was null");
+            }
         }
     }
 }
