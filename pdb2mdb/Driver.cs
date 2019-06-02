@@ -195,7 +195,7 @@ namespace Pdb2Mdb {
 
 			try {
 				Converter.Convert (asm);
-			} catch (FileNotFoundException ex) {
+			} catch (FileNotFoundException) {
 				Usage ();
 			} catch (PortablePdbNotSupportedException) {
 				Console.WriteLine ("Error: A portable PDB can't be converted to mdb.");

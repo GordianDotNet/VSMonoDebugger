@@ -19,6 +19,8 @@ namespace VSMonoDebugger.Services
         {
             internal static void SetText(string outputMessage)
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
+
                 var outputWindow = (IVsOutputWindow)Package.GetGlobalService(typeof(SVsOutputWindow));
                 if (outputWindow == null)
                 {

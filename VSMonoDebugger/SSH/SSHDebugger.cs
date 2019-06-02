@@ -34,7 +34,7 @@ namespace VSMonoDebugger.SSH
         {
             NLogService.TraceEnteringMethod();
 
-            return Task.Factory.StartNew(async () =>
+            return Task.Run<Task>(async () =>
             {
                 var errorHelpText = new StringBuilder();
                 Action<string> writeLineOutput = s => writeOutput(s + Environment.NewLine);
@@ -88,7 +88,7 @@ namespace VSMonoDebugger.SSH
                             // TODO if DebugScript fails no error is shown - very bad!
                             writeOutput(errorHelpText.ToString());
                             var cmd = sshDeltaCopy.CreateSSHCommand(monoDebugCommand);
-                            await RunCommandAndRedirectOutput(cmd, writeOutput, redirectOutputOption);
+                            await RunCommandAndRedirectOutputAsync(cmd, writeOutput, redirectOutputOption);
 
                             if (cmd.ExitStatus != 0 || !string.IsNullOrWhiteSpace(cmd.Error))
                             {
@@ -113,9 +113,9 @@ namespace VSMonoDebugger.SSH
             });
         }
 
-        private static async Task RunCommandAndRedirectOutput(Renci.SshNet.SshCommand cmd, Action<string> writeOutput, RedirectOutputOptions redirectOutputOption)
+        private static async Task RunCommandAndRedirectOutputAsync(Renci.SshNet.SshCommand cmd, Action<string> writeOutput, RedirectOutputOptions redirectOutputOption)
         {
-            await Task.Factory.StartNew(() =>
+            await Task.Run(() =>
             {
                 var asynch = cmd.BeginExecute();
 
@@ -124,13 +124,13 @@ namespace VSMonoDebugger.SSH
                 if (redirectOutputOption.HasFlag(RedirectOutputOptions.RedirectStandardOutput))
                 {
                     var stream = cmd.OutputStream;
-                    taskList.Add(RedirectStream(writeOutput, asynch, stream));
+                    taskList.Add(RedirectStreamAsync(writeOutput, asynch, stream));
                 }
 
                 if (redirectOutputOption.HasFlag(RedirectOutputOptions.RedirectErrorOutput))
                 {
                     var stream = cmd.ExtendedOutputStream;
-                    taskList.Add(RedirectStream(writeOutput, asynch, stream));
+                    taskList.Add(RedirectStreamAsync(writeOutput, asynch, stream));
                 }
 
                 Task.WaitAny(taskList.ToArray());
@@ -139,9 +139,9 @@ namespace VSMonoDebugger.SSH
             });
         }
 
-        private static Task RedirectStream(Action<string> writeOutput, IAsyncResult asynch, Stream stream)
+        private static Task RedirectStreamAsync(Action<string> writeOutput, IAsyncResult asynch, Stream stream)
         {
-            return Task.Factory.StartNew(() =>
+            return Task.Run(() =>
             {
                 var reader = new StreamReader(stream);
                 while (!asynch.IsCompleted)

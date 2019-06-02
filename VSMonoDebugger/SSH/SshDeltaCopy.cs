@@ -467,7 +467,7 @@ namespace SshFileSync
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 PrintTime($"Remote file cache '{_uploadCacheFileName}' not found! We are uploading all files!");
             }
