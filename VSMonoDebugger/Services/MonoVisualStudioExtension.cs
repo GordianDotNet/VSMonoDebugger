@@ -247,11 +247,19 @@ namespace VSMonoDebugger
             return assemblyPath;
         }
 
-        private static bool IsCSharpProject(Project vsProject)
+        private bool IsCSharpProject(Project vsProject)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            return vsProject.CodeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp;
+            try
+            {
+                return vsProject.CodeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp;
+            }
+            catch (Exception ex)
+            {
+                LogInfo($"Project doesn't support property vsProject.CodeModel.Language! No CSharp project. {ex.Message}");
+                return false;
+            }
         }
 
         internal string GetStartArguments()
@@ -430,24 +438,32 @@ namespace VSMonoDebugger
             var outputPaths = new Dictionary<string, string>();
             foreach (BuildDependency dep in sb.BuildDependencies)
             {
-                msgOutput($"### CollectOutputDirectories: Propertes of project '{dep.Project.Name}'");
-                LogInfo($"### CollectOutputDirectories: Propertes of project '{dep.Project.Name}'");
-
-                if (!IsCSharpProject(dep.Project))
+                try
                 {
-                    msgOutput($"Only C# projects are supported project! ProjectName = {dep.Project.Name} Language = {dep.Project.CodeModel.Language}");
-                    LogInfo($"Only C# projects are supported project! ProjectName = {dep.Project.Name} Language = {dep.Project.CodeModel.Language}");
-                    continue;
-                }
+                    msgOutput($"### CollectOutputDirectories: Propertes of project '{dep.Project.Name}'");
+                    LogInfo($"### CollectOutputDirectories: Propertes of project '{dep.Project.Name}'");
 
-                var outputDir = GetFullOutputPath(dep.Project);
-                if (string.IsNullOrEmpty(outputDir))
-                {
-                    continue;
+                    if (!IsCSharpProject(dep.Project))
+                    {
+                        msgOutput($"Only C# projects are supported project! ProjectName = {dep.Project.Name} Language = {dep.Project.CodeModel.Language}");
+                        LogInfo($"Only C# projects are supported project! ProjectName = {dep.Project.Name} Language = {dep.Project.CodeModel.Language}");
+                        continue;
+                    }
+
+                    var outputDir = GetFullOutputPath(dep.Project);
+                    if (string.IsNullOrEmpty(outputDir))
+                    {
+                        continue;
+                    }
+                    msgOutput($"OutputFullPath = {outputDir}");
+                    LogInfo($"OutputFullPath = {outputDir}");
+                    outputPaths[dep.Project.FullName] = outputDir;
                 }
-                msgOutput($"OutputFullPath = {outputDir}");
-                LogInfo($"OutputFullPath = {outputDir}");
-                outputPaths[dep.Project.FullName] = outputDir;
+                catch (Exception ex)
+                {
+                    msgOutput($"### CollectOutputDirectories: unsupported project - error was: '{ex.Message}'");
+                    LogInfo($"### CollectOutputDirectories: unsupported project - error was: '{ex.Message}'");
+                }
             }
             return outputPaths;
         }
