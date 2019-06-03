@@ -119,10 +119,12 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 # Version History
 
 ## 0.9.0
-**2019-06-01**
+**2019-06-03**
 
 - [x] Feature: Switched to AsyncPackage to avoid warning in Visual Studio 2019
 - [x] Feature: Supports a separate deployment path for each startup project via PROJECTNAME.VSMonoDebugger.config in the project folder
+- [x] Bugfix: #7 Catch exception of unsupported setup projects .vdproj
+- [x] Bugfix: #10 Allow only IPv4 for the result of Dns.GetHostAddresses - IPv6 is not supported by mono softdebugger
 
 ## 0.8.0
 **2019-05-05**
