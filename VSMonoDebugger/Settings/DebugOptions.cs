@@ -38,7 +38,12 @@ namespace VSMonoDebugger.Settings
                 if (!IPAddress.TryParse(UserSettings.SSHHostIP, out hostIp))
                 {
                     // try dns
-                    hostIp = Dns.GetHostAddresses(UserSettings.SSHHostIP).First();
+                    hostIp = Dns.GetHostAddresses(UserSettings.SSHHostIP)
+                        // IP V6 is unsupported by Xamarin/Mono soft debugger (?)
+                        .Where(x => x.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                        .First();
+
+                    //hostIp = Dns.GetHostAddresses(UserSettings.SSHHostIP).First();
                 }
             }
             else
