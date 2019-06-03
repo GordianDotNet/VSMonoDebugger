@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Threading;
 using SshFileSync;
 using System;
 using System.IO;
@@ -53,6 +54,8 @@ namespace VSMonoDebugger
 
         private void CheckStartupProjects(object sender, EventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var menuCommand = sender as OleMenuCommand;
             if (menuCommand != null)
             {
@@ -62,27 +65,27 @@ namespace VSMonoDebugger
 
         private async void DeployAndDebugOverSSHClicked(object sender, EventArgs e)
         {
-            await DeployAndRunCommandOverSSH(DebuggerMode.DeployOverSSH | DebuggerMode.DebugOverSSH | DebuggerMode.AttachProcess);
+            await DeployAndRunCommandOverSSHAsync(DebuggerMode.DeployOverSSH | DebuggerMode.DebugOverSSH | DebuggerMode.AttachProcess);
         }
 
         private async void DeployOverSSHClicked(object sender, EventArgs e)
         {
-            await DeployAndRunCommandOverSSH(DebuggerMode.DeployOverSSH);
+            await DeployAndRunCommandOverSSHAsync(DebuggerMode.DeployOverSSH);
         }
 
         private async void DebugOverSSHClicked(object sender, EventArgs e)
         {
-            await DeployAndRunCommandOverSSH(DebuggerMode.DebugOverSSH | DebuggerMode.AttachProcess);
+            await DeployAndRunCommandOverSSHAsync(DebuggerMode.DebugOverSSH | DebuggerMode.AttachProcess);
         }
 
         private async void AttachToMonoDebuggerWithoutSSHClicked(object sender, EventArgs e)
         {
-            await DeployAndRunCommandOverSSH(DebuggerMode.AttachProcess);
+            await DeployAndRunCommandOverSSHAsync(DebuggerMode.AttachProcess);
         }
 
         private async void BuildProjectWithMDBFilesClicked(object sender, EventArgs e)
         {
-            await BuildProjectWithMDBFiles();
+            await BuildProjectWithMDBFilesAsync();
         }
 
         private void OpenSSHDebugConfigDlg(object sender, EventArgs e)
@@ -103,14 +106,22 @@ namespace VSMonoDebugger
             AttachProcess = 0x4
         }
 
-        private async Task<bool> DeployAndRunCommandOverSSH(DebuggerMode debuggerMode)
+        private async Task<bool> DeployAndRunCommandOverSSHAsync(DebuggerMode debuggerMode)
         {
             // TODO error handling
             // TODO show ssh output stream
             // TODO stop monoRemoteSshDebugTask properly
             try
             {
-                NLogService.Logger.Info($"===== {nameof(DeployAndRunCommandOverSSH)} =====");
+                NLogService.Logger.Info($"===== {nameof(DeployAndRunCommandOverSSHAsync)} =====");
+
+                if (!_monoExtension.IsStartupProjectAvailable())
+                {
+                    NLogService.Logger.Info($"No startup project/solution loaded yet.");
+                    return false;
+                }
+
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
                 UserSettings settings;
                 DebugOptions debugOptions;
@@ -120,7 +131,7 @@ namespace VSMonoDebugger
                 if (debuggerMode.HasFlag(DebuggerMode.DeployOverSSH))
                 {
                     await _monoExtension.BuildStartupProjectAsync();
-                    await _monoExtension.CreateMdbForAllDependantProjects(HostOutputWindowEx.WriteLineLaunchError);
+                    await _monoExtension.CreateMdbForAllDependantProjectsAsync(HostOutputWindowEx.WriteLineLaunchError);
                 }
 
                 var monoRemoteSshDebugTask = System.Threading.Tasks.Task.CompletedTask;
@@ -159,8 +170,31 @@ namespace VSMonoDebugger
 
         private static void CreateDebugOptions(out UserSettings settings, out DebugOptions debugOptions, out SshDeltaCopy.Options options)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var allDeviceSettings = UserSettingsManager.Instance.Load();
             settings = allDeviceSettings.CurrentUserSettings;
+
+            if (settings.UseDeployPathFromProjectFileIfExists)
+            {
+                try
+                {
+                    var localProjectConfig = _monoExtension.GetProjectSettingsFromStartupProject();
+                    if (localProjectConfig.HasValue)
+                    {
+                        if (!string.IsNullOrWhiteSpace(localProjectConfig.Value.SSHDeployPath))
+                        {
+                            NLogService.Logger.Info($"SSHDeployPath = {settings.SSHDeployPath} was overwritten with local *.VSMonoDebugger.config: {localProjectConfig.Value.SSHDeployPath}");
+                            settings.SSHDeployPath = localProjectConfig.Value.SSHDeployPath;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    NLogService.Logger.Error(ex);
+                }               
+            }            
+
             debugOptions = _monoExtension.CreateDebugOptions(settings, true);
             options = new SshDeltaCopy.Options()
             {
@@ -177,19 +211,26 @@ namespace VSMonoDebugger
             };
         }
 
-        private async Task<bool> BuildProjectWithMDBFiles()
+        private async Task<bool> BuildProjectWithMDBFilesAsync()
         {
             try
             {
-                NLogService.Logger.Info($"===== {nameof(BuildProjectWithMDBFiles)} =====");
+                NLogService.Logger.Info($"===== {nameof(BuildProjectWithMDBFilesAsync)} =====");
+
+                if (!_monoExtension.IsStartupProjectAvailable())
+                {
+                    NLogService.Logger.Info($"No startup project/solution loaded yet.");
+                    return false;
+                }
 
                 UserSettings settings;
                 DebugOptions debugOptions;
                 SshDeltaCopy.Options options;
                 CreateDebugOptions(out settings, out debugOptions, out options);
 
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 await _monoExtension.BuildStartupProjectAsync();
-                await _monoExtension.CreateMdbForAllDependantProjects(HostOutputWindowEx.WriteLineLaunchError);
+                await _monoExtension.CreateMdbForAllDependantProjectsAsync(HostOutputWindowEx.WriteLineLaunchError);
 
                 return true;
             }

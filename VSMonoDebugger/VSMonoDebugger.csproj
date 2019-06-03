@@ -67,6 +67,7 @@
     <Compile Include="Settings\UserSettingsManager.cs" />
     <Compile Include="Settings\DebugOptions.cs" />
     <Compile Include="Settings\UserSettings.cs" />
+    <Compile Include="Settings\VSMonoDebuggerProjectSettings.cs" />
     <Compile Include="SSH\SSHDebugger.cs" />
     <Compile Include="SSH\SshDeltaCopy.cs" />
     <Compile Include="Views\BaseViewModel.cs" />

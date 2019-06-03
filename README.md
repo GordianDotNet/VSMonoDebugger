@@ -27,11 +27,12 @@ You have to save a valid SSH connection first!
 - [8] Enter/set the filepath to a private key file (if there is no ssh private key authentication => leave the field empty)
 - [9] Mono opens a debug session over this port
 - [10] This is where the project output is deployed
-- [11] Timeout to connect to the debug session
-- [12] Console outputs can be output in the Visual Studio Output window
-- [13] All changes are saved after you click on "Save"
-- [14] All changes are discarded if you click on "Cancel"
-- [15] Change the default debugging scripts on tab "Debug scripts". (ex.: to add sudo)
+- [11] If enabled you can create a JSON config file to overwrite the 'Remote Deploy Path'. (see below)
+- [12] Timeout to connect to the debug session
+- [13] Console outputs can be output in the Visual Studio Output window
+- [14] All changes are saved after you click on "Save"
+- [15] All changes are discarded if you click on "Cancel"
+- [16] Change the default debugging scripts on tab "Debug scripts". (ex.: to add sudo)
 
 ![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings2.png)
 - [1] Change the Pre-Debug script to kill old mono debug sessions
@@ -74,6 +75,23 @@ You can build the startup project and all dependent projects. Additionally the m
 
 > Menu "Mono"/"Build Startup Project with MDB Files"
 
+### Overwrite the remote deploy path for a startup project
+1) You have to enable the option via
+
+> Menu "Mono"/"Settings..."/"Search 'Deploy Path' in 'PROJECTNAME.VSMonoDebugger.config' of the startup project."
+
+2) You have to create a file with name 'PROJECTNAME.VSMonoDebugger.config' in the same directory like your startup project file (PROJECTNAME have to be the name of your project). 
+
+ex.: 'MyNewSampleProject.csproj' results in 'MyNewSampleProject.VSMonoDebugger.config'
+
+3) The file must contain a JSON object with the property "SSHDeployPath":
+
+```
+{
+	"SSHDeployPath": "./NewDeployPath/",
+}
+```
+
 # Known Issues
 
 - [ ] Support prerequisite Microsoft.VisualStudio.Component.MonoDebugger without copying the dlls (Makes problems with Xamarin's debugger)
@@ -82,8 +100,6 @@ You can build the startup project and all dependent projects. Additionally the m
 - [ ] Support settings in an [Options Page](https://msdn.microsoft.com/en-us/library/bb166195.aspx)
 - [ ] Code has to be refactored for better error logging
 - [ ] Why can't the Mono.Cecil.Pdb.NativePdbReaderProvider type be found in Visual Studio to support pdb files?
-- [ ] When using the ProvideAutoLoad attribute, your package (VSMonoDebugger.VSMonoDebuggerPackage) class should derive from AsyncPackage instead of Package to improve performance. Read more about using AsyncPackage here: https://aka.ms/asyncpackage.
-**Visual Studio 2019 shows a warning**
 
 # Solved Issues
 
@@ -97,8 +113,16 @@ And give your user root rights for `pkill` and `mono` [see: Run a specific progr
 yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 ```
 - [x] Support [ssh private key authentication](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604) to authenticate
+- [x] When using the ProvideAutoLoad attribute, your package (VSMonoDebugger.VSMonoDebuggerPackage) class should derive from AsyncPackage instead of Package to improve performance. Read more about using AsyncPackage here: https://aka.ms/asyncpackage.
+**Visual Studio 2019 shows a warning**
 
 # Version History
+
+## 0.9.0
+**2019-06-01**
+
+- [x] Feature: Switched to AsyncPackage to avoid warning in Visual Studio 2019
+- [x] Feature: Supports a separate deployment path for each startup project via PROJECTNAME.VSMonoDebugger.config in the project folder
 
 ## 0.8.0
 **2019-05-05**

@@ -19,6 +19,7 @@ namespace VSMonoDebugger.Settings
         private string _sSHPdb2mdbCommand;
         private int _sSHDebugConnectionTimeout;
         private string _sSHPrivateKeyFile;
+        private bool _useDeployPathFromProjectFileIfExists;
 
         public UserSettings()
         {
@@ -37,6 +38,7 @@ namespace VSMonoDebugger.Settings
             SSHDebugConnectionTimeout = 20;
             RedirectOutputOption = RedirectOutputOptions.RedirectStandardOutput;
             _sSHPrivateKeyFile = string.Empty;
+            _useDeployPathFromProjectFileIfExists = true;
         }
 
         public string Id { get => _id; set { _id = value; NotifyPropertyChanged(); } }
@@ -50,6 +52,7 @@ namespace VSMonoDebugger.Settings
         public string SSHPassword { get => _sSHPassword; set { _sSHPassword = value; NotifyPropertyChanged(); } }
         public string SSHPrivateKeyFile { get => _sSHPrivateKeyFile; set { _sSHPrivateKeyFile = value; NotifyPropertyChanged(); } }
         public string SSHDeployPath { get => _sSHDeployPath; set { _sSHDeployPath = value; NotifyPropertyChanged(); } }
+        public bool UseDeployPathFromProjectFileIfExists { get => _useDeployPathFromProjectFileIfExists; set { _useDeployPathFromProjectFileIfExists = value; NotifyPropertyChanged(); } }
         public int SSHMonoDebugPort { get => _sSHMonoDebugPort; set { _sSHMonoDebugPort = value; NotifyPropertyChanged(); } }
         public string SSHPdb2mdbCommand { get => _sSHPdb2mdbCommand; set { _sSHPdb2mdbCommand = value; NotifyPropertyChanged(); } }
         public int SSHDebugConnectionTimeout { get => _sSHDebugConnectionTimeout; set { _sSHDebugConnectionTimeout = value; NotifyPropertyChanged(); } }

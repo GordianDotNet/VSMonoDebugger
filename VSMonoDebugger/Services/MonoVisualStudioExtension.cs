@@ -9,13 +9,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 using NLog;
 using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Task = System.Threading.Tasks.Task;
-//using Microsoft.MIDebugEngine;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-//using Mono.Debugging.Soft;
-//using Mono.Debugging.VisualStudio;
-using System.Runtime.Remoting;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Diagnostics;
 using VSMonoDebugger.Services;
 using VSMonoDebugger.Settings;
@@ -44,25 +39,26 @@ namespace VSMonoDebugger
 
         internal async Task BuildStartupProjectAsync()
         {
-            await System.Threading.Tasks.Task.Factory.StartNew(() =>
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            
+            var failedBuilds = BuildStartupProject();
+            if (failedBuilds > 0)
             {
-                var failedBuilds = BuildStartupProject();
-                if (failedBuilds > 0)
-                {
-                    Window window = _dte.Windows.Item("{34E76E81-EE4A-11D0-AE2E-00A0C90FFFC3}");//EnvDTE.Constants.vsWindowKindOutput
-                    OutputWindow outputWindow = (OutputWindow)window.Object;
-                    outputWindow.ActivePane.Activate();
-                    outputWindow.ActivePane.OutputString($"{failedBuilds} project(s) failed to build. See error and output window!");
+                Window window = _dte.Windows.Item("{34E76E81-EE4A-11D0-AE2E-00A0C90FFFC3}");//EnvDTE.Constants.vsWindowKindOutput
+                OutputWindow outputWindow = (OutputWindow)window.Object;
+                outputWindow.ActivePane.Activate();
+                outputWindow.ActivePane.OutputString($"{failedBuilds} project(s) failed to build. See error and output window!");
 
-                    _errorListProvider.Show();
+                _errorListProvider.Show();
 
-                    throw new Exception($"{failedBuilds} project(s) failed to build. See error and output window!");
-                }
-            });
+                throw new Exception($"{failedBuilds} project(s) failed to build. See error and output window!");
+            }
         }
 
         internal int BuildStartupProject()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var sb = (SolutionBuild2) _dte.Solution.SolutionBuild;
 
             try
@@ -87,6 +83,8 @@ namespace VSMonoDebugger
 
         internal int BuildSolution()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;
             LogInfo($"BuildSolution");
             sb.Build(true);
@@ -95,18 +93,51 @@ namespace VSMonoDebugger
 
         internal string GetStartupAssemblyPath()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             Project startupProject = GetStartupProject();
             return GetAssemblyPath(startupProject);
         }
 
         public bool IsStartupProjectAvailable()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;
             return sb.StartupProjects != null && ((Array)sb.StartupProjects).Cast<string>().Count() > 0;
         }
 
+        public VSMonoDebuggerProjectSettings? GetProjectSettingsFromStartupProject()
+        {
+            try
+            {
+                ThreadHelper.ThrowIfNotOnUIThread();
+
+                var startupProject = GetStartupProject();
+                var projectFullName = startupProject.FullName;
+                if (File.Exists(projectFullName))
+                {
+                    var projectConfigFile = Path.ChangeExtension(projectFullName, ".VSMonoDebugger.config");
+                    if (File.Exists(projectConfigFile))
+                    {
+                        LogInfo($"Local project config file {projectConfigFile} found.");
+                        var projectConfigFileContent = File.ReadAllText(projectConfigFile);
+                        return VSMonoDebuggerProjectSettings.DeserializeFromJson(projectConfigFileContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LogError(ex);
+            }
+
+            return null;
+        }
+
         private Project GetStartupProject()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var sb = (SolutionBuild2) _dte.Solution.SolutionBuild;
             var startupProjects = ((Array) sb.StartupProjects).Cast<string>().ToList();
 
@@ -139,6 +170,8 @@ namespace VSMonoDebugger
 
         public static IList<Project> Projects(Solution solution)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             Projects projects = solution.Projects;
             List<Project> list = new List<Project>();
             var item = projects.GetEnumerator();
@@ -165,6 +198,8 @@ namespace VSMonoDebugger
 
         private static IEnumerable<Project> GetSolutionFolderProjects(Project solutionFolder)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             List<Project> list = new List<Project>();
             for (var i = 1; i <= solutionFolder.ProjectItems.Count; i++)
             {
@@ -189,6 +224,8 @@ namespace VSMonoDebugger
 
         internal string GetAssemblyPath(Project vsProject)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (!IsCSharpProject(vsProject))
             {
                 throw new ArgumentException($"Only C# projects are supported as startup project! ProjectName = {vsProject.Name} Language = {vsProject.CodeModel.Language}");
@@ -212,11 +249,15 @@ namespace VSMonoDebugger
 
         private static bool IsCSharpProject(Project vsProject)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             return vsProject.CodeModel.Language == CodeModelLanguageConstants.vsCMLanguageCSharp;
         }
 
         internal string GetStartArguments()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             try
             {
                 Project startupProject = GetStartupProject();
@@ -232,6 +273,8 @@ namespace VSMonoDebugger
         
         internal void AttachDebuggerToRunningProcess(DebugOptions debugOptions)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             if (DebugEngineGuids.UseAD7Engine == EngineType.XamarinEngine)
             {
                 // Workaround to get StartProject
@@ -242,17 +285,23 @@ namespace VSMonoDebugger
             var sp = new ServiceProvider((IServiceProvider)_dte);
             try
             {
-                var dbg = (IVsDebugger)sp.GetService(typeof(SVsShellDebugger));
+                var dbg = sp.GetService(typeof(SVsShellDebugger)) as IVsDebugger;
+                if (dbg == null)
+                {
+                    logger.Error($"GetService did not returned SVsShellDebugger");
+                }
                 int hr = dbg.LaunchDebugTargets(1, pInfo);
                 Marshal.ThrowExceptionForHR(hr);                
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
-                string msg;
-                var sh = (IVsUIShell)sp.GetService(typeof(SVsUIShell));
-                sh.GetErrorInfo(out msg);
-
+                string msg = null;
+                var sh = sp.GetService(typeof(SVsUIShell)) as IVsUIShell;
+                if (sh != null)
+                {
+                    sh.GetErrorInfo(out msg);
+                }
                 if (!string.IsNullOrWhiteSpace(msg))
                 {
                     logger.Error(msg);
@@ -309,6 +358,8 @@ namespace VSMonoDebugger
         
         public DebugOptions CreateDebugOptions(UserSettings settings, bool useSSH = false)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var startupAssemblyPath = GetStartupAssemblyPath();
             var targetExeFileName = Path.GetFileName(startupAssemblyPath);
             var outputDirectory = Path.GetDirectoryName(startupAssemblyPath);
@@ -339,8 +390,10 @@ namespace VSMonoDebugger
             return debugOptions;
         }
 
-        public async Task CreateMdbForAllDependantProjects(Action<string> msgOutput)
+        public async Task CreateMdbForAllDependantProjectsAsync(Action<string> msgOutput)
         {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+
             var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;
 
             var startProject = GetStartupProject();
@@ -356,7 +409,7 @@ namespace VSMonoDebugger
                         var outputDir = outputDirectories[projectName];
                         LogInfo($"{projectName} - OutputDir: {outputDir}");
 
-                        await ConvertPdb2Mdb(outputDir, msgOutput);
+                        await ConvertPdb2MdbAsync(outputDir, msgOutput);
                     }
                     else
                     {
@@ -372,6 +425,8 @@ namespace VSMonoDebugger
 
         private Dictionary<string, string> CollectOutputDirectories(SolutionBuild2 sb, Action<string> msgOutput)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var outputPaths = new Dictionary<string, string>();
             foreach (BuildDependency dep in sb.BuildDependencies)
             {
@@ -399,6 +454,8 @@ namespace VSMonoDebugger
 
         private string GetFullOutputPath(Project project)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             var fullPath = string.Empty;
             var outputPath = string.Empty;
             foreach (Property property in project.Properties)
@@ -434,6 +491,8 @@ namespace VSMonoDebugger
 
         public Dictionary<string, Project> CollectAllDependentProjects(Project currentProject, Action<string> msgOutput, Dictionary<string, Project> projects = null)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
             projects = projects ?? new Dictionary<string, Project>();
 
             if (currentProject == null || projects.ContainsKey(currentProject.FullName))
@@ -462,9 +521,9 @@ namespace VSMonoDebugger
             return projects;
         }
 
-        public Task ConvertPdb2Mdb(string outputDirectory, Action<string> msgOutput)
+        public Task ConvertPdb2MdbAsync(string outputDirectory, Action<string> msgOutput)
         {
-            return System.Threading.Tasks.Task.Factory.StartNew(() =>
+            return Task.Run(() =>
             {
                 msgOutput?.Invoke($"Start ConvertPdb2Mdb: {outputDirectory} ...");
 
