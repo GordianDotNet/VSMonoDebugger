@@ -118,10 +118,11 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 
 # Version History
 
-## 0.9.1
-**2019-06-03**
+## 0.9.2
+**2019-06-20**
 
 - [x] Bugfix: #11 Revert package reference update to support older version of visual studio 2017 (15.0.x)
+- [x] Bugfix: Support Visual Studio 2019 16.x version numbers (before only 16.0)
 
 ## 0.9.0
 **2019-06-03**
