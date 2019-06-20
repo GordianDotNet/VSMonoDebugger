@@ -12,32 +12,32 @@ namespace VSMonoDebugger.SSH
 {
     public class SSHDebugger
     {
-        public static Task<Task> DeployAndDebugAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, Action<string> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public static Task<Task> DeployAndDebugAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
             writeOutput("Start DeployAndDebug over SSH ...");
             return StartDebuggerAsync(options, debugOptions, true, true, writeOutput, redirectOutputOption);
         }
 
-        public static Task<Task> DeployAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, Action<string> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public static Task<Task> DeployAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
             writeOutput("Start Deploy over SSH ...");
             return StartDebuggerAsync(options, debugOptions, true, false, writeOutput, redirectOutputOption);
         }
 
-        public static Task<Task> DebugAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, Action<string> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public static Task<Task> DebugAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
             writeOutput("Start DeployAndDebug over SSH ...");
             return StartDebuggerAsync(options, debugOptions, false, true, writeOutput, redirectOutputOption);
         }
 
-        private static Task<Task> StartDebuggerAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, bool deploy, bool debug, Action<string> writeOutput, RedirectOutputOptions redirectOutputOption)
+        private static Task<Task> StartDebuggerAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, bool deploy, bool debug, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
         {
             NLogService.TraceEnteringMethod();
 
             return Task.Run<Task>(async () =>
             {
                 var errorHelpText = new StringBuilder();
-                Action<string> writeLineOutput = s => writeOutput(s + Environment.NewLine);
+                Action<string> writeLineOutput = s => writeOutput(s + Environment.NewLine).Wait();
 
                 try
                 {
@@ -113,7 +113,7 @@ namespace VSMonoDebugger.SSH
             });
         }
 
-        private static async Task RunCommandAndRedirectOutputAsync(Renci.SshNet.SshCommand cmd, Action<string> writeOutput, RedirectOutputOptions redirectOutputOption)
+        private static async Task RunCommandAndRedirectOutputAsync(Renci.SshNet.SshCommand cmd, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
         {
             await Task.Run(() =>
             {
@@ -139,17 +139,17 @@ namespace VSMonoDebugger.SSH
             });
         }
 
-        private static Task RedirectStreamAsync(Action<string> writeOutput, IAsyncResult asynch, Stream stream)
+        private static Task RedirectStreamAsync(Func<string, Task> writeOutput, IAsyncResult asynch, Stream stream)
         {
-            return Task.Run(() =>
+            return Task.Run(async () =>
             {
                 var reader = new StreamReader(stream);
                 while (!asynch.IsCompleted)
                 {
-                    var result = reader.ReadToEnd();
+                    var result = await reader.ReadToEndAsync();
                     if (!string.IsNullOrEmpty(result))
                     {
-                        writeOutput(result);
+                        await writeOutput(result);
                     }
                 }
             });

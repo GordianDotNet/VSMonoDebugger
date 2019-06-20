@@ -18,7 +18,7 @@ namespace VSMonoDebugger.Services
         private static class VsImpl
         {
             internal static void SetText(string outputMessage)
-            {
+            {                
                 ThreadHelper.ThrowIfNotOnUIThread();
 
                 var outputWindow = (IVsOutputWindow)Package.GetGlobalService(typeof(SVsOutputWindow));
@@ -44,26 +44,37 @@ namespace VSMonoDebugger.Services
         /// Write text to the Debug VS Output window pane directly. This is used to write information before the session create event.
         /// </summary>
         /// <param name="outputMessage"></param>
-        public static void WriteLaunchError(string outputMessage)
+        public static async System.Threading.Tasks.Task WriteLaunchErrorAsync(string outputMessage)
         {
             try
             {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 VsImpl.SetText(outputMessage);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                NLogService.Logger.Error(ex);
+            }
+        }
+
+        public static async System.Threading.Tasks.Task WriteLineLaunchErrorAsync(string outputMessage)
+        {
+            try
+            {
+                await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                VsImpl.SetText(outputMessage + Environment.NewLine);
+            }
+            catch (Exception ex)
+            {
+                NLogService.Logger.Error(ex);
             }
         }
 
         public static void WriteLineLaunchError(string outputMessage)
         {
-            try
-            {
-                VsImpl.SetText(outputMessage + Environment.NewLine);
-            }
-            catch (Exception)
-            {
-            }
+#pragma warning disable VSTHRD110 // Observe result of async calls
+            WriteLineLaunchErrorAsync(outputMessage);
+#pragma warning restore VSTHRD110 // Observe result of async calls
         }
     }
 
@@ -71,12 +82,12 @@ namespace VSMonoDebugger.Services
     {
         public override void WriteLine(string value)
         {
-            HostOutputWindowEx.WriteLineLaunchError(value);
+            HostOutputWindowEx.WriteLineLaunchErrorAsync(value);
         }
 
         public override void Write(char value)
         {
-            HostOutputWindowEx.WriteLaunchError(value.ToString());
+            HostOutputWindowEx.WriteLaunchErrorAsync(value.ToString());
         }
 
         public override Encoding Encoding

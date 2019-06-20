@@ -138,15 +138,15 @@ namespace VSMonoDebugger
 
                 if (debuggerMode.HasFlag(DebuggerMode.DeployOverSSH) && debuggerMode.HasFlag(DebuggerMode.DebugOverSSH))
                 {
-                    monoRemoteSshDebugTask = await SSHDebugger.DeployAndDebugAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchError, settings.RedirectOutputOption);
+                    monoRemoteSshDebugTask = await SSHDebugger.DeployAndDebugAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchErrorAsync, settings.RedirectOutputOption);
                 }
                 else if (debuggerMode.HasFlag(DebuggerMode.DeployOverSSH))
                 {
-                    monoRemoteSshDebugTask = await SSHDebugger.DeployAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchError, settings.RedirectOutputOption);
+                    monoRemoteSshDebugTask = await SSHDebugger.DeployAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchErrorAsync, settings.RedirectOutputOption);
                 }
                 else if (debuggerMode.HasFlag(DebuggerMode.DebugOverSSH))
                 {
-                    monoRemoteSshDebugTask = await SSHDebugger.DebugAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchError, settings.RedirectOutputOption);
+                    monoRemoteSshDebugTask = await SSHDebugger.DebugAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchErrorAsync, settings.RedirectOutputOption);
                 }
 
                 if (debuggerMode.HasFlag(DebuggerMode.AttachProcess))
@@ -160,7 +160,7 @@ namespace VSMonoDebugger
             }
             catch (Exception ex)
             {
-                HostOutputWindowEx.WriteLineLaunchError(ex.Message);
+                HostOutputWindowEx.WriteLineLaunchErrorAsync(ex.Message);
                 NLogService.Logger.Error(ex);
                 MessageBox.Show(ex.Message, "VSMonoDebugger", MessageBoxButton.OK, MessageBoxImage.Error);
             }
@@ -236,7 +236,7 @@ namespace VSMonoDebugger
             }
             catch (Exception ex)
             {
-                HostOutputWindowEx.WriteLineLaunchError(ex.Message);
+                await HostOutputWindowEx.WriteLineLaunchErrorAsync(ex.Message);
                 NLogService.Logger.Error(ex);
                 MessageBox.Show(ex.Message, "VSMonoDebugger", MessageBoxButton.OK, MessageBoxImage.Error);
             }
