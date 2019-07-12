@@ -1,4 +1,5 @@
 ﻿using EnvDTE;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Debugger.Interop;
 using Mono.Debugging.Soft;
 using System;
@@ -155,6 +156,24 @@ namespace Mono.Debugging.VisualStudio
 
             try
             {
+                var process = rgpPrograms[0] as VSMonoDebuggerProcess;
+                if (process != null)
+                {
+                    var debugOptions = new DebugOptions()
+                    {
+                        UserSettings = process.Port.UserSetting,
+                        TargetExeFileName = "Test.exe"
+                    };
+
+                    //var debugOptions = _monoExtension.CreateDebugOptions(process.Port.UserSetting, true);
+                    var pszOptions = debugOptions.SerializeToJson();
+                    //var base64Options = SerializeDebuggerOptions(pszOptions);
+                    if (VSConstants.S_OK != LaunchSuspended(null, PortSupplier.MainPort, "", "", "", null, pszOptions, enum_LAUNCH_FLAGS.LAUNCH_ENABLE_ENC, 0, 0, 0, pCallback, out IDebugProcess2 xamarinProcess))
+                    {
+                        rgpPrograms[0] = xamarinProcess as Mono.Debugging.VisualStudio.Process;
+                    }
+                }
+
                 _session.Run(_startInfo, _startInfo.SessionOptions);
             }
             catch (Exception ex)
