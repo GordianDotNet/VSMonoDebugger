@@ -1,7 +1,11 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using Microsoft;
+using Microsoft.Internal.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
 using SshFileSync;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -41,7 +45,7 @@ namespace VSMonoDebugger
         {
             if (File.Exists(NLogService.LoggerPath))
             {
-                System.Diagnostics.Process.Start(NLogService.LoggerPath);
+                Process.Start(NLogService.LoggerPath);
             }
             else
             {
@@ -90,11 +94,22 @@ namespace VSMonoDebugger
 
         private void OpenSSHDebugConfigDlg(object sender, EventArgs e)
         {
-            var dlg = new DebugSettings();
+            ThreadHelper.ThrowIfNotOnUIThread();
 
-            if (dlg.ShowDialog().GetValueOrDefault())
+            // https://docs.microsoft.com/en-us/visualstudio/extensibility/creating-and-managing-modal-dialog-boxes?view=vs-2019
+            var vsUIShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
+            Assumes.Present(vsUIShell);
+
+            var dlg = new DebugSettings(vsUIShell);
+            vsUIShell.GetDialogOwnerHwnd(out IntPtr vsParentHwnd);
+            vsUIShell.EnableModeless(0);
+            try
             {
-                // Saved
+                WindowHelper.ShowModal(dlg, vsParentHwnd);
+            }
+            finally
+            {
+                vsUIShell.EnableModeless(1);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using Microsoft.VisualStudio.Shell.Interop;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Forms;
@@ -10,8 +11,11 @@ namespace VSMonoDebugger.Views
     /// </summary>
     public partial class DebugSettings : Window
     {
-        public DebugSettings()
+        private IVsUIShell _vsUIShell;
+
+        public DebugSettings(IVsUIShell vsUIShell)
         {
+            _vsUIShell = vsUIShell;
             InitializeComponent();
             WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
