@@ -55,14 +55,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Mono.Debugging.VisualStudio\XamarinDocumentContext.cs" />
     <Compile Include="Mono.Debugging.VisualStudio\XamarinEngine.cs" />
+    <Compile Include="Mono.Debugging.VisualStudio\XamarinEnums.cs" />
+    <Compile Include="Mono.Debugging.VisualStudio\XamarinExpression.cs" />
+    <Compile Include="Mono.Debugging.VisualStudio\XamarinEvents.cs" />
+    <Compile Include="Mono.Debugging.VisualStudio\XamarinMemoryAddress.cs" />
     <Compile Include="Mono.Debugging.VisualStudio\XamarinPortSupplier.cs" />
+    <Compile Include="Mono.Debugging.VisualStudio\XamarinProperty.cs" />
+    <Compile Include="Mono.Debugging.VisualStudio\XamarinStackFrame.cs" />
+    <Compile Include="Mono.Debugging.VisualStudio\XamarinThread.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DebugEngineGuids.cs" />
     <Compile Include="Services\DebugEngineInstallService.cs" />
     <Compile Include="Services\HostOutputWindowEx.cs" />
     <Compile Include="Services\NLogService.cs" />
     <Compile Include="Services\MonoVisualStudioExtension.cs" />
+    <Compile Include="Services\VisualStudioExtensionConstants.cs" />
     <Compile Include="Settings\UserSettingsContainer.cs" />
     <Compile Include="Settings\UserSettingsManager.cs" />
     <Compile Include="Settings\DebugOptions.cs" />

@@ -2,11 +2,13 @@
 using Microsoft.VisualStudio.Debugger.Interop;
 using Mono.Debugging.Soft;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Runtime.Remoting;
 using System.Runtime.Serialization.Formatters.Binary;
+using VSMonoDebugger;
 using VSMonoDebugger.Services;
 using VSMonoDebugger.Settings;
 
@@ -16,15 +18,32 @@ namespace Mono.Debugging.VisualStudio
     public class XamarinEngine : IDebugEngine2, IDebugEngineLaunch2
     {
         protected Engine _engine;
+        protected IDebugProgram2 _activeProgram = null;
+        protected IDebugEventCallback2 _eventCallback = null;
 
         protected SoftDebuggerSession _session;
         protected StartInfo _startInfo;
 
         public static Project StartupProject { set; get; }
+        public IDebugProgram2 ActiveProgram { get { return _activeProgram; } }
+        public Engine MonoEngine { get { return _engine; } }
 
         public XamarinEngine()
         {
             _engine = new Engine();
+        }
+
+        private void CreateAndRegisterXamarinThread(Client.ThreadInfo threadInfo)
+        {
+            XamarinThread thread = new XamarinThread(this, threadInfo.Id, threadInfo.Name, threadInfo.Location, _session);
+            uint attributes;
+            Guid riidEvent = new Guid(XamarinThreadCreateEvent.IID);
+            IDebugThreadCreateEvent2 evnt = new XamarinThreadCreateEvent();
+            IDebugEvent2 eventObject = evnt as IDebugEvent2;
+            if (eventObject.GetAttributes(out attributes) != VisualStudioExtensionConstants.S_OK)
+                throw new InvalidOperationException("Failed to create and register a thread. The event object failed to get its attributes");
+            if (_eventCallback.Event(_engine, null, _activeProgram, thread, eventObject, ref riidEvent, attributes) != VisualStudioExtensionConstants.S_OK)
+                throw new InvalidOperationException("Failed to create and register a thread. The event has not been sent succesfully");
         }
 
         private string SerializeDebuggerOptions(string jsonDebugOptions)
@@ -38,6 +57,7 @@ namespace Mono.Debugging.VisualStudio
                 _session.TargetReady += (sender, eventArgs) =>
                 {
                     Debug.WriteLine("TargetReady!");
+                    CreateAndRegisterXamarinThread(eventArgs.Thread);
                 };
                 _session.ExceptionHandler = exception => true;
                 _session.TargetExited += (sender, x) =>
@@ -50,15 +70,25 @@ namespace Mono.Debugging.VisualStudio
                 };
                 _session.LogWriter = (stderr, text) => Debug.WriteLine(text);
                 _session.OutputWriter = (stderr, text) => Debug.WriteLine(text);
-                _session.TargetThreadStarted += (sender, x) => Debug.WriteLine("TargetThreadStarted!");
+                _session.TargetThreadStarted += (sender, x) =>
+                {
+                    Debug.WriteLine("TargetThreadStarted!");
+                    CreateAndRegisterXamarinThread(x.Thread);
+                };
                 _session.TargetThreadStopped += (sender, x) =>
                 {
                     Debug.WriteLine("TargetThreadStopped!");
                 };
-                _session.TargetStopped += (sender, x) => Debug.WriteLine(x.Type);
+                _session.TargetStopped += (sender, x) =>
+                {
+                    Debug.WriteLine(x.Type);
+                };
                 _session.TargetStarted += (sender, x) => Debug.WriteLine("TargetStarted");
                 _session.TargetSignaled += (sender, x) => Debug.WriteLine(x.Type);
-                _session.TargetInterrupted += (sender, x) => Debug.WriteLine(x.Type);
+                _session.TargetInterrupted += (sender, x) =>
+                {
+                    Debug.WriteLine(x.Type);
+                };
                 _session.TargetExceptionThrown += (sender, x) =>
                 {
                     Debug.WriteLine("TargetExceptionThrown!");
@@ -153,6 +183,21 @@ namespace Mono.Debugging.VisualStudio
         {
             NLogService.TraceEnteringMethod();
 
+            if (rgpPrograms.Length != 1)
+            {
+                NLogService.Logger.Error("The debug engine can only be attached to one program at the time.");
+                return VisualStudioExtensionConstants.S_FALSE;
+            }
+
+            if (_activeProgram != null)
+            {
+                NLogService.Logger.Error("The debug engine is already attached.");
+                return VisualStudioExtensionConstants.S_FALSE;
+            }
+
+            _activeProgram = rgpPrograms[0];
+            _eventCallback = pCallback;
+
             try
             {
                 _session.Run(_startInfo, _startInfo.SessionOptions);
@@ -200,6 +245,8 @@ namespace Mono.Debugging.VisualStudio
         public /*override*/ int DestroyProgram(IDebugProgram2 pProgram)
         {
             NLogService.TraceEnteringMethod();
+            _activeProgram = null;
+            _eventCallback = null;
             return _engine.DestroyProgram(pProgram);
         }
 
