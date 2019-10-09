@@ -118,6 +118,12 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 
 # Version History
 
+## 0.9.5
+**2019-10-09**
+
+- [x] Bugfix: Set the parent window handle for the setting dialog
+- [x] Bugfix: GitHub Security Warning: vulnerability found in SharpCompress < 0.24
+
 ## 0.9.3
 **2019-06-20**
 
