@@ -90,10 +90,11 @@ namespace VSMonoDebugger
         /// Initializes the singleton instance of the command.
         /// </summary>
         /// <param name="package">Owner package, not null.</param>
-        public static void Initialize(Package package)
+        public static async System.Threading.Tasks.Task InitializeAsync(Package package)
         {
             Instance = new VSMonoDebuggerCommands(package);
             _monoExtension = new MonoVisualStudioExtension(package);
+            await _monoExtension.InitAsync();
         }
 
         /// <summary>

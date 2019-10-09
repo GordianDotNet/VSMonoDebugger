@@ -26,15 +26,34 @@ namespace VSMonoDebugger
         public readonly static string VS_PROJECTKIND_SOLUTION_FOLDER = "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}";
 
         private readonly Package _package;
-        private readonly DTE _dte;
+        private DTE _dte;
         private readonly ErrorListProvider _errorListProvider;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public MonoVisualStudioExtension(Package package)
         {
-            _package = package;
-            _dte = package.GetService<DTE>();
+            _package = package;            
             _errorListProvider = new ErrorListProvider(package);
+        }
+
+        private System.IServiceProvider ServiceProvider
+        {
+            get
+            {
+                return _package;
+            }
+        }
+
+        public async Task InitAsync()
+        {
+            _dte = await GetDTEAsync();
+        }
+
+        private async System.Threading.Tasks.Task<DTE> GetDTEAsync()
+        {
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+            var dte = ServiceProvider.GetService(typeof(SDTE)) as DTE;
+            return dte;
         }
 
         internal async Task BuildStartupProjectAsync()
@@ -55,7 +74,7 @@ namespace VSMonoDebugger
             }
         }
 
-        internal int BuildStartupProject()
+        private int BuildStartupProject()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -81,7 +100,7 @@ namespace VSMonoDebugger
             return sb.LastBuildInfo;
         }
 
-        internal int BuildSolution()
+        private int BuildSolution()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -91,7 +110,7 @@ namespace VSMonoDebugger
             return sb.LastBuildInfo;
         }
 
-        internal string GetStartupAssemblyPath()
+        private string GetStartupAssemblyPath()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -168,7 +187,7 @@ namespace VSMonoDebugger
             throw new ArgumentException($"No startup project found! Checked projects in StartupProjects = '{string.Join(",", startupProjects.ToArray())}'");
         }
 
-        public static IList<Project> Projects(Solution solution)
+        private static IList<Project> Projects(Solution solution)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -222,7 +241,7 @@ namespace VSMonoDebugger
             return list;
         }
 
-        internal string GetAssemblyPath(Project vsProject)
+        private string GetAssemblyPath(Project vsProject)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -262,7 +281,7 @@ namespace VSMonoDebugger
             }
         }
 
-        internal string GetStartArguments()
+        private string GetStartArguments()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -279,7 +298,7 @@ namespace VSMonoDebugger
             }
         }
         
-        internal void AttachDebuggerToRunningProcess(DebugOptions debugOptions)
+        public void AttachDebuggerToRunningProcess(DebugOptions debugOptions)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -323,15 +342,15 @@ namespace VSMonoDebugger
             }
         }
         
-        public static string ComputeHash(string file)
-        {
-            using (FileStream stream = File.OpenRead(file))
-            {
-                var sha = new SHA256Managed();
-                byte[] checksum = sha.ComputeHash(stream);
-                return BitConverter.ToString(checksum).Replace("-", string.Empty);
-            }
-        }
+        //public static string ComputeHash(string file)
+        //{
+        //    using (FileStream stream = File.OpenRead(file))
+        //    {
+        //        var sha = new SHA256Managed();
+        //        byte[] checksum = sha.ComputeHash(stream);
+        //        return BitConverter.ToString(checksum).Replace("-", string.Empty);
+        //    }
+        //}
 
         private IntPtr GetDebugInfo(DebugOptions debugOptions)//string args, int debugPort, string targetExe, string outputDirectory)
         {
@@ -505,7 +524,7 @@ namespace VSMonoDebugger
             return outputDir;
         }
 
-        public Dictionary<string, Project> CollectAllDependentProjects(Project currentProject, Action<string> msgOutput, Dictionary<string, Project> projects = null)
+        private Dictionary<string, Project> CollectAllDependentProjects(Project currentProject, Action<string> msgOutput, Dictionary<string, Project> projects = null)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -537,7 +556,7 @@ namespace VSMonoDebugger
             return projects;
         }
 
-        public Task ConvertPdb2MdbAsync(string outputDirectory, Action<string> msgOutput)
+        private Task ConvertPdb2MdbAsync(string outputDirectory, Action<string> msgOutput)
         {
             return Task.Run(() =>
             {
@@ -578,13 +597,13 @@ namespace VSMonoDebugger
             });
         }
 
-        public void LogInfo(string message)
+        private void LogInfo(string message)
         {
             logger.Log(new LogEventInfo(LogLevel.Info, "MonoVisualStudioExtension", message));
 
         }
 
-        public void LogError(Exception ex)
+        private void LogError(Exception ex)
         {
             logger.Error(ex);
         }

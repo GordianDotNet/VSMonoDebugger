@@ -65,7 +65,7 @@ namespace VSMonoDebugger
 
                 await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
                 UserSettingsManager.Initialize(this);
-                VSMonoDebuggerCommands.Initialize(this);
+                await VSMonoDebuggerCommands.InitializeAsync(this);
             }
             catch (UnauthorizedAccessException uex)
             {
