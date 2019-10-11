@@ -72,8 +72,18 @@ namespace Mono.Debugging.VisualStudio
                 var connectionTimeout = debugOptions.UserSettings.SSHDebugConnectionTimeout;
                 var evaluationTimeout = 30000;
                 var startupProject = StartupProject;
+                var softDebuggerConnectArgs = new SoftDebuggerConnectArgs(debugOptions.TargetExeFileName, debugOptions.GetHostIP(), debugOptions.GetMonoDebugPort());
+                
+                // TODO implement programm output via stream
+                //softDebuggerConnectArgs.RedirectOutput = true;
+                //softDebuggerConnectArgs.OutputPort = ???;
+                //_session.VirtualMachine.StandardOutput ???
+
+                softDebuggerConnectArgs.TimeBetweenConnectionAttempts = 1000;
+                softDebuggerConnectArgs.MaxConnectionAttempts = (int)(connectionTimeout / softDebuggerConnectArgs.TimeBetweenConnectionAttempts);
+
                 _startInfo = new StartInfo(
-                    new SoftDebuggerConnectArgs(debugOptions.TargetExeFileName, debugOptions.GetHostIP(), debugOptions.GetMonoDebugPort()),
+                    softDebuggerConnectArgs,
                     new DebuggingOptions() {
                         EvaluationTimeout = evaluationTimeout,
                         MemberEvaluationTimeout = evaluationTimeout,
