@@ -18,8 +18,6 @@ namespace VSMonoDebugger
 {
     internal sealed partial class VSMonoDebuggerCommands
     {
-        private static MonoVisualStudioExtension _monoExtension;
-
         private void InstallMenu(OleMenuCommandService commandService)
         {
             AddMenuItem(commandService, CommandIds.cmdDeployAndDebugOverSSH, CheckStartupProjects, DeployAndDebugOverSSHClicked);
@@ -92,12 +90,12 @@ namespace VSMonoDebugger
             await BuildProjectWithMDBFilesAsync();
         }
 
-        private void OpenSSHDebugConfigDlg(object sender, EventArgs e)
+        private async void OpenSSHDebugConfigDlg(object sender, EventArgs e)
         {
-            ThreadHelper.ThrowIfNotOnUIThread();
+            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             // https://docs.microsoft.com/en-us/visualstudio/extensibility/creating-and-managing-modal-dialog-boxes?view=vs-2019
-            var vsUIShell = ServiceProvider.GetService(typeof(SVsUIShell)) as IVsUIShell;
+            var vsUIShell = await _asyncServiceProvider.GetServiceAsync(typeof(SVsUIShell)) as IVsUIShell;
             Assumes.Present(vsUIShell);
 
             var dlg = new DebugSettings(vsUIShell);
@@ -183,7 +181,7 @@ namespace VSMonoDebugger
             return false;
         }
 
-        private static void CreateDebugOptions(out UserSettings settings, out DebugOptions debugOptions, out SshDeltaCopy.Options options)
+        private void CreateDebugOptions(out UserSettings settings, out DebugOptions debugOptions, out SshDeltaCopy.Options options)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -238,10 +236,7 @@ namespace VSMonoDebugger
                     return false;
                 }
 
-                UserSettings settings;
-                DebugOptions debugOptions;
-                SshDeltaCopy.Options options;
-                CreateDebugOptions(out settings, out debugOptions, out options);
+                CreateDebugOptions(out UserSettings settings, out DebugOptions debugOptions, out SshDeltaCopy.Options options);
 
                 await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
                 await _monoExtension.BuildStartupProjectAsync();

@@ -37,21 +37,24 @@ namespace VSMonoDebugger
         /// <summary>
         /// VS Package that provides this command, not null.
         /// </summary>
-        private readonly Package package;
+        private readonly AsyncPackage _asyncServiceProvider;
+
+        /// <summary>
+        /// MonoVisualStudioExtension contains all implementation work
+        /// </summary>
+        private MonoVisualStudioExtension _monoExtension;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VSMonoDebuggerCommands"/> class.
         /// Adds our command handlers for menu (commands must exist in the command table file)
         /// </summary>
-        /// <param name="package">Owner package, not null.</param>
-        private VSMonoDebuggerCommands(Package package)
+        /// <param name="asyncServiceProvider">Owner package, not null.</param>
+        public VSMonoDebuggerCommands(AsyncPackage asyncServiceProvider, OleMenuCommandService menuCommandService, MonoVisualStudioExtension monoVisualStudioExtension)
         {
-            this.package = package ?? throw new ArgumentNullException("package");
+            _asyncServiceProvider = asyncServiceProvider ?? throw new ArgumentNullException(nameof(asyncServiceProvider));
+            _monoExtension = monoVisualStudioExtension ?? throw new ArgumentNullException(nameof(monoVisualStudioExtension));
 
-            if (ServiceProvider.GetService(typeof(IMenuCommandService)) is OleMenuCommandService commandService)
-            {
-                InstallMenu(commandService);
-            }
+            InstallMenu(menuCommandService);
         }
         
         private OleMenuCommand AddMenuItem(OleMenuCommandService mcs, int cmdCode, EventHandler check, EventHandler action)
@@ -64,59 +67,6 @@ namespace VSMonoDebugger
             }
             mcs.AddCommand(menuCommand);
             return menuCommand;
-        }
-        
-        /// <summary>
-        /// Gets the instance of the command.
-        /// </summary>
-        public static VSMonoDebuggerCommands Instance
-        {
-            get;
-            private set;
-        }
-
-        /// <summary>
-        /// Gets the service provider from the owner package.
-        /// </summary>
-        private IServiceProvider ServiceProvider
-        {
-            get
-            {
-                return this.package;
-            }
-        }
-
-        /// <summary>
-        /// Initializes the singleton instance of the command.
-        /// </summary>
-        /// <param name="package">Owner package, not null.</param>
-        public static async System.Threading.Tasks.Task InitializeAsync(Package package)
-        {
-            Instance = new VSMonoDebuggerCommands(package);
-            _monoExtension = new MonoVisualStudioExtension(package);
-            await _monoExtension.InitAsync();
-        }
-
-        /// <summary>
-        /// This function is the callback used to execute the command when the menu item is clicked.
-        /// See the constructor to see how the menu item is associated with this function using
-        /// OleMenuCommandService service and MenuCommand class.
-        /// </summary>
-        /// <param name="sender">Event sender.</param>
-        /// <param name="e">Event args.</param>
-        private void MenuItemCallback(object sender, EventArgs e)
-        {
-            string message = string.Format(CultureInfo.CurrentCulture, "Inside {0}.MenuItemCallback()", this.GetType().FullName);
-            string title = "VSMonoDebuggerCommands";
-
-            // Show a message box to prove we were here
-            VsShellUtilities.ShowMessageBox(
-                this.ServiceProvider,
-                message,
-                title,
-                OLEMSGICON.OLEMSGICON_INFO,
-                OLEMSGBUTTON.OLEMSGBUTTON_OK,
-                OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
         }
     }
 }

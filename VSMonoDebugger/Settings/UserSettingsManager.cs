@@ -10,34 +10,28 @@ namespace VSMonoDebugger.Settings
     {
         public readonly static string SETTINGS_STORE_NAME = "VSMonoDebugger";
 
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-        private static readonly UserSettingsManager manager = new UserSettingsManager();
-        private WritableSettingsStore store;
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private WritableSettingsStore _settingsStore;
 
         private UserSettingsManager()
         {
-        }
-
-        public static UserSettingsManager Instance
-        {
-            get { return manager; }
-        }
+        }        
 
         public UserSettingsContainer Load()
         {
             var result = new UserSettingsContainer();
 
-            if (store.CollectionExists(SETTINGS_STORE_NAME))
+            if (_settingsStore.CollectionExists(SETTINGS_STORE_NAME))
             {
                 try
                 {
-                    string content = store.GetString(SETTINGS_STORE_NAME, "Settings");
+                    var content = _settingsStore.GetString(SETTINGS_STORE_NAME, "Settings");
                     result = UserSettingsContainer.DeserializeFromJson(content);
                     return result;
                 }
                 catch (Exception ex)
                 {
-                    logger.Error(ex);
+                    _logger.Error(ex);
                 }
             }
 
@@ -46,13 +40,15 @@ namespace VSMonoDebugger.Settings
 
         public void Save(UserSettingsContainer settings)
         {
-            string json = settings.SerializeToJson();
-            if (!store.CollectionExists(SETTINGS_STORE_NAME))
+            var json = settings.SerializeToJson();
+            if (!_settingsStore.CollectionExists(SETTINGS_STORE_NAME))
             {
-                store.CreateCollection(SETTINGS_STORE_NAME);
+                _settingsStore.CreateCollection(SETTINGS_STORE_NAME);
             }
-            store.SetString(SETTINGS_STORE_NAME, "Settings", json);
+            _settingsStore.SetString(SETTINGS_STORE_NAME, "Settings", json);
         }
+
+        public static UserSettingsManager Instance { get; } = new UserSettingsManager();
 
         public static void Initialize(Package package)
         {
@@ -60,7 +56,7 @@ namespace VSMonoDebugger.Settings
             {
                 var settingsManager = new ShellSettingsManager(package);
                 var configurationSettingsStore = settingsManager.GetWritableSettingsStore(SettingsScope.UserSettings);
-                Instance.store = configurationSettingsStore;
+                Instance._settingsStore = configurationSettingsStore;
             }
             else
             {

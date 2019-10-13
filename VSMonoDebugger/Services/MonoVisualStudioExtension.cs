@@ -25,38 +25,35 @@ namespace VSMonoDebugger
         /// </summary>
         public readonly static string VS_PROJECTKIND_SOLUTION_FOLDER = "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}";
 
-        private readonly Package _package;
         private DTE _dte;
+        private CommandEvents _startCommandEvents;
         private readonly ErrorListProvider _errorListProvider;
         private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
-        public MonoVisualStudioExtension(Package package)
+        public MonoVisualStudioExtension(Package package, DTE dte)
         {
-            _package = package;            
+            _dte = dte;
             _errorListProvider = new ErrorListProvider(package);
         }
 
-        private System.IServiceProvider ServiceProvider
-        {
-            get
-            {
-                return _package;
-            }
-        }
-
-        public async Task InitAsync()
-        {
-            _dte = await GetDTEAsync();
-        }
-
-        private async System.Threading.Tasks.Task<DTE> GetDTEAsync()
+        public async Task OverrideRunCommandAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
-            var dte = ServiceProvider.GetService(typeof(SDTE)) as DTE;
-            return dte;
+
+            // https://stackoverflow.com/questions/15908652/how-to-programmatically-override-the-build-and-launch-actions
+            // https://visualstudioextensions.vlasovstudio.com/2017/06/29/changing-visual-studio-2017-private-registry-settings/
+            // https://github.com/3F/vsCommandEvent
+            var _dteEvents = _dte.Events;
+            _startCommandEvents = _dte.Events.CommandEvents["{5EFC7975-14BC-11CF-9B2B-00AA00573819}", 295];
+            _startCommandEvents.BeforeExecute += OnBeforeStartCommand;
         }
 
-        internal async Task BuildStartupProjectAsync()
+        private void OnBeforeStartCommand(string guid, int id, object customIn, object customOut, ref bool cancelDefault)
+        {
+            //your event handler this command
+        }
+
+        public async Task BuildStartupProjectAsync()
         {
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             
@@ -187,7 +184,7 @@ namespace VSMonoDebugger
             throw new ArgumentException($"No startup project found! Checked projects in StartupProjects = '{string.Join(",", startupProjects.ToArray())}'");
         }
 
-        private static IList<Project> Projects(Solution solution)
+        private IList<Project> Projects(Solution solution)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
 
