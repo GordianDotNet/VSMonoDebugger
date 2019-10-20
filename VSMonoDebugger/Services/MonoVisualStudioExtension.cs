@@ -38,6 +38,8 @@ namespace VSMonoDebugger
 
         public async Task OverrideRunCommandAsync()
         {
+            NLogService.TraceEnteringMethod();
+
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             // https://stackoverflow.com/questions/15908652/how-to-programmatically-override-the-build-and-launch-actions
@@ -50,11 +52,15 @@ namespace VSMonoDebugger
 
         private void OnBeforeStartCommand(string guid, int id, object customIn, object customOut, ref bool cancelDefault)
         {
+            NLogService.TraceEnteringMethod();
+
             //your event handler this command
         }
 
         public async Task BuildStartupProjectAsync()
         {
+            NLogService.TraceEnteringMethod();
+
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             
             var failedBuilds = BuildStartupProject();
@@ -117,6 +123,8 @@ namespace VSMonoDebugger
 
         public bool IsStartupProjectAvailable()
         {
+            NLogService.TraceEnteringMethod();
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;
@@ -125,6 +133,8 @@ namespace VSMonoDebugger
 
         public VSMonoDebuggerProjectSettings? GetProjectSettingsFromStartupProject()
         {
+            NLogService.TraceEnteringMethod();
+
             try
             {
                 ThreadHelper.ThrowIfNotOnUIThread();
@@ -297,6 +307,8 @@ namespace VSMonoDebugger
         
         public void AttachDebuggerToRunningProcess(DebugOptions debugOptions)
         {
+            NLogService.TraceEnteringMethod();
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             if (DebugEngineGuids.UseAD7Engine == EngineType.XamarinEngine)
@@ -380,28 +392,25 @@ namespace VSMonoDebugger
             return pInfo;
         }
         
-        public DebugOptions CreateDebugOptions(UserSettings settings, bool useSSH = false)
+        public DebugOptions CreateDebugOptions(UserSettings settings)
         {
+            NLogService.TraceEnteringMethod();
+
             ThreadHelper.ThrowIfNotOnUIThread();
 
             var startupAssemblyPath = GetStartupAssemblyPath();
             var targetExeFileName = Path.GetFileName(startupAssemblyPath);
             var outputDirectory = Path.GetDirectoryName(startupAssemblyPath);
             var startArguments = GetStartArguments();
-            var preDebugScript = settings.PreDebugScriptWithParameters
-                .Replace(settings.MONO_DEBUG_PORT, settings.SSHMonoDebugPort.ToString())
-                .Replace(settings.TARGET_EXE_FILENAME, targetExeFileName)
-                .Replace(settings.START_ARGUMENTS, startArguments)
-                .Replace("\r\n", "\n");
-            var debugScript = settings.DebugScriptWithParameters
-                .Replace(settings.MONO_DEBUG_PORT, settings.SSHMonoDebugPort.ToString())
-                .Replace(settings.TARGET_EXE_FILENAME, targetExeFileName)
-                .Replace(settings.START_ARGUMENTS, startArguments)
-                .Replace("\r\n", "\n");
+
+            var preDebugScript = settings.DeployAndDebugOnLocalWindowsSystem ? settings.PreDebugScriptWithParametersWindows : settings.PreDebugScriptWithParameters;
+            preDebugScript = ReplaceDebugParameters(preDebugScript, settings, targetExeFileName, startArguments, "\n");
+
+            var debugScript = settings.DeployAndDebugOnLocalWindowsSystem ? settings.DebugScriptWithParametersWindows : settings.DebugScriptWithParameters;
+            debugScript = ReplaceDebugParameters(debugScript, settings, targetExeFileName, startArguments, "\n");
 
             var debugOptions = new DebugOptions()
             {
-                UseSSH = useSSH,
                 StartupAssemblyPath = startupAssemblyPath,
                 UserSettings = settings,
                 OutputDirectory = outputDirectory,
@@ -414,8 +423,19 @@ namespace VSMonoDebugger
             return debugOptions;
         }
 
+        private string ReplaceDebugParameters(string scriptWithParameters, UserSettings settings, string targetExeFileName, string startArguments, string endOfLine)
+        {
+            return scriptWithParameters
+                .Replace(settings.MONO_DEBUG_PORT, settings.SSHMonoDebugPort.ToString())
+                .Replace(settings.TARGET_EXE_FILENAME, targetExeFileName)
+                .Replace(settings.START_ARGUMENTS, startArguments)
+                .Replace("\r\n", endOfLine);
+        }
+
         public async Task CreateMdbForAllDependantProjectsAsync(Action<string> msgOutput)
         {
+            NLogService.TraceEnteringMethod();
+
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
             var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;

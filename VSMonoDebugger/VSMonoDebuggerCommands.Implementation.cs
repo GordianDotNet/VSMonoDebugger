@@ -147,19 +147,21 @@ namespace VSMonoDebugger
                     await _monoExtension.CreateMdbForAllDependantProjectsAsync(HostOutputWindowEx.WriteLineLaunchError);
                 }
 
+                IDebugger debugger = settings.DeployAndDebugOnLocalWindowsSystem ? (IDebugger)new LocalWindowsDebugger() : new SSHDebugger(options);
+
                 var monoRemoteSshDebugTask = System.Threading.Tasks.Task.CompletedTask;
 
                 if (debuggerMode.HasFlag(DebuggerMode.DeployOverSSH) && debuggerMode.HasFlag(DebuggerMode.DebugOverSSH))
                 {
-                    monoRemoteSshDebugTask = await SSHDebugger.DeployAndDebugAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchErrorAsync, settings.RedirectOutputOption);
+                    monoRemoteSshDebugTask = await debugger.DeployRunAndDebugAsync(debugOptions, HostOutputWindowEx.WriteLaunchErrorAsync, settings.RedirectOutputOption);
                 }
                 else if (debuggerMode.HasFlag(DebuggerMode.DeployOverSSH))
                 {
-                    monoRemoteSshDebugTask = await SSHDebugger.DeployAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchErrorAsync, settings.RedirectOutputOption);
+                    monoRemoteSshDebugTask = await debugger.DeployAsync(debugOptions, HostOutputWindowEx.WriteLaunchErrorAsync, settings.RedirectOutputOption);
                 }
                 else if (debuggerMode.HasFlag(DebuggerMode.DebugOverSSH))
                 {
-                    monoRemoteSshDebugTask = await SSHDebugger.DebugAsync(options, debugOptions, HostOutputWindowEx.WriteLaunchErrorAsync, settings.RedirectOutputOption);
+                    monoRemoteSshDebugTask = await debugger.RunAndDebugAsync(debugOptions, HostOutputWindowEx.WriteLaunchErrorAsync, settings.RedirectOutputOption);
                 }
 
                 if (debuggerMode.HasFlag(DebuggerMode.AttachProcess))
@@ -200,6 +202,11 @@ namespace VSMonoDebugger
                             NLogService.Logger.Info($"SSHDeployPath = {settings.SSHDeployPath} was overwritten with local *.VSMonoDebugger.config: {localProjectConfig.Value.SSHDeployPath}");
                             settings.SSHDeployPath = localProjectConfig.Value.SSHDeployPath;
                         }
+                        if (!string.IsNullOrWhiteSpace(localProjectConfig.Value.WindowsDeployPath))
+                        {
+                            NLogService.Logger.Info($"WindowsDeployPath = {settings.WindowsDeployPath} was overwritten with local *.VSMonoDebugger.config: {localProjectConfig.Value.WindowsDeployPath}");
+                            settings.WindowsDeployPath = localProjectConfig.Value.WindowsDeployPath;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -208,7 +215,7 @@ namespace VSMonoDebugger
                 }               
             }            
 
-            debugOptions = _monoExtension.CreateDebugOptions(settings, true);
+            debugOptions = _monoExtension.CreateDebugOptions(settings);
             options = new SshDeltaCopy.Options()
             {
                 Host = settings.SSHHostIP,

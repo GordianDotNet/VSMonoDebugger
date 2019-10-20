@@ -6,7 +6,6 @@ namespace VSMonoDebugger.Settings
 {
     public class DebugOptions
     {
-        public bool UseSSH { get; set; }
         public UserSettings UserSettings { get; set; }        
         public string OutputDirectory { get; set; }
         public string TargetExeFileName { get; set; }
@@ -33,7 +32,11 @@ namespace VSMonoDebugger.Settings
         public IPAddress GetHostIP()
         {
             var hostIp = IPAddress.Loopback;
-            if (UseSSH)
+            if (UserSettings.DeployAndDebugOnLocalWindowsSystem)
+            {
+                hostIp = IPAddress.Loopback;
+            }
+            else
             {
                 if (!IPAddress.TryParse(UserSettings.SSHHostIP, out hostIp))
                 {
@@ -46,16 +49,12 @@ namespace VSMonoDebugger.Settings
                     //hostIp = Dns.GetHostAddresses(UserSettings.SSHHostIP).First();
                 }
             }
-            else
-            {
-                hostIp = IPAddress.Parse(UserSettings.LastIp);
-            }
             return hostIp;
         }
         
         public int GetMonoDebugPort()
         {
-            return UseSSH ? UserSettings.SSHMonoDebugPort : UserSettings.DEFAULT_DEBUGGER_AGENT_PORT;            
+            return UserSettings.SSHMonoDebugPort;            
         }
     }
 }

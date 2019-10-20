@@ -11,6 +11,8 @@ namespace VSMonoDebugger.Settings
     {
         public string SSHDeployPath;
 
+        public string WindowsDeployPath;
+
         public string SerializeToJson()
         {
             var json = JsonConvert.SerializeObject(this);

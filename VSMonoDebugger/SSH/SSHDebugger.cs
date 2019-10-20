@@ -10,27 +10,46 @@ using VSMonoDebugger.Settings;
 
 namespace VSMonoDebugger.SSH
 {
-    public class SSHDebugger
+    public interface IDebugger
     {
-        public static Task<Task> DeployAndDebugAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        Task<Task> DeployRunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None);
+
+        Task<Task> DeployAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None);
+
+        Task<Task> RunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None);
+    }
+
+    public class SSHDebugger : IDebugger
+    {
+        private readonly SshDeltaCopy.Options _sshOptions;
+
+        public SSHDebugger(SshDeltaCopy.Options options)
         {
-            writeOutput("Start DeployAndDebug over SSH ...");
-            return StartDebuggerAsync(options, debugOptions, true, true, writeOutput, redirectOutputOption);
+            _sshOptions = options;
         }
 
-        public static Task<Task> DeployAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public async Task<Task> DeployRunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
-            writeOutput("Start Deploy over SSH ...");
-            return StartDebuggerAsync(options, debugOptions, true, false, writeOutput, redirectOutputOption);
+            NLogService.TraceEnteringMethod();
+            await writeOutput("Start DeployRunAndDebug over SSH ...");
+            return StartDebuggerAsync(_sshOptions, debugOptions, true, true, writeOutput, redirectOutputOption);
         }
 
-        public static Task<Task> DebugAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public async Task<Task> DeployAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
-            writeOutput("Start DeployAndDebug over SSH ...");
-            return StartDebuggerAsync(options, debugOptions, false, true, writeOutput, redirectOutputOption);
+            NLogService.TraceEnteringMethod();
+            await writeOutput("Start Deploy over SSH ...");
+            return StartDebuggerAsync(_sshOptions, debugOptions, true, false, writeOutput, redirectOutputOption);
         }
 
-        private static Task<Task> StartDebuggerAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, bool deploy, bool debug, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
+        public async Task<Task> RunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        {
+            NLogService.TraceEnteringMethod();
+            await writeOutput("Start RunAndDebug over SSH ...");
+            return StartDebuggerAsync(_sshOptions, debugOptions, false, true, writeOutput, redirectOutputOption);
+        }
+
+        private Task<Task> StartDebuggerAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, bool deploy, bool debug, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
         {
             NLogService.TraceEnteringMethod();
 
@@ -86,7 +105,7 @@ namespace VSMonoDebugger.SSH
                             NLogService.Logger.Info($"Run DebugScript: {monoDebugCommand}");
 
                             // TODO if DebugScript fails no error is shown - very bad!
-                            writeOutput(errorHelpText.ToString());
+                            await writeOutput(errorHelpText.ToString());
                             var cmd = sshDeltaCopy.CreateSSHCommand(monoDebugCommand);
                             await RunCommandAndRedirectOutputAsync(cmd, writeOutput, redirectOutputOption);
 
@@ -107,13 +126,13 @@ namespace VSMonoDebugger.SSH
                 catch (Exception ex)
                 {
                     var additionalErrorMessage = $"SSHDebugger: {ex.Message}\n\nExecuted steps:\n{errorHelpText.ToString()}";
-                    writeOutput(additionalErrorMessage);
+                    await writeOutput(additionalErrorMessage);
                     throw new Exception(additionalErrorMessage, ex);
                 }
             });
         }
 
-        private static async Task RunCommandAndRedirectOutputAsync(Renci.SshNet.SshCommand cmd, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
+        private async Task RunCommandAndRedirectOutputAsync(Renci.SshNet.SshCommand cmd, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
         {
             await Task.Run(() =>
             {
@@ -139,7 +158,7 @@ namespace VSMonoDebugger.SSH
             });
         }
 
-        private static Task RedirectStreamAsync(Func<string, Task> writeOutput, IAsyncResult asynch, Stream stream)
+        private Task RedirectStreamAsync(Func<string, Task> writeOutput, IAsyncResult asynch, Stream stream)
         {
             return Task.Run(async () =>
             {

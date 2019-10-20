@@ -82,7 +82,14 @@ namespace VSMonoDebugger.Views
         {
             if (ViewModel?.SettingsContainer?.CurrentUserSettings != null)
             {
-                ViewModel.SettingsContainer.CurrentUserSettings.PreDebugScriptWithParameters = "";
+                if (ViewModel.SettingsContainer.CurrentUserSettings.DeployAndDebugOnLocalWindowsSystem)
+                {
+                    ViewModel.SettingsContainer.CurrentUserSettings.PreDebugScriptWithParametersWindows = "";
+                }
+                else
+                {
+                    ViewModel.SettingsContainer.CurrentUserSettings.PreDebugScriptWithParameters = "";
+                }
             }
         }
 
@@ -90,7 +97,14 @@ namespace VSMonoDebugger.Views
         {
             if (ViewModel?.SettingsContainer?.CurrentUserSettings != null)
             {
-                ViewModel.SettingsContainer.CurrentUserSettings.DebugScriptWithParameters = "";
+                if (ViewModel.SettingsContainer.CurrentUserSettings.DeployAndDebugOnLocalWindowsSystem)
+                {
+                    ViewModel.SettingsContainer.CurrentUserSettings.DebugScriptWithParametersWindows = "";
+                }
+                else
+                {
+                    ViewModel.SettingsContainer.CurrentUserSettings.DebugScriptWithParameters = "";
+                }
             }
         }
         

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="VSMonoDebugger.Views.DebugSettings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="VSMonoDebugger Settings" Width="550" Height="460" ResizeMode="CanResizeWithGrip" MinHeight="375" MinWidth="375"
+        Title="VSMonoDebugger Settings" Width="550" Height="550" ResizeMode="CanResizeWithGrip" MinHeight="375" MinWidth="375"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
     <Grid Margin="5,15,5,5">
         <Grid.RowDefinitions>
@@ -15,7 +15,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Grid Grid.Row="0" Grid.ColumnSpan="3">
-            
+
             <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -27,7 +27,7 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Selected Connection:" VerticalAlignment="Center" Margin="5" />
-                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding SettingsContainer.DeviceConnections}" DisplayMemberPath="SSHFullUrl"  SelectedValue="{Binding SettingsContainer.SelectedId, Mode=TwoWay}" SelectedValuePath="Id" Margin="5" SelectionChanged="DeviceConnections_SelectionChanged"/>
+                <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding SettingsContainer.DeviceConnections}" DisplayMemberPath="FullDescription"  SelectedValue="{Binding SettingsContainer.SelectedId, Mode=TwoWay}" SelectedValuePath="Id" Margin="5" SelectionChanged="DeviceConnections_SelectionChanged"/>
                 <Button Grid.Row="0" Grid.Column="2" Click="Add" Margin="5" Padding="5,2">New</Button>
                 <Button Grid.Row="0" Grid.Column="3" Click="Delete" Margin="5" Padding="5,2">Remove</Button>
             </Grid>
@@ -36,6 +36,9 @@
             <TabItem Header="General">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -54,51 +57,92 @@
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" MinWidth="230"/>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Remote Host IP:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHHostIP}" Margin="5" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Description:" VerticalAlignment="Center" Margin="5" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.Description}" Margin="5" />
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Remote Host Port:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHPort}" Margin="5" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Debug/Deploy on local Windows:" VerticalAlignment="Center" Margin="5" />
+                    <CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding SettingsContainer.CurrentUserSettings.DeployAndDebugOnLocalWindowsSystem}" Margin="5" />
 
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="SSH User:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHUsername}"  Margin="5" />
-
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="SSH Password / key file passphrase:" VerticalAlignment="Center"  Margin="5" />
-                    <PasswordBox  Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SshPasswordBox" PasswordChanged="SshPasswordBox_PasswordChanged" Margin="5" />
-
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="SSH private key file (optional):" VerticalAlignment="Center"  Margin="5" />
-                    <Grid Grid.Row="5" Grid.Column="2" Grid.ColumnSpan="1">
+                    <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowSSHOptions}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" MinWidth="230"/>
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="{Binding SettingsContainer.CurrentUserSettings.SSHPrivateKeyFile}" x:Name="SshPrivateKeyFile" Margin="5,5,0,5"/>
-                        <Button Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" Click="Button_Click" Margin="0,5,5,5">...</Button>
+
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Remote Host IP:" VerticalAlignment="Center" Margin="5" />
+                        <TextBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHHostIP}" Margin="5" />
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="Remote Host Port:" VerticalAlignment="Center" Margin="5" />
+                        <TextBox Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHPort}" Margin="5" />
+
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="SSH User:" VerticalAlignment="Center" Margin="5" />
+                        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHUsername}"  Margin="5" />
+
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="SSH Password / key file passphrase:" VerticalAlignment="Center"  Margin="5" />
+                        <PasswordBox  Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" x:Name="SshPasswordBox" PasswordChanged="SshPasswordBox_PasswordChanged" Margin="5" />
+
+                        <TextBlock Grid.Row="7" Grid.Column="0" Text="SSH private key file (optional):" VerticalAlignment="Center"  Margin="5" />
+                        <Grid Grid.Row="7" Grid.Column="2" Grid.ColumnSpan="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="1" Text="{Binding SettingsContainer.CurrentUserSettings.SSHPrivateKeyFile}" x:Name="SshPrivateKeyFile" Margin="5,5,0,5"/>
+                            <Button Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="1" Click="Button_Click" Margin="0,5,5,5">...</Button>
+                        </Grid>
+
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="Deploy Path:" VerticalAlignment="Center" Margin="5" />
+                        <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHDeployPath}" Margin="5" />
                     </Grid>
+
+                    <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowWindowsOptions}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="230"/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="9" Grid.Column="0" Text="Local Deploy Path:" VerticalAlignment="Center" Margin="5" />
+                        <TextBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.WindowsDeployPath}" Margin="5" />
+                    </Grid>
+
+                    <!--<TextBlock Grid.Row="9" Grid.Column="0" Text="Use Deploy Path from Startup Project file if available:" VerticalAlignment="Center" Margin="5" />-->
+                    <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding SettingsContainer.CurrentUserSettings.UseDeployPathFromProjectFileIfExists}" Margin="5" 
+                              Content="Search 'Deploy Path' in 'PROJECTNAME.VSMonoDebugger.config' of the startup project."/>
 
                     <TextBlock Grid.Row="6" Grid.Column="0" Text="Mono Debug Port:" VerticalAlignment="Center" Margin="5" />
                     <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHMonoDebugPort}" Margin="5" />
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Remote Deploy Path:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHDeployPath}" Margin="5" />
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Max connection attempts:" VerticalAlignment="Center" Margin="5" />
+                    <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.MaxConnectionAttempts}" Margin="5" />
 
-                    <!--<TextBlock Grid.Row="8" Grid.Column="0" Text="Use Deploy Path from Startup Project file if available:" VerticalAlignment="Center" Margin="5" />-->
-                    <CheckBox Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding SettingsContainer.CurrentUserSettings.UseDeployPathFromProjectFileIfExists}" Margin="5" 
-                              Content="Search 'Deploy Path' in 'PROJECTNAME.VSMonoDebugger.config' of the startup project."/>
-                    
-                    <!--<TextBlock Grid.Row="6" Grid.Column="0" Text="pdb2mdb command:" VerticalAlignment="Center" Margin="5" />
-        <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHPdb2mdbCommand}" Margin="5" />-->
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Time between connection attempts (ms):" VerticalAlignment="Center" Margin="5" />
+                    <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.TimeBetweenConnectionAttemptsInMs}" Margin="5" />
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Debug connection Timeout:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHDebugConnectionTimeout}" Margin="5" />
-
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Redirect output:" VerticalAlignment="Center" Margin="5" />
-                    <ComboBox Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding AllRedirectOutputOptions}" SelectedValue="{Binding SettingsContainer.CurrentUserSettings.RedirectOutputOption, Mode=TwoWay}" Margin="5" SelectionChanged="RedirectOutputOption_SelectionChanged"/>
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Redirect output:" VerticalAlignment="Center" Margin="5" />
+                    <ComboBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding AllRedirectOutputOptions}" SelectedValue="{Binding SettingsContainer.CurrentUserSettings.RedirectOutputOption, Mode=TwoWay}" Margin="5" SelectionChanged="RedirectOutputOption_SelectionChanged"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Debug script">
@@ -116,10 +160,12 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Row="0" Grid.Column="0" Text="Pre-Debug script (To kill previous debugging session):" VerticalAlignment="Center" Margin="5" />
                     <Button Grid.Row="0" Grid.Column="1" MinWidth="100" Click="SetDefaultPreDebugScript" Margin="5" Padding="5,2">Set default Pre-Debug script</Button>
-                    <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Text="{Binding SettingsContainer.CurrentUserSettings.PreDebugScriptWithParameters}"/>
+                    <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Text="{Binding SettingsContainer.CurrentUserSettings.PreDebugScriptWithParameters}" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowSSHOptions}"/>
+                    <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Text="{Binding SettingsContainer.CurrentUserSettings.PreDebugScriptWithParametersWindows}" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowWindowsOptions}"/>
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Debug script (Start mono debugger):" VerticalAlignment="Center" Margin="5" />
                     <Button Grid.Row="2" Grid.Column="1" MinWidth="100" Click="SetDefaultDebugScript" Margin="5" Padding="5,2">Set default Debug script</Button>
-                    <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Text="{Binding SettingsContainer.CurrentUserSettings.DebugScriptWithParameters}"/>
+                    <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Text="{Binding SettingsContainer.CurrentUserSettings.DebugScriptWithParameters}" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowSSHOptions}"/>
+                    <TextBox Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Text="{Binding SettingsContainer.CurrentUserSettings.DebugScriptWithParametersWindows}" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowWindowsOptions}"/>
                     <Expander Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" 
                               Name="myExpander" 
                               Header="Script information" 
