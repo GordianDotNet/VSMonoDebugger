@@ -144,7 +144,8 @@ namespace VSMonoDebugger.Settings
         {
             get
             {
-                return string.IsNullOrWhiteSpace(_preDebugScriptWithParameters) ? DefaultPreDebugScriptWithParameters : _preDebugScriptWithParameters;
+                return _preDebugScriptWithParameters;
+                //return string.IsNullOrWhiteSpace(_preDebugScriptWithParameters) ? DefaultPreDebugScriptWithParameters : _preDebugScriptWithParameters;
             }
             set
             {
@@ -158,7 +159,8 @@ namespace VSMonoDebugger.Settings
         {
             get
             {
-                return string.IsNullOrWhiteSpace(_debugScriptWithParameters) ? DefaultDebugScriptWithParameters : _debugScriptWithParameters;
+                return _debugScriptWithParameters;
+                //return string.IsNullOrWhiteSpace(_debugScriptWithParameters) ? DefaultDebugScriptWithParameters : _debugScriptWithParameters;
             }
             set
             {
@@ -192,7 +194,8 @@ namespace VSMonoDebugger.Settings
         {
             get
             {
-                return string.IsNullOrWhiteSpace(_preDebugScriptWithParametersWindows) ? DefaultPreDebugScriptWithParametersWindows : _preDebugScriptWithParametersWindows;
+                return _preDebugScriptWithParametersWindows;
+                //return string.IsNullOrWhiteSpace(_preDebugScriptWithParametersWindows) ? DefaultPreDebugScriptWithParametersWindows : _preDebugScriptWithParametersWindows;
             }
             set
             {
@@ -206,7 +209,8 @@ namespace VSMonoDebugger.Settings
         {
             get
             {
-                return string.IsNullOrWhiteSpace(_debugScriptWithParametersWindows) ? DefaultDebugScriptWithParametersWindows : _debugScriptWithParametersWindows;
+                return _debugScriptWithParametersWindows;
+                //return string.IsNullOrWhiteSpace(_debugScriptWithParametersWindows) ? DefaultDebugScriptWithParametersWindows : _debugScriptWithParametersWindows;
             }
             set
             {
