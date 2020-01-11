@@ -11,32 +11,32 @@ namespace VSMonoDebugger.SSH
 {
     public class LocalWindowsDebugger : IDebugger
     {
-        public async Task<Task> DeployRunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public Task<bool> DeployRunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
             NLogService.TraceEnteringMethod();
-            await writeOutput("Start DeployRunAndDebug locally ...");
+            writeOutput("Start DeployRunAndDebug locally ...");
             return StartDebuggerAsync(debugOptions, true, true, writeOutput, redirectOutputOption);
         }
 
-        public async Task<Task> DeployAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public Task<bool> DeployAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
             NLogService.TraceEnteringMethod();
-            await writeOutput("Start Deploy locally ...");
+            writeOutput("Start Deploy locally ...");
             return StartDebuggerAsync(debugOptions, true, false, writeOutput, redirectOutputOption);
         }
 
-        public async Task<Task> RunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public Task<bool> RunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
             NLogService.TraceEnteringMethod();
-            await writeOutput("Start RunAndDebug locally ...");
+            writeOutput("Start RunAndDebug locally ...");
             return StartDebuggerAsync(debugOptions, false, true, writeOutput, redirectOutputOption);
         }
 
-        private Task<Task> StartDebuggerAsync(DebugOptions debugOptions, bool deploy, bool debug, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
+        private Task<bool> StartDebuggerAsync(DebugOptions debugOptions, bool deploy, bool debug, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
         {
             NLogService.TraceEnteringMethod();
 
-            return Task.Run<Task>(async () =>
+            return Task.Run<bool>(async () =>
             {
                 var errorHelpText = new StringBuilder();
                 Action<string> writeLineOutput = s => writeOutput(s + Environment.NewLine).Wait();
@@ -61,7 +61,7 @@ namespace VSMonoDebugger.SSH
 
                         errorHelpText.AppendLine($"Local: Start deployment from '{debugOptions.OutputDirectory}' to '{destinationDirectory}'.");
                         Directory.CreateDirectory(destinationDirectory);
-                        DirectoryCopy(debugOptions.OutputDirectory, destinationDirectory, copySubDirs: true, overwrite: true);
+                        DirectoryCopy(debugOptions.OutputDirectory, destinationDirectory, copySubDirs: true, overwrite: true, writeOutput: writeOutput);
                         errorHelpText.AppendLine($"Local Deployment was successful.");                        
                     }
 
@@ -114,6 +114,8 @@ namespace VSMonoDebugger.SSH
                     await writeOutput(additionalErrorMessage);
                     throw new Exception(additionalErrorMessage, ex);
                 }
+
+                return true;
             });
         }
 
@@ -159,7 +161,7 @@ namespace VSMonoDebugger.SSH
             });
         }
 
-        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, bool overwrite)
+        private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, bool overwrite, Func<string, Task> writeOutput)
         {
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
@@ -183,7 +185,14 @@ namespace VSMonoDebugger.SSH
             foreach (FileInfo file in files)
             {
                 string temppath = Path.Combine(destDirName, file.Name);
-                file.CopyTo(temppath, overwrite);
+                try
+                {
+                    file.CopyTo(temppath, overwrite);
+                }
+                catch (Exception ex)
+                {
+                    writeOutput($"Couldn't copy/overwrite file '{temppath}' (source: {file.FullName}) - Ex: {ex.Message}");
+                }
             }
 
             // If copying subdirectories, copy them and their contents to new location.
@@ -192,7 +201,7 @@ namespace VSMonoDebugger.SSH
                 foreach (DirectoryInfo subdir in dirs)
                 {
                     string temppath = Path.Combine(destDirName, subdir.Name);
-                    DirectoryCopy(subdir.FullName, temppath, copySubDirs, overwrite);
+                    DirectoryCopy(subdir.FullName, temppath, copySubDirs, overwrite, writeOutput);
                 }
             }
         }

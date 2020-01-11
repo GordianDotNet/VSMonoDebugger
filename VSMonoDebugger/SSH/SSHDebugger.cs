@@ -12,11 +12,11 @@ namespace VSMonoDebugger.SSH
 {
     public interface IDebugger
     {
-        Task<Task> DeployRunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None);
+        Task<bool> DeployRunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None);
 
-        Task<Task> DeployAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None);
+        Task<bool> DeployAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None);
 
-        Task<Task> RunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None);
+        Task<bool> RunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None);
     }
 
     public class SSHDebugger : IDebugger
@@ -28,32 +28,32 @@ namespace VSMonoDebugger.SSH
             _sshOptions = options;
         }
 
-        public async Task<Task> DeployRunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public Task<bool> DeployRunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
             NLogService.TraceEnteringMethod();
-            await writeOutput("Start DeployRunAndDebug over SSH ...");
+            writeOutput("Start DeployRunAndDebug over SSH ...");
             return StartDebuggerAsync(_sshOptions, debugOptions, true, true, writeOutput, redirectOutputOption);
         }
 
-        public async Task<Task> DeployAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public Task<bool> DeployAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
             NLogService.TraceEnteringMethod();
-            await writeOutput("Start Deploy over SSH ...");
+            writeOutput("Start Deploy over SSH ...");
             return StartDebuggerAsync(_sshOptions, debugOptions, true, false, writeOutput, redirectOutputOption);
         }
 
-        public async Task<Task> RunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
+        public Task<bool> RunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
             NLogService.TraceEnteringMethod();
-            await writeOutput("Start RunAndDebug over SSH ...");
+            writeOutput("Start RunAndDebug over SSH ...");
             return StartDebuggerAsync(_sshOptions, debugOptions, false, true, writeOutput, redirectOutputOption);
         }
 
-        private Task<Task> StartDebuggerAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, bool deploy, bool debug, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
+        private Task<bool> StartDebuggerAsync(SshDeltaCopy.Options options, DebugOptions debugOptions, bool deploy, bool debug, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
         {
             NLogService.TraceEnteringMethod();
 
-            return Task.Run<Task>(async () =>
+            return Task.Run<bool>(async () =>
             {
                 var errorHelpText = new StringBuilder();
                 Action<string> writeLineOutput = s => writeOutput(s + Environment.NewLine).Wait();
@@ -129,6 +129,8 @@ namespace VSMonoDebugger.SSH
                     await writeOutput(additionalErrorMessage);
                     throw new Exception(additionalErrorMessage, ex);
                 }
+
+                return true;
             });
         }
 

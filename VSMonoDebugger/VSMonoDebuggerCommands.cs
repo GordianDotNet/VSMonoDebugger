@@ -66,6 +66,7 @@ namespace VSMonoDebugger
                 menuCommand.BeforeQueryStatus += check;
             }
             mcs.AddCommand(menuCommand);
+
             return menuCommand;
         }
     }
