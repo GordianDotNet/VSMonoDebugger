@@ -137,6 +137,30 @@ namespace VSMonoDebugger.Settings
 
         #endregion
 
+        public void SetDefaultPreDebugScript()
+        {
+            if (DeployAndDebugOnLocalWindowsSystem)
+            {
+                PreDebugScriptWithParametersWindows = DefaultPreDebugScriptWithParametersWindows;
+            }
+            else
+            {
+                PreDebugScriptWithParameters = DefaultPreDebugScriptWithParameters;
+            }
+        }
+
+        public void SetDefaultDebugScript()
+        {
+            if (DeployAndDebugOnLocalWindowsSystem)
+            {
+                DebugScriptWithParametersWindows = DefaultDebugScriptWithParametersWindows;
+            }
+            else
+            {
+                DebugScriptWithParameters = DefaultDebugScriptWithParameters;
+            }
+        }
+
         #region Debug scripts Linux
 
         private string _preDebugScriptWithParameters;
@@ -187,7 +211,7 @@ namespace VSMonoDebugger.Settings
 
         #endregion
 
-        #region Debug scripts Windows
+        #region Debug scripts Windows        
 
         private string _preDebugScriptWithParametersWindows;
         public string PreDebugScriptWithParametersWindows
@@ -223,7 +247,7 @@ namespace VSMonoDebugger.Settings
         {
             get
             {
-                return $"taskkill /IM mono.exe /F";
+                return $"#WARNING: This will kill all mono processes\ntaskkill /IM mono.exe /F";
             }
         }
 

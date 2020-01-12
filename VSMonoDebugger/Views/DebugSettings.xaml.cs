@@ -80,32 +80,12 @@ namespace VSMonoDebugger.Views
 
         private void SetDefaultPreDebugScript(object sender, RoutedEventArgs e)
         {
-            if (ViewModel?.SettingsContainer?.CurrentUserSettings != null)
-            {
-                if (ViewModel.SettingsContainer.CurrentUserSettings.DeployAndDebugOnLocalWindowsSystem)
-                {
-                    ViewModel.SettingsContainer.CurrentUserSettings.PreDebugScriptWithParametersWindows = "";
-                }
-                else
-                {
-                    ViewModel.SettingsContainer.CurrentUserSettings.PreDebugScriptWithParameters = "";
-                }
-            }
+            ViewModel?.SettingsContainer?.CurrentUserSettings?.SetDefaultPreDebugScript();
         }
 
         private void SetDefaultDebugScript(object sender, RoutedEventArgs e)
         {
-            if (ViewModel?.SettingsContainer?.CurrentUserSettings != null)
-            {
-                if (ViewModel.SettingsContainer.CurrentUserSettings.DeployAndDebugOnLocalWindowsSystem)
-                {
-                    ViewModel.SettingsContainer.CurrentUserSettings.DebugScriptWithParametersWindows = "";
-                }
-                else
-                {
-                    ViewModel.SettingsContainer.CurrentUserSettings.DebugScriptWithParameters = "";
-                }
-            }
+            ViewModel?.SettingsContainer?.CurrentUserSettings?.SetDefaultDebugScript();
         }
         
         private void Button_Click(object sender, RoutedEventArgs e)
