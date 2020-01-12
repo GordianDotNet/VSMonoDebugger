@@ -163,6 +163,12 @@ namespace VSMonoDebugger.SSH
 
         private static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, bool overwrite, Func<string, Task> writeOutput)
         {
+            if (Path.GetFullPath(sourceDirName) == Path.GetFullPath(destDirName))
+            {
+                writeOutput($"Ignore copy. SourceDirectory and DestinationDirectory are equal: '{sourceDirName}' == '{destDirName}'");
+                return;
+            }
+
             // Get the subdirectories for the specified directory.
             DirectoryInfo dir = new DirectoryInfo(sourceDirName);
 
