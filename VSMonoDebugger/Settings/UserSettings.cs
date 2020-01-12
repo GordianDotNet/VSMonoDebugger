@@ -278,7 +278,7 @@ namespace VSMonoDebugger.Settings
         {
             get
             {
-                return $@"1) An empty script will replaced by the default script.
+                return $@"1) You can and should adapt the scripts if the commands are not supported.
 2) Windows new line '\r\n' will be replaced by '\n'.
 3) You can use following Parameters in the debug scripts:
 {MONO_DEBUG_PORT} = Will be replaced by the mono debug port.
