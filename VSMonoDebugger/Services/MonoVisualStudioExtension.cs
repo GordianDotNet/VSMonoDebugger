@@ -154,6 +154,9 @@ namespace VSMonoDebugger
             }
             catch (Exception ex)
             {
+                // *.VSMonoDebugger.config can contain illigal escape characters for WindowsPath "C:\Temp" => "C:\\Temp"
+                // Don't fix it ... user has to be json conform
+                LogInfo("Please validate that the local project config file (*.VSMonoDebugger.config) conatins no illigal escape character sequences for WindowsDeployPath!");
                 LogError(ex);
             }
 
@@ -425,7 +428,7 @@ namespace VSMonoDebugger
 
         private string ReplaceDebugParameters(string scriptWithParameters, UserSettings settings, string targetExeFileName, string startArguments, string endOfLine)
         {
-            return scriptWithParameters
+            return (scriptWithParameters ?? string.Empty)
                 .Replace(settings.MONO_DEBUG_PORT, settings.SSHMonoDebugPort.ToString())
                 .Replace(settings.TARGET_EXE_FILENAME, targetExeFileName)
                 .Replace(settings.START_ARGUMENTS, startArguments)
