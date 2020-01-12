@@ -120,5 +120,28 @@ namespace VSMonoDebugger.Views
                 }
             }
         }
+
+        private const string DialogFilter = "Settings.VSMonoDebugger json files (*.VSMonoDebugger.json)|*.VSMonoDebugger.json|All files (*.*)|*.*";
+
+        private void SaveAs(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SaveFileDialog();
+            dialog.FileName = "Settings.VSMonoDebugger.json";
+            dialog.Filter = DialogFilter;
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ViewModel?.SaveAsDebugSettings(dialog.FileName);
+            }
+        }
+
+        private void LoadFrom(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog();
+            dialog.Filter = DialogFilter;
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ViewModel?.LoadFromDebugSettings(dialog.FileName);
+            }            
+        }
     }
 }

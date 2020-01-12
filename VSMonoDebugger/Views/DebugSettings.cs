@@ -20,6 +20,16 @@ namespace VSMonoDebugger.Views
             UserSettingsManager.Instance.Save(_settingsContainer);
         }
 
+        public void LoadFromDebugSettings(string path)
+        {
+            SettingsContainer = UserSettingsManager.Instance.LoadFromPath(path);
+        }
+
+        public void SaveAsDebugSettings(string path)
+        {
+            UserSettingsManager.Instance.SaveAs(_settingsContainer, path);
+        }
+
         public UserSettingsContainer SettingsContainer
         {
             get

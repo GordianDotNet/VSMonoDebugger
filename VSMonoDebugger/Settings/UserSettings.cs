@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Windows;
 using VSMonoDebugger.Views;
 
@@ -14,7 +15,6 @@ namespace VSMonoDebugger.Settings
 
             Description = "";
             LastIp = "127.0.0.1";
-            LastTimeout = 10000;
 
             SSHHostIP = "127.0.0.1";
             SSHPort = 22;
@@ -32,6 +32,11 @@ namespace VSMonoDebugger.Settings
             MaxConnectionAttempts = 10;
             TimeBetweenConnectionAttemptsInMs = 1000;
             RedirectOutputOption = RedirectOutputOptions.RedirectStandardOutput;
+
+            PreDebugScriptWithParametersWindows = DefaultPreDebugScriptWithParametersWindows;
+            PreDebugScriptWithParameters = DefaultPreDebugScriptWithParameters;
+            DebugScriptWithParametersWindows = DefaultDebugScriptWithParametersWindows;
+            DebugScriptWithParameters = DefaultDebugScriptWithParameters;
         }
 
         #region General
@@ -44,9 +49,6 @@ namespace VSMonoDebugger.Settings
 
         private string _lastIp;
         public string LastIp { get => _lastIp; set { _lastIp = value; NotifyPropertyChanged(); } }
-
-        private int _lastTimeout;
-        public int LastTimeout { get => _lastTimeout; set { _lastTimeout = value; NotifyPropertyChanged(); } }
 
         public string FullDescription
         {
@@ -193,6 +195,7 @@ namespace VSMonoDebugger.Settings
             }
         }
 
+        [JsonIgnore]
         public string DefaultPreDebugScriptWithParameters
         {
             get
@@ -201,6 +204,7 @@ namespace VSMonoDebugger.Settings
             }
         }
 
+        [JsonIgnore]
         public string DefaultDebugScriptWithParameters
         {
             get
@@ -243,6 +247,7 @@ namespace VSMonoDebugger.Settings
             }
         }
 
+        [JsonIgnore]
         public string DefaultPreDebugScriptWithParametersWindows
         {
             get
@@ -251,6 +256,7 @@ namespace VSMonoDebugger.Settings
             }
         }
 
+        [JsonIgnore]
         public string DefaultDebugScriptWithParametersWindows
         {
             get
@@ -267,6 +273,7 @@ namespace VSMonoDebugger.Settings
         public readonly string TARGET_EXE_FILENAME = "$(TARGET_EXE_FILENAME)";
         public readonly string START_ARGUMENTS = "$(START_ARGUMENTS)";
 
+        [JsonIgnore]
         public string SupportedScriptParameters
         {
             get

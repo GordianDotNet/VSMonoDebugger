@@ -46,6 +46,7 @@ namespace VSMonoDebugger.Settings
 
         private UserSettings _currentUserSettings;
 
+        [JsonIgnore]
         public UserSettings CurrentUserSettings
         {
             get
@@ -60,7 +61,7 @@ namespace VSMonoDebugger.Settings
 
         public string SerializeToJson()
         {
-            string json = JsonConvert.SerializeObject(this);
+            string json = JsonConvert.SerializeObject(this, Formatting.Indented);
             return json;
         }
 

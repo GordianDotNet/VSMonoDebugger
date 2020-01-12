@@ -13,8 +13,10 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Grid Grid.Row="0" Grid.ColumnSpan="3">
+        <Grid Grid.Row="0" Grid.ColumnSpan="5">
 
             <Grid Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2">
                 <Grid.RowDefinitions>
@@ -32,7 +34,7 @@
                 <Button Grid.Row="0" Grid.Column="3" Click="Delete" Margin="5" Padding="5,2">Remove</Button>
             </Grid>
         </Grid>
-        <TabControl Grid.Row="1" Grid.ColumnSpan="3">
+        <TabControl Grid.Row="1" Grid.ColumnSpan="5">
             <TabItem Header="General">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -177,5 +179,7 @@
         </TabControl>
         <Button Grid.Row="10" Grid.Column="0" MinWidth="100" Click="Save" Margin="5" >Save</Button>
         <Button Grid.Row="10" Grid.Column="1" MinWidth="100" Click="Cancel" Margin="5" >Cancel</Button>
+        <Button Grid.Row="10" Grid.Column="3" MinWidth="100" Click="SaveAs" Margin="5" >Save to file ...</Button>
+        <Button Grid.Row="10" Grid.Column="4" MinWidth="100" Click="LoadFrom" Margin="5" >Load from file ...</Button>
     </Grid>
 </Window>

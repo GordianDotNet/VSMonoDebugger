@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Settings;
 using NLog;
 using System;
+using System.IO;
 
 namespace VSMonoDebugger.Settings
 {
@@ -46,6 +47,30 @@ namespace VSMonoDebugger.Settings
                 _settingsStore.CreateCollection(SETTINGS_STORE_NAME);
             }
             _settingsStore.SetString(SETTINGS_STORE_NAME, "Settings", json);
+        }
+
+        public void SaveAs(UserSettingsContainer settings, string path)
+        {
+            var json = settings.SerializeToJson();
+            File.WriteAllText(path, json);
+        }
+
+        public UserSettingsContainer LoadFromPath(string path)
+        {
+            var result = new UserSettingsContainer();
+
+            try
+            {
+                var content = File.ReadAllText(path);
+                result = UserSettingsContainer.DeserializeFromJson(content);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(ex);
+            }
+
+            return result;
         }
 
         public static UserSettingsManager Instance { get; } = new UserSettingsManager();
