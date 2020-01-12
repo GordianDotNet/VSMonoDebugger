@@ -6,6 +6,8 @@ VSMonoDebugger
 Enables Visual Studio 2017 and 2019 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.
 Local debugging under Windows with Mono installed is now also supported.
 
+**For bugs with the latest version, an older version can be found here:** [MarketplaceReleases](https://github.com/GordianDotNet/VSMonoDebugger/tree/master/MarketplaceReleases)
+
 # Usage
 
 ## Visual Studio 2019 Support
