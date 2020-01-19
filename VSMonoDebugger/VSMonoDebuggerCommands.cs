@@ -3,6 +3,7 @@ using System.ComponentModel.Design;
 using System.Globalization;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using NLog;
 
 namespace VSMonoDebugger
 {
@@ -11,6 +12,8 @@ namespace VSMonoDebugger
     /// </summary>
     internal sealed partial class VSMonoDebuggerCommands
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         #region CommandID from VSMonoDebuggerPackage.vsct
         public sealed class CommandIds
         {

@@ -25,6 +25,8 @@ namespace VSMonoDebugger
         /// </summary>
         public readonly static string VS_PROJECTKIND_SOLUTION_FOLDER = "{66A26720-8FB5-11D2-AA7E-00C04F688DDE}";
 
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private DTE _dte;
         private CommandEvents _startCommandEvents;
         private readonly ErrorListProvider _errorListProvider;
@@ -38,7 +40,7 @@ namespace VSMonoDebugger
 
         public async Task OverrideRunCommandAsync()
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
@@ -52,14 +54,14 @@ namespace VSMonoDebugger
 
         private void OnBeforeStartCommand(string guid, int id, object customIn, object customOut, ref bool cancelDefault)
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
 
             //your event handler this command
         }
 
         public async Task BuildStartupProjectAsync()
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
             
@@ -123,7 +125,7 @@ namespace VSMonoDebugger
 
         public bool IsStartupProjectAvailable()
         {
-            NLogService.TraceEnteringMethod();
+            //NLogService.TraceEnteringMethod(Logger);
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -133,7 +135,7 @@ namespace VSMonoDebugger
 
         public VSMonoDebuggerProjectSettings? GetProjectSettingsFromStartupProject()
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
 
             try
             {
@@ -310,7 +312,7 @@ namespace VSMonoDebugger
         
         public void AttachDebuggerToRunningProcess(DebugOptions debugOptions)
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -397,7 +399,7 @@ namespace VSMonoDebugger
         
         public DebugOptions CreateDebugOptions(UserSettings settings)
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
 
             ThreadHelper.ThrowIfNotOnUIThread();
 
@@ -437,7 +439,7 @@ namespace VSMonoDebugger
 
         public async Task CreateMdbForAllDependantProjectsAsync(Action<string> msgOutput)
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
 
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 

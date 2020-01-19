@@ -15,11 +15,11 @@ namespace VSMonoDebugger.Services
     {
         public static string LoggerPath { get; private set; }
 
-        public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public static void TraceEnteringMethod([CallerMemberName] string callerMember = "", [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
+        public static void TraceEnteringMethod(Logger logger, [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
         {
-            Logger.Trace($"Entering: {callerMember} - {Path.GetFileName(callerFilePath)}({callerLineNumber})");
+            (logger ?? Logger).Trace($"Entering: {callerMember} - {Path.GetFileName(callerFilePath)}({callerLineNumber})");
         }
 
         public static void Setup(string logFilename)

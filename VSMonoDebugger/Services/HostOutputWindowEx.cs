@@ -7,11 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using NLog;
 
 namespace VSMonoDebugger.Services
 {
     public static class HostOutputWindowEx
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public static VSErrorTextWriter LogInstance { get; internal set; } = new VSErrorTextWriter();
 
         // Use an extra class so that we have a seperate class which depends on VS interfaces
@@ -53,7 +56,7 @@ namespace VSMonoDebugger.Services
             }
             catch (Exception ex)
             {
-                NLogService.Logger.Error(ex);
+                Logger.Error(ex);
             }
         }
 
@@ -66,7 +69,7 @@ namespace VSMonoDebugger.Services
             }
             catch (Exception ex)
             {
-                NLogService.Logger.Error(ex);
+                Logger.Error(ex);
             }
         }
 

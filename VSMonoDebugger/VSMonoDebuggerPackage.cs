@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using NLog;
 using System;
 using System.ComponentModel.Design;
 using System.Diagnostics.CodeAnalysis;
@@ -35,6 +36,8 @@ namespace VSMonoDebugger
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class VSMonoDebuggerPackage : AsyncPackage
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         /// VSMonoDebuggerPackage GUID string.
         /// </summary>
@@ -91,11 +94,11 @@ namespace VSMonoDebugger
                 OLEMSGBUTTON.OLEMSGBUTTON_OK,
                 OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
 
-                NLogService.Logger.Error(uex);
+                Logger.Error(uex);
             }
             catch (Exception ex)
             {
-                NLogService.Logger.Error(ex);
+                Logger.Error(ex);
             }
 
             await base.InitializeAsync(cancellationToken, progress);

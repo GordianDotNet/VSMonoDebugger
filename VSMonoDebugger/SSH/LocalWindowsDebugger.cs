@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,30 +12,32 @@ namespace VSMonoDebugger.SSH
 {
     public class LocalWindowsDebugger : IDebugger
     {
+        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public Task<bool> DeployRunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
             writeOutput("Start DeployRunAndDebug locally ...");
             return StartDebuggerAsync(debugOptions, true, true, writeOutput, redirectOutputOption);
         }
 
         public Task<bool> DeployAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
             writeOutput("Start Deploy locally ...");
             return StartDebuggerAsync(debugOptions, true, false, writeOutput, redirectOutputOption);
         }
 
         public Task<bool> RunAndDebugAsync(DebugOptions debugOptions, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption = RedirectOutputOptions.None)
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
             writeOutput("Start RunAndDebug locally ...");
             return StartDebuggerAsync(debugOptions, false, true, writeOutput, redirectOutputOption);
         }
 
         private Task<bool> StartDebuggerAsync(DebugOptions debugOptions, bool deploy, bool debug, Func<string, Task> writeOutput, RedirectOutputOptions redirectOutputOption)
         {
-            NLogService.TraceEnteringMethod();
+            NLogService.TraceEnteringMethod(Logger);
 
             return Task.Run<bool>(async () =>
             {
@@ -57,7 +60,7 @@ namespace VSMonoDebugger.SSH
 
                     if (deploy)
                     {
-                        NLogService.Logger.Info($"StartDebuggerAsync - deploy");
+                        Logger.Info($"StartDebuggerAsync - deploy");
 
                         errorHelpText.AppendLine($"Local: Start deployment from '{debugOptions.OutputDirectory}' to '{destinationDirectory}'.");
                         Directory.CreateDirectory(destinationDirectory);
@@ -67,13 +70,13 @@ namespace VSMonoDebugger.SSH
 
                     if (debug)
                     {
-                        NLogService.Logger.Info($"StartDebuggerAsync - debug");
+                        Logger.Info($"StartDebuggerAsync - debug");
 
                         var killCommandText = debugOptions.PreDebugScript;
 
                         errorHelpText.AppendLine($"Local: Stop previous mono processes with the PreDebugScript");
                         errorHelpText.AppendLine(killCommandText);
-                        NLogService.Logger.Info($"Run PreDebugScript: {killCommandText}");
+                        Logger.Info($"Run PreDebugScript: {killCommandText}");
 
                         PowershellExecuter.RunScript(killCommandText, destinationDirectory, writeLineOutput, redirectOutputOption);
 
@@ -82,14 +85,14 @@ namespace VSMonoDebugger.SSH
                         //{
                         //    var error = $"SSH script error in PreDebugScript:\n{killCommand.CommandText}\n{killCommand.Error}";
                         //    //errorHelpText.AppendLine(error);
-                        //    NLogService.Logger.Error(error);
+                        //    Logger.Error(error);
                         //}
 
                         var monoDebugCommand = debugOptions.DebugScript;
 
                         errorHelpText.AppendLine($"Local: Start mono debugger");
                         errorHelpText.AppendLine(monoDebugCommand);
-                        NLogService.Logger.Info($"Run DebugScript: {monoDebugCommand}");
+                        Logger.Info($"Run DebugScript: {monoDebugCommand}");
 
                         // TODO if DebugScript fails no error is shown - very bad!
                         await writeOutput(errorHelpText.ToString());
@@ -102,7 +105,7 @@ namespace VSMonoDebugger.SSH
                         //{
                         //    var error = $"SSH script error in DebugScript:\n{cmd.CommandText}\n{cmd.Error}";
                         //    //errorHelpText.AppendLine(error);
-                        //    NLogService.Logger.Error(error);
+                        //    Logger.Error(error);
 
                         //    throw new Exception(error);
                         //}

@@ -176,11 +176,11 @@ namespace VSMonoDebugger
             // TODO stop monoRemoteSshDebugTask properly
             try
             {
-                NLogService.Logger.Info($"===== {nameof(DeployAndRunCommandOverSSHAsync)} =====");
+                Logger.Info($"===== {nameof(DeployAndRunCommandOverSSHAsync)} =====");
 
                 if (!_monoExtension.IsStartupProjectAvailable())
                 {
-                    NLogService.Logger.Info($"No startup project/solution loaded yet.");
+                    Logger.Info($"No startup project/solution loaded yet.");
                     return false;
                 }
 
@@ -229,7 +229,7 @@ namespace VSMonoDebugger
             catch (Exception ex)
             {
                 await HostOutputWindowEx.WriteLineLaunchErrorAsync(ex.Message);
-                NLogService.Logger.Error(ex);
+                Logger.Error(ex);
                 MessageBox.Show(ex.Message, "VSMonoDebugger", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
@@ -252,19 +252,19 @@ namespace VSMonoDebugger
                     {
                         if (!string.IsNullOrWhiteSpace(localProjectConfig.Value.SSHDeployPath))
                         {
-                            NLogService.Logger.Info($"SSHDeployPath = {settings.SSHDeployPath} was overwritten with local *.VSMonoDebugger.config: {localProjectConfig.Value.SSHDeployPath}");
+                            Logger.Info($"SSHDeployPath = {settings.SSHDeployPath} was overwritten with local *.VSMonoDebugger.config: {localProjectConfig.Value.SSHDeployPath}");
                             settings.SSHDeployPath = localProjectConfig.Value.SSHDeployPath;
                         }
                         if (!string.IsNullOrWhiteSpace(localProjectConfig.Value.WindowsDeployPath))
                         {
-                            NLogService.Logger.Info($"WindowsDeployPath = {settings.WindowsDeployPath} was overwritten with local *.VSMonoDebugger.config: {localProjectConfig.Value.WindowsDeployPath}");
+                            Logger.Info($"WindowsDeployPath = {settings.WindowsDeployPath} was overwritten with local *.VSMonoDebugger.config: {localProjectConfig.Value.WindowsDeployPath}");
                             settings.WindowsDeployPath = localProjectConfig.Value.WindowsDeployPath;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    NLogService.Logger.Error(ex);
+                    Logger.Error(ex);
                 }               
             }            
 
@@ -288,11 +288,11 @@ namespace VSMonoDebugger
         {
             try
             {
-                NLogService.Logger.Info($"===== {nameof(BuildProjectWithMDBFilesAsync)} =====");
+                Logger.Info($"===== {nameof(BuildProjectWithMDBFilesAsync)} =====");
 
                 if (!_monoExtension.IsStartupProjectAvailable())
                 {
-                    NLogService.Logger.Info($"No startup project/solution loaded yet.");
+                    Logger.Info($"No startup project/solution loaded yet.");
                     return false;
                 }
 
@@ -307,7 +307,7 @@ namespace VSMonoDebugger
             catch (Exception ex)
             {
                 await HostOutputWindowEx.WriteLineLaunchErrorAsync(ex.Message);
-                NLogService.Logger.Error(ex);
+                Logger.Error(ex);
                 MessageBox.Show(ex.Message, "VSMonoDebugger", MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
