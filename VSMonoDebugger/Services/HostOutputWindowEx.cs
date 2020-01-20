@@ -56,7 +56,7 @@ namespace VSMonoDebugger.Services
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                NLogService.LogError(Logger, ex);
             }
         }
 
@@ -69,7 +69,7 @@ namespace VSMonoDebugger.Services
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                NLogService.LogError(Logger, ex);
             }
         }
 

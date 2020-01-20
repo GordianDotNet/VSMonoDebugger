@@ -72,6 +72,9 @@ namespace VSMonoDebugger.Settings
         private bool _useDeployPathFromProjectFileIfExists;
         public bool UseDeployPathFromProjectFileIfExists { get => _useDeployPathFromProjectFileIfExists; set { _useDeployPathFromProjectFileIfExists = value; NotifyPropertyChanged(); } }
 
+        private bool _enableVerboseDebugLogging;
+        public bool EnableVerboseDebugLogging { get => _enableVerboseDebugLogging; set { _enableVerboseDebugLogging = value; NotifyPropertyChanged(); } }
+
         #endregion
 
         #region SSH properties

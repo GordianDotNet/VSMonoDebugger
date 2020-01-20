@@ -1,7 +1,7 @@
 ﻿<Window x:Class="VSMonoDebugger.Views.DebugSettings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="VSMonoDebugger Settings" Width="550" Height="550" ResizeMode="CanResizeWithGrip" MinHeight="375" MinWidth="375"
+        Title="VSMonoDebugger Settings" Width="550" Height="570" ResizeMode="CanResizeWithGrip" MinHeight="375" MinWidth="375"
         WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
     <Grid Margin="5,15,5,5">
         <Grid.RowDefinitions>
@@ -145,6 +145,9 @@
 
                     <TextBlock Grid.Row="9" Grid.Column="0" Text="Redirect output:" VerticalAlignment="Center" Margin="5" />
                     <ComboBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding AllRedirectOutputOptions}" SelectedValue="{Binding SettingsContainer.CurrentUserSettings.RedirectOutputOption, Mode=TwoWay}" Margin="5" SelectionChanged="RedirectOutputOption_SelectionChanged"/>
+
+                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Enable verbose debug logging:" VerticalAlignment="Center" Margin="5" />
+                    <CheckBox Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding SettingsContainer.CurrentUserSettings.EnableVerboseDebugLogging}" Margin="5" />
                 </Grid>
             </TabItem>
             <TabItem Header="Debug script">

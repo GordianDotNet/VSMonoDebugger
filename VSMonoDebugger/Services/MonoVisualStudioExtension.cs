@@ -30,7 +30,6 @@ namespace VSMonoDebugger
         private DTE _dte;
         private CommandEvents _startCommandEvents;
         private readonly ErrorListProvider _errorListProvider;
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
         public MonoVisualStudioExtension(Package package, DTE dte)
         {
@@ -91,13 +90,13 @@ namespace VSMonoDebugger
                 var activeConfiguration = _dte.Solution.SolutionBuild.ActiveConfiguration;
                 var activeConfigurationName = activeConfiguration.Name;
                 var startProjectName = startProject.FullName;
-                LogInfo($"BuildProject {startProject.FullName} {activeConfiguration.Name}");
+                Logger.Info($"BuildProject {startProject.FullName} {activeConfiguration.Name}");
                 sb.BuildProject(activeConfiguration.Name, startProject.FullName, true);                
             }
             catch (Exception ex)
             {
-                LogError(ex);
-                LogInfo($"BuildProject failed - Fallback: BuildSolution");
+                NLogService.LogError(Logger, ex);
+                Logger.Info($"BuildProject failed - Fallback: BuildSolution");
                 // Build complete solution (fallback solution)
                 return BuildSolution();
             }
@@ -107,10 +106,10 @@ namespace VSMonoDebugger
 
         private int BuildSolution()
         {
+            NLogService.TraceEnteringMethod(Logger);
             ThreadHelper.ThrowIfNotOnUIThread();
 
-            var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;
-            LogInfo($"BuildSolution");
+            var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;            
             sb.Build(true);
             return sb.LastBuildInfo;
         }
@@ -148,7 +147,7 @@ namespace VSMonoDebugger
                     var projectConfigFile = Path.ChangeExtension(projectFullName, ".VSMonoDebugger.config");
                     if (File.Exists(projectConfigFile))
                     {
-                        LogInfo($"Local project config file {projectConfigFile} found.");
+                        Logger.Info($"Local project config file {projectConfigFile} found.");
                         var projectConfigFileContent = File.ReadAllText(projectConfigFile);
                         return VSMonoDebuggerProjectSettings.DeserializeFromJson(projectConfigFileContent);
                     }
@@ -158,8 +157,8 @@ namespace VSMonoDebugger
             {
                 // *.VSMonoDebugger.config can contain illigal escape characters for WindowsPath "C:\Temp" => "C:\\Temp"
                 // Don't fix it ... user has to be json conform
-                LogInfo("Please validate that the local project config file (*.VSMonoDebugger.config) conatins no illigal escape character sequences for WindowsDeployPath!");
-                LogError(ex);
+                Logger.Info("Please validate that the local project config file (*.VSMonoDebugger.config) conatins no illigal escape character sequences for WindowsDeployPath!");
+                NLogService.LogError(Logger, ex);
             }
 
             return null;
@@ -186,7 +185,7 @@ namespace VSMonoDebugger
                         }
                         else
                         {
-                            LogInfo($"Only C# projects are supported as startup project! ProjectName = {project.Name} Language = {project.CodeModel.Language}");
+                            Logger.Info($"Only C# projects are supported as startup project! ProjectName = {project.Name} Language = {project.CodeModel.Language}");
                         }
                     }
                 }
@@ -266,13 +265,13 @@ namespace VSMonoDebugger
             if (outputDir == null)
             {
                 outputDir = string.Empty;
-                LogInfo($"GetFullOutputPath returned null! Using fallback: '{outputDir}'");
+                Logger.Info($"GetFullOutputPath returned null! Using fallback: '{outputDir}'");
             }
             string outputFileName = vsProject.Properties.Item("OutputFileName").Value.ToString();
             if (string.IsNullOrEmpty(outputFileName))
             {
                 outputFileName = $"{vsProject.Name}.exe";
-                LogInfo($"OutputFileName for project {vsProject.Name} is empty! Using fallback: {outputFileName}");
+                Logger.Info($"OutputFileName for project {vsProject.Name} is empty! Using fallback: {outputFileName}");
             }
             string assemblyPath = Path.Combine(outputDir, outputFileName);
             return assemblyPath;
@@ -288,7 +287,7 @@ namespace VSMonoDebugger
             }
             catch (Exception ex)
             {
-                LogInfo($"Project doesn't support property vsProject.CodeModel.Language! No CSharp project. {ex.Message}");
+                Logger.Info($"Project doesn't support property vsProject.CodeModel.Language! No CSharp project. {ex.Message}");
                 return false;
             }
         }
@@ -305,7 +304,7 @@ namespace VSMonoDebugger
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"{nameof(GetStartArguments)}: {ex.Message} {ex.StackTrace}");
+                NLogService.LogError(Logger, ex);
                 return string.Empty;
             }
         }
@@ -329,14 +328,14 @@ namespace VSMonoDebugger
                 var dbg = sp.GetService(typeof(SVsShellDebugger)) as IVsDebugger;
                 if (dbg == null)
                 {
-                    logger.Error($"GetService did not returned SVsShellDebugger");
+                    Logger.Error($"GetService did not returned SVsShellDebugger");
                 }
                 int hr = dbg.LaunchDebugTargets(1, pInfo);
                 Marshal.ThrowExceptionForHR(hr);                
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                NLogService.LogError(Logger, ex);
                 string msg = null;
                 var sh = sp.GetService(typeof(SVsUIShell)) as IVsUIShell;
                 if (sh != null)
@@ -345,7 +344,7 @@ namespace VSMonoDebugger
                 }
                 if (!string.IsNullOrWhiteSpace(msg))
                 {
-                    logger.Error(msg);
+                    Logger.Error(msg);
                 }
                 throw;
             }
@@ -422,7 +421,7 @@ namespace VSMonoDebugger
                 TargetExeFileName = targetExeFileName,
                 StartArguments = startArguments,
                 PreDebugScript = preDebugScript,
-                DebugScript = debugScript,
+                DebugScript = debugScript
             };
 
             return debugOptions;
@@ -455,19 +454,19 @@ namespace VSMonoDebugger
                 {
                     if (outputDirectories.ContainsKey(projectName))
                     {
-                        var outputDir = outputDirectories[projectName];
-                        LogInfo($"{projectName} - OutputDir: {outputDir}");
+                        var outputDir = Path.GetFullPath(outputDirectories[projectName]);
+                        Logger.Info($"{projectName} - OutputDir: {outputDir}");
 
                         await ConvertPdb2MdbAsync(outputDir, msgOutput);
                     }
                     else
                     {
-                        LogInfo($"{projectName} - OutputDir: NOT FOUND!");
+                        Logger.Info($"{projectName} - OutputDir: NOT FOUND!");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogError(ex);
+                    NLogService.LogError(Logger, ex);
                 }
             }
         }
@@ -482,12 +481,12 @@ namespace VSMonoDebugger
                 try
                 {
                     msgOutput($"### CollectOutputDirectories: Propertes of project '{dep.Project.Name}'");
-                    LogInfo($"### CollectOutputDirectories: Propertes of project '{dep.Project.Name}'");
+                    Logger.Info($"### CollectOutputDirectories: Propertes of project '{dep.Project.Name}'");
 
                     if (!IsCSharpProject(dep.Project))
                     {
                         msgOutput($"Only C# projects are supported project! ProjectName = {dep.Project.Name} Language = {dep.Project.CodeModel.Language}");
-                        LogInfo($"Only C# projects are supported project! ProjectName = {dep.Project.Name} Language = {dep.Project.CodeModel.Language}");
+                        Logger.Info($"Only C# projects are supported project! ProjectName = {dep.Project.Name} Language = {dep.Project.CodeModel.Language}");
                         continue;
                     }
 
@@ -497,13 +496,13 @@ namespace VSMonoDebugger
                         continue;
                     }
                     msgOutput($"OutputFullPath = {outputDir}");
-                    LogInfo($"OutputFullPath = {outputDir}");
+                    Logger.Info($"OutputFullPath = {outputDir}");
                     outputPaths[dep.Project.FullName] = outputDir;
                 }
                 catch (Exception ex)
                 {
                     msgOutput($"### CollectOutputDirectories: unsupported project - error was: '{ex.Message}'");
-                    LogInfo($"### CollectOutputDirectories: unsupported project - error was: '{ex.Message}'");
+                    Logger.Info($"### CollectOutputDirectories: unsupported project - error was: '{ex.Message}'");
                 }
             }
             return outputPaths;
@@ -538,7 +537,7 @@ namespace VSMonoDebugger
             }
             catch
             {
-                LogInfo($"OutputPath not available!");
+                Logger.Info($"OutputPath not available!");
                 return null;
             }
 
@@ -611,23 +610,13 @@ namespace VSMonoDebugger
                     }
                     catch (Exception ex)
                     {
+                        NLogService.LogError(Logger, ex);
                         msgOutput?.Invoke($"Error while creating mdb file for {file}. {ex.Message}");
                     }                    
                 }
 
                 msgOutput?.Invoke($"End ConvertPdb2Mdb.");
             });
-        }
-
-        private void LogInfo(string message)
-        {
-            logger.Log(new LogEventInfo(LogLevel.Info, "MonoVisualStudioExtension", message));
-
-        }
-
-        private void LogError(Exception ex)
-        {
-            logger.Error(ex);
         }
     }
 }

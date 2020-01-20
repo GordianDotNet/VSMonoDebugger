@@ -40,7 +40,12 @@ namespace Mono.Debugging.VisualStudio
 
                 _session = new SoftDebuggerSession();
 
-                RegisterEventHandlers();
+                LogMonoDebuggerAssemblyPaths();
+
+                if (debugOptions.UserSettings.EnableVerboseDebugLogging)
+                {
+                    RegisterEventHandlers();
+                }
 
                 var connectionTimeout = 30000;
                 var evaluationTimeout = 30000;
@@ -83,6 +88,20 @@ namespace Mono.Debugging.VisualStudio
             }
         }
 
+        private void LogMonoDebuggerAssemblyPaths()
+        {
+            LogAssemblyPath(typeof(Mono.Debugger.Soft.MethodMirror).Assembly);
+            LogAssemblyPath(typeof(Mono.Debugging.Client.Breakpoint).Assembly);
+            LogAssemblyPath(typeof(Mono.Debugging.Soft.SoftDebuggerSession).Assembly);
+            LogAssemblyPath(typeof(Mono.Debugging.VisualStudio.DebuggerSession).Assembly);
+            LogAssemblyPath(typeof(Mono.Debugging.VisualStudio.Engine).Assembly);
+        }
+
+        private void LogAssemblyPath(System.Reflection.Assembly assembly)
+        {
+            Log(nameof(LogMonoDebuggerAssemblyPaths), false, $"{assembly.FullName} loaded from {assembly.CodeBase}");
+        }
+
         private void RegisterEventHandlers()
         {
             _session.LogWriter = (stderr, text) =>
@@ -100,6 +119,10 @@ namespace Mono.Debugging.VisualStudio
 
             _session.TargetReady += (sender, eventArgs) =>
             {
+                var session = sender as SoftDebuggerSession;
+                if (session != null)
+                {
+                }
                 Log(nameof(_session.TargetReady), sender, eventArgs);
             };
             _session.TargetExited += (sender, eventArgs) =>

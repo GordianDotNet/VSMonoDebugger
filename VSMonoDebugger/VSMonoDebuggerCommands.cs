@@ -71,6 +71,6 @@ namespace VSMonoDebugger
             mcs.AddCommand(menuCommand);
 
             return menuCommand;
-        }
+        }        
     }
 }

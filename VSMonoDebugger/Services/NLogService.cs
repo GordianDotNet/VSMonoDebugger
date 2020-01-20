@@ -17,6 +17,11 @@ namespace VSMonoDebugger.Services
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        public static void LogError(Logger logger, Exception ex, string msg = "", [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
+        {
+            (logger ?? Logger).Error(ex, $"{msg}Catched: {callerMember} - {Path.GetFileName(callerFilePath)}({callerLineNumber})");
+        }
+
         public static void TraceEnteringMethod(Logger logger, [CallerMemberName] string callerMember = "", [CallerFilePath] string callerFilePath = "", [CallerLineNumber] int callerLineNumber = 0)
         {
             (logger ?? Logger).Trace($"Entering: {callerMember} - {Path.GetFileName(callerFilePath)}({callerLineNumber})");
