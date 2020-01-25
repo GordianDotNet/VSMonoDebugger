@@ -132,6 +132,10 @@ namespace VSMonoDebugger.Settings
                 NotifyPropertyChanged(nameof(ShowSSHOptions));
                 NotifyPropertyChanged(nameof(ShowWindowsOptions));
                 NotifyPropertyChanged(nameof(LaunchJsonContent));
+                if (_deployAndDebugOnLocalWindowsSystem)
+                {
+                    UseDotnetCoreDebugger = false;
+                }
             }
         }
         public Visibility ShowSSHOptions { get => DeployAndDebugOnLocalWindowsSystem ? Visibility.Collapsed : Visibility.Visible; }
@@ -162,7 +166,21 @@ namespace VSMonoDebugger.Settings
         #region Dotnet core debugger properties
 
         private bool _useDotnetCoreDebugger;
-        public bool UseDotnetCoreDebugger { get => _useDotnetCoreDebugger; set { _useDotnetCoreDebugger = value; NotifyPropertyChanged(); NotifyPropertyChanged(nameof(ShowMonoOptions)); NotifyPropertyChanged(nameof(ShowLaunchJsonOptions)); } }
+        public bool UseDotnetCoreDebugger {
+            get => _useDotnetCoreDebugger;
+            set
+            {
+                _useDotnetCoreDebugger = value;                
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(ShowMonoOptions));
+                NotifyPropertyChanged(nameof(ShowLaunchJsonOptions));
+                // dotnet debugger on Windows is not supported ()
+                if (_useDotnetCoreDebugger)
+                {
+                    DeployAndDebugOnLocalWindowsSystem = false;
+                }
+            }
+        }
         [JsonIgnore]
         public Visibility ShowMonoOptions { get => UseDotnetCoreDebugger ? Visibility.Collapsed : Visibility.Visible; }
         [JsonIgnore]

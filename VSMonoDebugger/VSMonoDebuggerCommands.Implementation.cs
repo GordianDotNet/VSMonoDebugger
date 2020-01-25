@@ -24,34 +24,10 @@ namespace VSMonoDebugger
             AddMenuItem(commandService, CommandIds.cmdDeployOverSSH, SetMenuTextAndVisibility, DeployOverSSHClicked);
             AddMenuItem(commandService, CommandIds.cmdDebugOverSSH, SetMenuTextAndVisibility, DebugOverSSHClicked);
             AddMenuItem(commandService, CommandIds.cmdAttachToMonoDebuggerWithoutSSH, SetMenuTextAndVisibility, AttachToMonoDebuggerWithoutSSHClicked);
-            AddMenuItem(commandService, CommandIds.cmdBuildProjectWithMDBFiles, CheckStartupProjects, BuildProjectWithMDBFilesClicked);
+            AddMenuItem(commandService, CommandIds.cmdBuildProjectWithMDBFiles, SetMenuTextAndVisibility, BuildProjectWithMDBFilesClicked);
 
             AddMenuItem(commandService, CommandIds.cmdOpenLogFile, CheckOpenLogFile, OpenLogFile);
             AddMenuItem(commandService, CommandIds.cmdOpenDebugSettings, null, OpenSSHDebugConfigDlg);
-        }
-
-        private string GetMenuText(int commandId)
-        {
-            switch (commandId)
-            {
-                case CommandIds.cmdDeployAndDebugOverSSH:
-                    return "Deploy, Run and Debug";
-                case CommandIds.cmdDeployOverSSH:
-                    return "Deploy";
-                case CommandIds.cmdDebugOverSSH:
-                    return "Run and Debug";
-                case CommandIds.cmdAttachToMonoDebuggerWithoutSSH:
-                    return "Attach to mono debugger";
-                case CommandIds.cmdBuildProjectWithMDBFiles:
-                    return "Build Startup Project with MDB files";
-
-                case CommandIds.cmdOpenLogFile:
-                    return "Open Logfile";
-                case CommandIds.cmdOpenDebugSettings:
-                    return "Settings ...";
-                default:
-                    return $"Unknown CommandID {commandId}";
-            }
         }
 
         private void CheckOpenLogFile(object sender, EventArgs e)
@@ -87,21 +63,53 @@ namespace VSMonoDebugger
             {
                 var allDeviceSettings = UserSettingsManager.Instance.Load();
                 var settings = allDeviceSettings.CurrentUserSettings;
+                var debuggerName = settings.UseDotnetCoreDebugger ? "dotnet" : "mono";
+                var withMdbFiles = settings.UseDotnetCoreDebugger ? "" : "with MDB files";
+                var remoteName = settings.DeployAndDebugOnLocalWindowsSystem ? "Local" : "SSH";
                 if (menuCommand.CommandID.ID == CommandIds.cmdAttachToMonoDebuggerWithoutSSH)
                 {
-                    menuCommand.Text = $"{GetMenuText(menuCommand.CommandID.ID)} (TCP {settings.SSHHostIP})";
-                }
-                else if (settings.DeployAndDebugOnLocalWindowsSystem)
-                {
-                    menuCommand.Text = $"{GetMenuText(menuCommand.CommandID.ID)} (Local {settings.SSHHostIP})";
+                    menuCommand.Text = $"{GetMenuText(menuCommand.CommandID.ID)} [mono debugger] (TCP {settings.SSHHostIP})";
+                    menuCommand.Enabled = settings.UseDotnetCoreDebugger == false && _monoExtension.IsStartupProjectAvailable();
+                    menuCommand.Visible = settings.UseDotnetCoreDebugger == false && _monoExtension.IsStartupProjectAvailable();
                 }
                 else
                 {
-                    menuCommand.Text = $"{GetMenuText(menuCommand.CommandID.ID)} (SSH {settings.SSHHostIP})";
+                    if (menuCommand.CommandID.ID == CommandIds.cmdBuildProjectWithMDBFiles)
+                    {
+                        menuCommand.Text = $"{GetMenuText(menuCommand.CommandID.ID)} {withMdbFiles}";
+                    }
+                    else
+                    {
+                        menuCommand.Text = $"{GetMenuText(menuCommand.CommandID.ID)} [{debuggerName} debugger] ({remoteName} {settings.SSHHostIP})";                        
+                    }
+
+                    menuCommand.Enabled = _monoExtension.IsStartupProjectAvailable();
                 }
             }
+        }
 
-            CheckStartupProjects(sender, e);
+        private string GetMenuText(int commandId)
+        {
+            switch (commandId)
+            {
+                case CommandIds.cmdDeployAndDebugOverSSH:
+                    return "Deploy, Run and Debug";
+                case CommandIds.cmdDeployOverSSH:
+                    return "Deploy";
+                case CommandIds.cmdDebugOverSSH:
+                    return "Run and Debug";
+                case CommandIds.cmdAttachToMonoDebuggerWithoutSSH:
+                    return "Attach to mono debugger";
+                case CommandIds.cmdBuildProjectWithMDBFiles:
+                    return "Build Startup Project";
+
+                case CommandIds.cmdOpenLogFile:
+                    return "Open Logfile";
+                case CommandIds.cmdOpenDebugSettings:
+                    return "Settings ...";
+                default:
+                    return $"Unknown CommandID {commandId}";
+            }
         }
 
         private void CheckStartupProjects(object sender, EventArgs e)

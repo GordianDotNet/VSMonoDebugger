@@ -70,7 +70,11 @@
                     <TextBlock Grid.Row="2" Grid.Column="0" Text="Debug/Deploy on local Windows:" VerticalAlignment="Center" Margin="5" />
                     <CheckBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding SettingsContainer.CurrentUserSettings.DeployAndDebugOnLocalWindowsSystem}" Margin="5" />
 
-                    <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowSSHOptions}">
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Use dotnet core debugger:" VerticalAlignment="Center" Margin="5" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowSSHOptions}"/>
+                    <CheckBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="1" IsChecked="{Binding SettingsContainer.CurrentUserSettings.UseDotnetCoreDebugger}" Margin="5" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowSSHOptions}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="2" Text="[experimental and Windows not supported]" VerticalAlignment="Center" Margin="5" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowSSHOptions}"/>
+
+                    <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowSSHOptions}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -115,7 +119,7 @@
                         <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHDeployPath}" Margin="5" />
                     </Grid>
 
-                    <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowWindowsOptions}">
+                    <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowWindowsOptions}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -131,10 +135,9 @@
                     </Grid>
 
                     <!--<TextBlock Grid.Row="9" Grid.Column="0" Text="Use Deploy Path from Startup Project file if available:" VerticalAlignment="Center" Margin="5" />-->
-                    <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding SettingsContainer.CurrentUserSettings.UseDeployPathFromProjectFileIfExists}" Margin="5" 
+                    <CheckBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding SettingsContainer.CurrentUserSettings.UseDeployPathFromProjectFileIfExists}" Margin="5" 
                               Content="Search 'Deploy Path' in 'PROJECTNAME.VSMonoDebugger.config' of the startup project."/>
-                    <CheckBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding SettingsContainer.CurrentUserSettings.UseDotnetCoreDebugger}" Margin="5" 
-                              Content="Use dotnet core instead of mono via DebugAdapterHost and launch.json [experimental]"/>
+                    
                     <Grid Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowMonoOptions}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />

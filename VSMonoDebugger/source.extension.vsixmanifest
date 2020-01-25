@@ -3,14 +3,14 @@
     <Metadata>
         <Identity Id="VSMonoDebugger.0d6242b8-2f22-4dc8-bfeb-30216f040d0b" Version="1.2.0" Language="en-US" Publisher="GordianDotNet" />
         <DisplayName>VSMonoDebugger</DisplayName>
-        <Description xml:space="preserve">Enables Visual Studio 2017 and 2019 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.
+        <Description xml:space="preserve">Enables Visual Studio 2017 and 2019 to deploy and debug a .Net application on a remote Linux machine with mono or dotnet core installed over SSH.
 Local debugging on Windows with installed mono is also supported.</Description>
         <MoreInfo>https://github.com/GordianDotNet/VSMonoDebugger</MoreInfo>
         <License>LICENSE.txt</License>
         <GettingStartedGuide>https://github.com/GordianDotNet/VSMonoDebugger</GettingStartedGuide>
         <ReleaseNotes>https://github.com/GordianDotNet/VSMonoDebugger</ReleaseNotes>
         <Icon>MonoIcon.png</Icon>
-        <Tags>SSH Linux Mono debugger deploy debug remote</Tags>
+        <Tags>SSH Linux Mono debugger deploy debug remote dotnet</Tags>
     </Metadata>
     <Installation>
         <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[15.0,17.0)" />

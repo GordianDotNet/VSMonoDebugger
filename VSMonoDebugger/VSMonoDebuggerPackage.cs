@@ -36,7 +36,7 @@ namespace VSMonoDebugger
     [ProvideMenuResource("Menus.ctmenu", 1)]
     public sealed class VSMonoDebuggerPackage : AsyncPackage
     {
-        protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// VSMonoDebuggerPackage GUID string.
