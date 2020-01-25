@@ -164,6 +164,11 @@
     </Bitmaps>
   </Commands>
 
+  <!--<KeyBindings>
+    <KeyBinding guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDeployAndDebugOverSSH" mod1="Control Shift Alt" key1="VK_F5" editor="guidVSStd97" />
+    <KeyBinding guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDeployOverSSH" mod1="Control Shift Alt" key1="VK_B" editor="guidVSStd97" />
+  </KeyBindings>-->
+
   <Symbols>
     <!-- This is the package guid. -->
     <GuidSymbol name="guidVSMonoDebuggerPackage" value="{c7b4e82a-beac-493e-90c3-578d0a0e11b1}" />

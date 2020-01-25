@@ -16,7 +16,7 @@ namespace VSMonoDebugger.Services
 
         public static void TryRegisterAssembly()
         {
-            // TODO move to 
+            // TODO move to AdapterRegistration.pkgdef
             // see https://github.com/microsoft/VSDebugAdapterHost/blob/master/src/sample/SampleDebugAdapter.VSIX/AdapterRegistration.pkgdef
             // see https://github.com/Microsoft/VSDebugAdapterHost/wiki
             // see https://github.com/microsoft/VSDebugAdapterHost/wiki/Packaging-a-VS-Code-Debug-Adapter-For-Use-in-VS

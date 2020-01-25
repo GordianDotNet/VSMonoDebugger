@@ -143,5 +143,10 @@ namespace VSMonoDebugger.Views
                 ViewModel?.LoadFromDebugSettings(dialog.FileName);
             }            
         }
+
+        private void SetDefaultLaunchJsonContent(object sender, RoutedEventArgs e)
+        {
+            ViewModel?.SettingsContainer?.CurrentUserSettings?.SetDefaultLaunchJsonContent();
+        }
     }
 }

@@ -133,24 +133,37 @@
                     <!--<TextBlock Grid.Row="9" Grid.Column="0" Text="Use Deploy Path from Startup Project file if available:" VerticalAlignment="Center" Margin="5" />-->
                     <CheckBox Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding SettingsContainer.CurrentUserSettings.UseDeployPathFromProjectFileIfExists}" Margin="5" 
                               Content="Search 'Deploy Path' in 'PROJECTNAME.VSMonoDebugger.config' of the startup project."/>
+                    <CheckBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding SettingsContainer.CurrentUserSettings.UseDotnetCoreDebugger}" Margin="5" 
+                              Content="Use dotnet core instead of mono via DebugAdapterHost and launch.json [experimental]"/>
+                    <Grid Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowMonoOptions}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" MinWidth="230"/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Mono Debug Port:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHMonoDebugPort}" Margin="5" />
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Mono Debug Port:" VerticalAlignment="Center" Margin="5" />
+                        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.SSHMonoDebugPort}" Margin="5" />
 
-                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Max connection attempts:" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="7" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.MaxConnectionAttempts}" Margin="5" />
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Max connection attempts:" VerticalAlignment="Center" Margin="5" />
+                        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.MaxConnectionAttempts}" Margin="5" />
 
-                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Time between connection attempts (ms):" VerticalAlignment="Center" Margin="5" />
-                    <TextBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.TimeBetweenConnectionAttemptsInMs}" Margin="5" />
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Time between connection attempts (ms):" VerticalAlignment="Center" Margin="5" />
+                        <TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding SettingsContainer.CurrentUserSettings.TimeBetweenConnectionAttemptsInMs}" Margin="5" />
+                    </Grid>
+                    <TextBlock Grid.Row="8" Grid.Column="0" Text="Redirect output:" VerticalAlignment="Center" Margin="5" />
+                    <ComboBox Grid.Row="8" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding AllRedirectOutputOptions}" SelectedValue="{Binding SettingsContainer.CurrentUserSettings.RedirectOutputOption, Mode=TwoWay}" Margin="5" SelectionChanged="RedirectOutputOption_SelectionChanged"/>
 
-                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Redirect output:" VerticalAlignment="Center" Margin="5" />
-                    <ComboBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding AllRedirectOutputOptions}" SelectedValue="{Binding SettingsContainer.CurrentUserSettings.RedirectOutputOption, Mode=TwoWay}" Margin="5" SelectionChanged="RedirectOutputOption_SelectionChanged"/>
-
-                    <TextBlock Grid.Row="10" Grid.Column="0" Text="Enable verbose debug logging:" VerticalAlignment="Center" Margin="5" />
-                    <CheckBox Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding SettingsContainer.CurrentUserSettings.EnableVerboseDebugLogging}" Margin="5" />
+                    <TextBlock Grid.Row="9" Grid.Column="0" Text="Enable verbose debug logging:" VerticalAlignment="Center" Margin="5" />
+                    <CheckBox Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="2" IsChecked="{Binding SettingsContainer.CurrentUserSettings.EnableVerboseDebugLogging}" Margin="5" />
                 </Grid>
             </TabItem>
-            <TabItem Header="Debug script">
+            <TabItem Header="Debug script" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowMonoOptions}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -176,6 +189,28 @@
                               Header="Script information" 
                               ExpandDirection="Down" IsExpanded="False">
                         <TextBlock Text="{Binding SettingsContainer.CurrentUserSettings.SupportedScriptParameters}" VerticalAlignment="Center" Margin="0,5" Background="LightYellow" Padding="10" TextWrapping="Wrap"/>
+                    </Expander>
+                </Grid>
+            </TabItem>
+            <TabItem Header="dotnet core" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowLaunchJsonOptions}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="launch.json" VerticalAlignment="Center" Margin="5" />
+                    <Button Grid.Row="0" Grid.Column="1" MinWidth="100" Click="SetDefaultLaunchJsonContent" Margin="5" Padding="5,2">Set default launch.json</Button>
+                    <TextBox Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" AcceptsReturn="True" AcceptsTab="True" TextWrapping="Wrap" Text="{Binding SettingsContainer.CurrentUserSettings.LaunchJsonContent}"/>
+                    <Expander Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" 
+                              Name="myExpanderDotnet" 
+                              Header="Script information" 
+                              ExpandDirection="Down" IsExpanded="False">
+                        <TextBlock Text="{Binding SettingsContainer.CurrentUserSettings.SupportedDotnetCoreScriptParameters}" VerticalAlignment="Center" Margin="0,5" Background="LightYellow" Padding="10" TextWrapping="Wrap"/>
                     </Expander>
                 </Grid>
             </TabItem>

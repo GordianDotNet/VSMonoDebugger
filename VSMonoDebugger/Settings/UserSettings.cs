@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using VSMonoDebugger.Views;
 
@@ -37,6 +38,10 @@ namespace VSMonoDebugger.Settings
             PreDebugScriptWithParameters = DefaultPreDebugScriptWithParameters;
             DebugScriptWithParametersWindows = DefaultDebugScriptWithParametersWindows;
             DebugScriptWithParameters = DefaultDebugScriptWithParameters;
+
+            UseDotnetCoreDebugger = false;
+            LaunchJsonContentWindows = DefaultLaunchJsonContentWindows;
+            LaunchJsonContentLinux = DefaultLaunchJsonContentLinux;
         }
 
         #region General
@@ -117,7 +122,18 @@ namespace VSMonoDebugger.Settings
         #region Local Windows properties
 
         private bool _deployAndDebugOnLocalWindowsSystem;
-        public bool DeployAndDebugOnLocalWindowsSystem { get => _deployAndDebugOnLocalWindowsSystem; set { _deployAndDebugOnLocalWindowsSystem = value; NotifyPropertyChanged(); NotifyPropertyChanged(nameof(ShowSSHOptions)); NotifyPropertyChanged(nameof(ShowWindowsOptions)); } }
+        public bool DeployAndDebugOnLocalWindowsSystem
+        {
+            get => _deployAndDebugOnLocalWindowsSystem;
+            set
+            {
+                _deployAndDebugOnLocalWindowsSystem = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(ShowSSHOptions));
+                NotifyPropertyChanged(nameof(ShowWindowsOptions));
+                NotifyPropertyChanged(nameof(LaunchJsonContent));
+            }
+        }
         public Visibility ShowSSHOptions { get => DeployAndDebugOnLocalWindowsSystem ? Visibility.Collapsed : Visibility.Visible; }
         public Visibility ShowWindowsOptions { get => DeployAndDebugOnLocalWindowsSystem ? Visibility.Visible : Visibility.Collapsed; }
 
@@ -128,7 +144,8 @@ namespace VSMonoDebugger.Settings
 
         #region Mono softdebugger connection properties
 
-        private RedirectOutputOptions _redirectOutputOption;
+        private RedirectOutputOptions _redirectOutputOption;        
+
         public RedirectOutputOptions RedirectOutputOption { get => _redirectOutputOption; set { _redirectOutputOption = value; NotifyPropertyChanged(); } }
 
         private int _sSHMonoDebugPort;
@@ -139,6 +156,33 @@ namespace VSMonoDebugger.Settings
 
         private uint _timeBetweenConnectionAttemptsInMs;
         public uint TimeBetweenConnectionAttemptsInMs { get => _timeBetweenConnectionAttemptsInMs; set { _timeBetweenConnectionAttemptsInMs = value; NotifyPropertyChanged(); } }
+
+        #endregion
+
+        #region Dotnet core debugger properties
+
+        private bool _useDotnetCoreDebugger;
+        public bool UseDotnetCoreDebugger { get => _useDotnetCoreDebugger; set { _useDotnetCoreDebugger = value; NotifyPropertyChanged(); NotifyPropertyChanged(nameof(ShowMonoOptions)); NotifyPropertyChanged(nameof(ShowLaunchJsonOptions)); } }
+        [JsonIgnore]
+        public Visibility ShowMonoOptions { get => UseDotnetCoreDebugger ? Visibility.Collapsed : Visibility.Visible; }
+        [JsonIgnore]
+        public Visibility ShowLaunchJsonOptions { get => UseDotnetCoreDebugger ? Visibility.Visible : Visibility.Collapsed; }
+        [JsonIgnore]
+        public string LaunchJsonContent
+        {
+            get => DeployAndDebugOnLocalWindowsSystem ? LaunchJsonContentWindows : LaunchJsonContentLinux;
+            set
+            {
+                if (DeployAndDebugOnLocalWindowsSystem)
+                {
+                    LaunchJsonContentWindows = value;
+                }
+                else
+                {
+                    LaunchJsonContentLinux = value;
+                }
+            }
+        }
 
         #endregion
 
@@ -166,7 +210,19 @@ namespace VSMonoDebugger.Settings
             }
         }
 
-        #region Debug scripts Linux
+        public void SetDefaultLaunchJsonContent()
+        {
+            if (DeployAndDebugOnLocalWindowsSystem)
+            {
+                LaunchJsonContentWindows = DefaultLaunchJsonContentWindows;
+            }
+            else
+            {
+                LaunchJsonContentLinux = DefaultLaunchJsonContentLinux;
+            }
+        }
+
+        #region Debug mono scripts Linux
 
         private string _preDebugScriptWithParameters;
         public string PreDebugScriptWithParameters
@@ -198,8 +254,7 @@ namespace VSMonoDebugger.Settings
             }
         }
 
-        [JsonIgnore]
-        public string DefaultPreDebugScriptWithParameters
+        private string DefaultPreDebugScriptWithParameters
         {
             get
             {
@@ -207,8 +262,7 @@ namespace VSMonoDebugger.Settings
             }
         }
 
-        [JsonIgnore]
-        public string DefaultDebugScriptWithParameters
+        private string DefaultDebugScriptWithParameters
         {
             get
             {
@@ -218,7 +272,7 @@ namespace VSMonoDebugger.Settings
 
         #endregion
 
-        #region Debug scripts Windows        
+        #region Debug mono scripts Windows        
 
         private string _preDebugScriptWithParametersWindows;
         public string PreDebugScriptWithParametersWindows
@@ -226,7 +280,6 @@ namespace VSMonoDebugger.Settings
             get
             {
                 return _preDebugScriptWithParametersWindows;
-                //return string.IsNullOrWhiteSpace(_preDebugScriptWithParametersWindows) ? DefaultPreDebugScriptWithParametersWindows : _preDebugScriptWithParametersWindows;
             }
             set
             {
@@ -241,7 +294,6 @@ namespace VSMonoDebugger.Settings
             get
             {
                 return _debugScriptWithParametersWindows;
-                //return string.IsNullOrWhiteSpace(_debugScriptWithParametersWindows) ? DefaultDebugScriptWithParametersWindows : _debugScriptWithParametersWindows;
             }
             set
             {
@@ -250,8 +302,7 @@ namespace VSMonoDebugger.Settings
             }
         }
 
-        [JsonIgnore]
-        public string DefaultPreDebugScriptWithParametersWindows
+        private string DefaultPreDebugScriptWithParametersWindows
         {
             get
             {
@@ -259,12 +310,59 @@ namespace VSMonoDebugger.Settings
             }
         }
 
-        [JsonIgnore]
-        public string DefaultDebugScriptWithParametersWindows
+        private string DefaultDebugScriptWithParametersWindows
         {
             get
             {
                 return $"mono.exe --debugger-agent=address=0.0.0.0:{MONO_DEBUG_PORT},transport=dt_socket,server=y --debug=mdb-optimizations {TARGET_EXE_FILENAME} {START_ARGUMENTS}";
+            }
+        }
+
+        #endregion
+
+        #region Debug dotnet core launch.json Windows
+
+        private string _launchJsonContentWindows;
+        public string LaunchJsonContentWindows
+        {
+            get => _launchJsonContentWindows;
+            set
+            {
+                _launchJsonContentWindows = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(LaunchJsonContent));
+            }
+        }
+
+        private string DefaultLaunchJsonContentWindows
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(new LaunchJsonOptions(), Formatting.Indented);
+            }
+        }
+
+        #endregion
+
+        #region Debug dotnet core launch.json Linux
+
+        private string _launchJsonContentLinux;
+        public string LaunchJsonContentLinux
+        {
+            get => _launchJsonContentLinux;
+            set
+            {
+                _launchJsonContentLinux = value;
+                NotifyPropertyChanged();
+                NotifyPropertyChanged(nameof(LaunchJsonContent));
+            }
+        }
+
+        private string DefaultLaunchJsonContentLinux
+        {
+            get
+            {
+                return JsonConvert.SerializeObject(new LaunchJsonOptions(), Formatting.Indented);
             }
         }
 
@@ -291,6 +389,30 @@ namespace VSMonoDebugger.Settings
         }
 
         #endregion
+
+        #region SupportedLaunchJsonParameters
+
+        public readonly string PLINK_EXE_PATH = "$(PLINK_EXE_PATH)";
+        public readonly string PLINK_SSH_CONNECTION_ARGS = "$(PLINK_SSH_CONNECTION_ARGS)";
+        public readonly string DEPLOYMENT_PATH = "$(DEPLOYMENT_PATH)";
+
+        [JsonIgnore]
+        public string SupportedDotnetCoreScriptParameters
+        {
+            get
+            {
+                return $@"You can and should adapt the scripts if the commands are not supported.
+vsdbg and dotnet are required.
+You can use following Parameters in the launch.json:
+{PLINK_EXE_PATH} = Will be replaced by the internal plink.exe path.
+{PLINK_SSH_CONNECTION_ARGS} = Will be replaced by the ssh connection parameters for plink.exe
+{DEPLOYMENT_PATH} = Will be replaced by the deployment path.
+{TARGET_EXE_FILENAME} = Replaced by the application name (*.exe or *.dll) results from the StartupProject.
+{START_ARGUMENTS} = Is replaced by the startup parameters set in the properties of the StartupProject.";
+            }
+        }
+
+        #endregion
     }
 
     [Flags]
@@ -300,5 +422,28 @@ namespace VSMonoDebugger.Settings
         RedirectStandardOutput = 1,
         RedirectErrorOutput = 2,
         RedirectAll = RedirectStandardOutput | RedirectErrorOutput
+    }
+
+    public class LaunchJsonOptions
+    {
+        public string version = "0.2.0";
+        public string adapter = "$(PLINK_EXE_PATH)";
+        public string adapterArgs = "$(PLINK_SSH_CONNECTION_ARGS) -batch -T vsdbg --interpreter=vscode";
+        public List<LaunchJsonConfiguration> configurations = new List<LaunchJsonConfiguration>
+        {
+            { new LaunchJsonConfiguration() }
+        };
+    }
+    public class LaunchJsonConfiguration
+    {
+        public string name = ".NET Core Launch (console)";
+        public string type = "coreclr";
+        public string request = "launch";
+        public string preLaunchTask = "build";
+        public string program = "dotnet";
+        public string[] args = new string[] { "$(TARGET_EXE_FILENAME)", "$(START_ARGUMENTS)" };
+        public string cwd = "$(DEPLOYMENT_PATH)";
+        public string console = "internalConsole";
+        public bool stopAtEntry = true;
     }
 }

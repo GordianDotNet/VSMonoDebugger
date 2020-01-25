@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="VSMonoDebugger.0d6242b8-2f22-4dc8-bfeb-30216f040d0b" Version="1.1.0" Language="en-US" Publisher="GordianDotNet" />
+        <Identity Id="VSMonoDebugger.0d6242b8-2f22-4dc8-bfeb-30216f040d0b" Version="1.2.0" Language="en-US" Publisher="GordianDotNet" />
         <DisplayName>VSMonoDebugger</DisplayName>
         <Description xml:space="preserve">Enables Visual Studio 2017 and 2019 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.
 Local debugging on Windows with installed mono is also supported.</Description>
