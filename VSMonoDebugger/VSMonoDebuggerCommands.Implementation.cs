@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using VSMonoDebugger.Services;
 using VSMonoDebugger.Settings;
-using VSMonoDebugger.SSH;
+using VSMonoDebugger.Debuggers;
 using VSMonoDebugger.Views;
 
 namespace VSMonoDebugger
@@ -202,10 +202,15 @@ namespace VSMonoDebugger
                 if (debuggerMode.HasFlag(DebuggerMode.DeployOverSSH))
                 {
                     await _monoExtension.BuildStartupProjectAsync();
-                    await _monoExtension.CreateMdbForAllDependantProjectsAsync(HostOutputWindowEx.WriteLineLaunchError);
+                    if (settings.UseDotnetCoreDebugger == false)
+                    {
+                        await _monoExtension.CreateMdbForAllDependantProjectsAsync(HostOutputWindowEx.WriteLineLaunchError);
+                    }
                 }
 
-                IDebugger debugger = settings.DeployAndDebugOnLocalWindowsSystem ? (IDebugger)new LocalWindowsDebugger() : new SSHDebugger(options);
+                IDebugger debugger = settings.DeployAndDebugOnLocalWindowsSystem ? 
+                    (IDebugger)new LocalWindowsDebugger() :
+                    settings.UseDotnetCoreDebugger ? (IDebugger)new SSHDebuggerDotnet(options) : new SSHDebuggerMono(options);
 
                 System.Threading.Tasks.Task<bool> monoRemoteSshDebugTask = null;
 
@@ -224,7 +229,15 @@ namespace VSMonoDebugger
 
                 if (debuggerMode.HasFlag(DebuggerMode.AttachProcess))
                 {
-                    _monoExtension.AttachDebuggerToRunningProcess(debugOptions);
+                    if (settings.UseDotnetCoreDebugger)
+                    {
+                        var myresult = await monoRemoteSshDebugTask;
+                        _monoExtension.AttachDotnetDebuggerToRunningProcess(debugOptions);                        
+                    }
+                    else
+                    {
+                        _monoExtension.AttachMonoDebuggerToRunningProcess(debugOptions);
+                    }
                 }
 
                 if (monoRemoteSshDebugTask != null)

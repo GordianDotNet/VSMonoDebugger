@@ -68,10 +68,13 @@
     <Compile Include="Settings\DebugOptions.cs" />
     <Compile Include="Settings\UserSettings.cs" />
     <Compile Include="Settings\VSMonoDebuggerProjectSettings.cs" />
-    <Compile Include="SSH\LocalWindowsDebugger.cs" />
-    <Compile Include="SSH\PowershellExecuter.cs" />
-    <Compile Include="SSH\SSHDebugger.cs" />
-    <Compile Include="SSH\SshDeltaCopy.cs" />
+    <Compile Include="Debuggers\IDebugger.cs" />
+    <Compile Include="Debuggers\LocalWindowsDebugger.cs" />
+    <Compile Include="Debuggers\PowershellExecuter.cs" />
+    <Compile Include="Debuggers\SSHDebuggerBase.cs" />
+    <Compile Include="Debuggers\SSHDebuggerDotnet.cs" />
+    <Compile Include="Debuggers\SSHDebuggerMono.cs" />
+    <Compile Include="Debuggers\SshDeltaCopy.cs" />
     <Compile Include="Views\BaseViewModel.cs" />
     <Compile Include="Views\DebugSettings.xaml.cs">
       <DependentUpon>DebugSettings.xaml</DependentUpon>
@@ -107,6 +110,10 @@
     <Content Include="Newtonsoft.Json.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="plink.exe">
+      <IncludeInVSIX>true</IncludeInVSIX>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Resources\BatchCheckIn_16x.png" />
     <Content Include="Resources\BuildSelection_16x.png" />

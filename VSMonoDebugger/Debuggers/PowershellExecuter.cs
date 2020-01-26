@@ -9,7 +9,7 @@ using System.Management.Automation.Runspaces;
 using System.Threading;
 using VSMonoDebugger.Settings;
 
-namespace VSMonoDebugger.SSH
+namespace VSMonoDebugger.Debuggers
 {
     public class PowershellExecuter
     {

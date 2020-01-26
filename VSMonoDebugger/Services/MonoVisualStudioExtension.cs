@@ -15,6 +15,7 @@ using System.Diagnostics;
 using VSMonoDebugger.Services;
 using VSMonoDebugger.Settings;
 using Mono.Debugging.VisualStudio;
+using Newtonsoft.Json;
 
 namespace VSMonoDebugger
 {
@@ -35,6 +36,19 @@ namespace VSMonoDebugger
         {
             _dte = dte;
             _errorListProvider = new ErrorListProvider(package);
+        }
+
+        public static string GetExtensionInstallationDirectoryOrNull()
+        {
+            try
+            {
+                var uri = new Uri(typeof(MonoVisualStudioExtension).Assembly.CodeBase, UriKind.Absolute);
+                return Path.GetDirectoryName(uri.LocalPath);
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         public async Task OverrideRunCommandAsync()
@@ -112,6 +126,15 @@ namespace VSMonoDebugger
             var sb = (SolutionBuild2)_dte.Solution.SolutionBuild;            
             sb.Build(true);
             return sb.LastBuildInfo;
+        }
+
+        private string GetStartupProjectPath()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            Project startupProject = GetStartupProject();
+            var projectFullName = startupProject.FullName;
+            return Path.GetDirectoryName(projectFullName);
         }
 
         private string GetStartupAssemblyPath()
@@ -309,7 +332,7 @@ namespace VSMonoDebugger
             }
         }
         
-        public void AttachDebuggerToRunningProcess(DebugOptions debugOptions)
+        public void AttachMonoDebuggerToRunningProcess(DebugOptions debugOptions)
         {
             NLogService.TraceEnteringMethod(Logger);
 
@@ -354,16 +377,6 @@ namespace VSMonoDebugger
                     Marshal.FreeCoTaskMem(pInfo);
             }
         }
-        
-        //public static string ComputeHash(string file)
-        //{
-        //    using (FileStream stream = File.OpenRead(file))
-        //    {
-        //        var sha = new SHA256Managed();
-        //        byte[] checksum = sha.ComputeHash(stream);
-        //        return BitConverter.ToString(checksum).Replace("-", string.Empty);
-        //    }
-        //}
 
         private IntPtr GetDebugInfo(DebugOptions debugOptions)//string args, int debugPort, string targetExe, string outputDirectory)
         {
@@ -395,7 +408,121 @@ namespace VSMonoDebugger
             Marshal.StructureToPtr(info, pInfo, false);
             return pInfo;
         }
-        
+
+        /// <summary>
+        /// We don't want to create a launch.json file
+        /// Currently not working!
+        /// </summary>
+        /// <param name="debugOptions"></param>
+        internal void AttachDotnetDebuggerToRunningProcess2(DebugOptions debugOptions)
+        {
+            NLogService.TraceEnteringMethod(Logger);
+
+            ThreadHelper.ThrowIfNotOnUIThread();
+
+            var extensionInstallationDirectory = GetExtensionInstallationDirectoryOrNull();
+            if (extensionInstallationDirectory == null)
+            {
+                Logger.Error($"{nameof(extensionInstallationDirectory)} is null!");
+            }
+
+            var settings = debugOptions.UserSettings;
+
+            var launchJson = settings.LaunchJsonContent;
+            var jsonStringPlinkExe = JsonConvert.SerializeObject(Path.Combine(extensionInstallationDirectory, "plink.exe")).Trim('"');
+            launchJson = launchJson.Replace(settings.PLINK_EXE_PATH, jsonStringPlinkExe);
+
+            var sshPassword = string.IsNullOrWhiteSpace(settings.SSHPrivateKeyFile) ? $"-pw {settings.SSHPassword} {settings.SSHFullUrl}" : $"-i {settings.SSHPrivateKeyFile} {settings.SSHFullUrl}";
+            launchJson = launchJson.Replace(settings.PLINK_SSH_CONNECTION_ARGS, $"{sshPassword} ");
+
+            var jsonStringDeployPath = JsonConvert.SerializeObject(debugOptions.UserSettings.SSHDeployPath).Trim('"');
+            launchJson = launchJson.Replace(settings.DEPLOYMENT_PATH, jsonStringDeployPath);
+            launchJson = launchJson.Replace(settings.TARGET_EXE_FILENAME, debugOptions.TargetExeFileName);
+            var jsonStringStartArguments = JsonConvert.SerializeObject(debugOptions.StartArguments).Trim('"');
+            launchJson = launchJson.Replace(settings.START_ARGUMENTS, jsonStringStartArguments);
+
+            var sp = new ServiceProvider((IServiceProvider)_dte);
+            try
+            {
+                var dbg = sp.GetService(typeof(SVsShellDebugger)) as IVsDebugger4;
+                if (dbg == null)
+                {
+                    Logger.Error($"GetService did not returned SVsShellDebugger");
+                }
+                VsDebugTargetInfo4[] debugTargets = new VsDebugTargetInfo4[1];
+                debugTargets[0].dlo = (uint)DEBUG_LAUNCH_OPERATION.DLO_CreateProcess;
+                debugTargets[0].bstrExe = debugOptions.StartupAssemblyPath;
+                debugTargets[0].bstrCurDir = debugOptions.OutputDirectory;
+                debugTargets[0].bstrArg = debugOptions.StartArguments;
+                debugTargets[0].bstrRemoteMachine = null; // debug locally                
+                //debugTargets[0].grfLaunch = (uint)__VSDBGLAUNCHFLAGS.DBGLAUNCH_StopDebuggingOnEnd; // When this process ends, debugging is stopped.
+                //debugTargets[0].grfLaunch = (uint)__VSDBGLAUNCHFLAGS.DBGLAUNCH_DetachOnStop, // Detaches instead of terminating when debugging stopped.
+                //debugTargets[0].fSendStdoutToOutputWindow = 0,
+                //debugTargets[0].bstrExe = Path.Combine(extensionInstallationDirectory, "plink.exe");
+                debugTargets[0].bstrOptions = launchJson;
+                debugTargets[0].guidLaunchDebugEngine = new Guid("{541B8A8A-6081-4506-9F0A-1CE771DEBC04}");
+                VsDebugTargetProcessInfo[] processInfo = new VsDebugTargetProcessInfo[debugTargets.Length];
+
+                dbg.LaunchDebugTargets4(1, debugTargets, processInfo);
+            }
+            catch (Exception ex)
+            {
+                NLogService.LogError(Logger, ex);
+                string msg = null;
+                var sh = sp.GetService(typeof(SVsUIShell)) as IVsUIShell;
+                if (sh != null)
+                {
+                    sh.GetErrorInfo(out msg);
+                }
+                if (!string.IsNullOrWhiteSpace(msg))
+                {
+                    Logger.Error(msg);
+                }
+                throw;
+            }
+
+            //var launchJsonFile = @"C:\TFS\launch.json";
+            //File.WriteAllText(launchJsonFile, launchJson);
+
+            //Logger.Info($"Project {debugOptions.StartupAssemblyPath} was built successfully. Invoking remote debug command");
+            //var dte2 = _dte as DTE2;
+            //dte2.ExecuteCommand("DebugAdapterHost.Launch", $"/LaunchJson:\"{launchJsonFile}\" /EngineGuid:541B8A8A-6081-4506-9F0A-1CE771DEBC04");
+        }
+
+        public void AttachDotnetDebuggerToRunningProcess(DebugOptions debugOptions)
+        {
+            NLogService.TraceEnteringMethod(Logger);            
+
+            var extensionInstallationDirectory = GetExtensionInstallationDirectoryOrNull();
+            if (extensionInstallationDirectory == null)
+            {
+                Logger.Error($"{nameof(extensionInstallationDirectory)} is null!");
+            }
+
+            var settings = debugOptions.UserSettings;
+
+            var launchJson = settings.LaunchJsonContent;
+            var jsonStringPlinkExe = JsonConvert.SerializeObject(Path.Combine(extensionInstallationDirectory, "plink.exe")).Trim('"');
+            launchJson = launchJson.Replace(settings.PLINK_EXE_PATH, jsonStringPlinkExe);
+
+            var sshPassword = string.IsNullOrWhiteSpace(settings.SSHPrivateKeyFile) ? $"-pw {settings.SSHPassword} {settings.SSHFullUrl}" : $"-i {settings.SSHPrivateKeyFile} {settings.SSHFullUrl}";
+            launchJson = launchJson.Replace(settings.PLINK_SSH_CONNECTION_ARGS, $"{sshPassword} ");
+
+            var jsonStringDeployPath = JsonConvert.SerializeObject(debugOptions.UserSettings.SSHDeployPath).Trim('"');
+            launchJson = launchJson.Replace(settings.DEPLOYMENT_PATH, jsonStringDeployPath);
+            launchJson = launchJson.Replace(settings.TARGET_EXE_FILENAME, debugOptions.TargetExeFileName);
+            var jsonStringStartArguments = JsonConvert.SerializeObject(debugOptions.StartArguments).Trim('"');
+            launchJson = launchJson.Replace(settings.START_ARGUMENTS, jsonStringStartArguments);
+
+            string launchJsonFile = Path.Combine(GetStartupProjectPath(), "launch.json");
+            Logger.Info($"Path of launch.json = {launchJsonFile}");
+            File.WriteAllText(launchJsonFile, launchJson);
+
+            Logger.Info($"Project {debugOptions.StartupAssemblyPath} was built successfully. Invoking remote debug command");
+            var dte2 = _dte as DTE2;
+            dte2.ExecuteCommand("DebugAdapterHost.Launch", $"/LaunchJson:\"{launchJsonFile}\" /EngineGuid:541B8A8A-6081-4506-9F0A-1CE771DEBC04");
+        }
+
         public DebugOptions CreateDebugOptions(UserSettings settings)
         {
             NLogService.TraceEnteringMethod(Logger);

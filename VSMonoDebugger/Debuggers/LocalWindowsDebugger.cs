@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using VSMonoDebugger.Services;
 using VSMonoDebugger.Settings;
 
-namespace VSMonoDebugger.SSH
+namespace VSMonoDebugger.Debuggers
 {
     public class LocalWindowsDebugger : IDebugger
     {
