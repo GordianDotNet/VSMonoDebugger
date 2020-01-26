@@ -3,8 +3,8 @@
 VSMonoDebugger
 ============
 
-Enables Visual Studio 2017 and 2019 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH.
-Local debugging under Windows with Mono installed is now also supported.
+Enables Visual Studio 2017 and 2019 to deploy and debug a .Net application on a remote Linux machine with mono or dotnet core installed over SSH.
+Local debugging on Windows with installed mono is also supported.
 
 **For bugs with the latest version, an older version can be found here:** [MarketplaceReleases](https://github.com/GordianDotNet/VSMonoDebugger/tree/master/MarketplaceReleases)
 
@@ -14,6 +14,19 @@ Local debugging under Windows with Mono installed is now also supported.
 In Visual Studio 2019, extension menus are handled differently. "Mono" can now be found in the "Extensions" menu.
 
 ![Visual Studio 2019 Extensions Menu](VSMonoDebugger/Resources/VisualStudio2019ExtensionMenu.png)
+
+## .Net core Support
+Since Version 1.2.0 you can deploy, run and debug .Net core applications on a remote linux machine with the help from vsdbg.
+
+### Prerequisite
+You have to install/copy [dotnet core runtime download](https://dotnet.microsoft.com/download/dotnet-core) and [vsdbg (GetClrDbg)](https://github.com/microsoft/MIEngine/tree/master/scripts) to the remote machine.
+
+**Don't forget to set the paths of dotnet and vsdbg in launch.json setting page!**
+
+Attach/Detach mode without deployment is possible [see: debugging-net-core-on-unix-over-ssh](https://devblogs.microsoft.com/devops/debugging-net-core-on-unix-over-ssh/).
+My problem: the remote machine have to have internet connection to download vsdbg otherwise the debugging process aborts.
+
+See also: [Wiki of MIEngine](https://github.com/microsoft/MIEngine/wiki/Offroad-Debugging-of-.NET-Core-on-Linux---OSX-from-Visual-Studio-Legacy-Instructions#linux-computer)
 
 ## Settings (Linux over SSH)
 You have to save a valid SSH connection first!
@@ -52,6 +65,23 @@ You have to save a valid SSH connection first!
 - [5] For further script information click on "Script information"
 
 ![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings3.png)
+- [1] Information about all supported parameters
+
+### Use dotnet instead of mono
+![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings_Linux_3.png)
+
+- [1] If enabled the dotnet core runtime and vsdbg is used (Debug/Deploy on local Windows will be diabled)
+- [2] Set the paths of dotnet and vsdbg in launch.json (Important!)
+
+![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings_Linux_4.png)
+
+- [1] You can change the content of launch.json
+- [2] Please set the path to vsdbg
+- [3] Please set the path to dotnet runtime
+- [4] The default launch.json is loaded if you click on "Set default launch.json"
+- [5] For further information click on "Script information"
+
+![VSMonoDebugger Settings](VSMonoDebugger/Resources/VSMonoDebugger_Settings_Linux_5.png)
 - [1] Information about all supported parameters
 
 ## Debugging (Linux over SSH)
@@ -166,6 +196,10 @@ ex.: 'MyNewSampleProject.csproj' results in 'MyNewSampleProject.VSMonoDebugger.c
 - [ ] Code has to be refactored for better error logging
 - [ ] Why can't the Mono.Cecil.Pdb.NativePdbReaderProvider type be found in Visual Studio to support pdb files?
 - [ ] Sometimes errors (like collection was modified) are thrown and you have to restart the debugging process.
+- [ ] Use putty to do ssh stuff
+- [ ] dotnet core debugging support is experimental (use IVsDebugger4 to set launch.json without file creation)
+- [ ] Make the deployment for vsdbg and dotnet easier
+- [ ] Support dotnet attach mode for a running process [see: debugging-net-core-on-unix-over-ssh](https://devblogs.microsoft.com/devops/debugging-net-core-on-unix-over-ssh/)
 
 # Solved Issues
 
@@ -183,6 +217,12 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 **Visual Studio 2019 shows a warning**
 
 # Version History
+
+## 1.2.0
+**2020-01-26**
+
+- [x] Feature: Better logging support ('Enable verbose debug logging' in settings)
+- [x] Feature: Support dotnet core debugging via vsdbg, launch.json and DebugAdapterHost.Launch for Linux. See [Offroad Debugging of .NET Core on Linux OSX from Visual Studio](https://github.com/Microsoft/MIEngine/wiki/Offroad-Debugging-of-.NET-Core-on-Linux---OSX-from-Visual-Studio)
 
 ## 1.0.5
 **2020-01-12**
@@ -270,3 +310,4 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 - [x] [pdb2mdb source code](https://github.com/mono/mono/tree/master/mcs/tools/pdb2mdb)
 - [x] [Newtonsoft.Json.dll Version 10.0.3.21018](https://www.newtonsoft.com/json)
 - [x] [PowerShell](https://www.nuget.org/packages/system.management.automation.dll/10.0.10586)
+- [x] [plink.exe 64Bit](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
