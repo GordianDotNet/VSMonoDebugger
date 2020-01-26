@@ -200,6 +200,7 @@ ex.: 'MyNewSampleProject.csproj' results in 'MyNewSampleProject.VSMonoDebugger.c
 - [ ] dotnet core debugging support is experimental (use IVsDebugger4 to set launch.json without file creation)
 - [ ] Make the deployment for vsdbg and dotnet easier
 - [ ] Support dotnet attach mode for a running process [see: debugging-net-core-on-unix-over-ssh](https://devblogs.microsoft.com/devops/debugging-net-core-on-unix-over-ssh/)
+- [ ] Arguments for dotnet have to set in launch.json
 
 # Solved Issues
 
