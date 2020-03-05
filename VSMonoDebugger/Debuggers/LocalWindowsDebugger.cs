@@ -156,7 +156,11 @@ namespace VSMonoDebugger.Debuggers
                 while (!asynch.IsCompleted)
                 {
                     var result = await reader.ReadToEndAsync();
-                    if (!string.IsNullOrEmpty(result))
+                    if (string.IsNullOrEmpty(result))
+                    {
+                        System.Threading.Thread.Sleep(1);
+                    }
+                    else
                     {
                         await writeOutput(result);
                     }
