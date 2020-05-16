@@ -326,7 +326,7 @@ namespace SshFileSync
             PrivateKeyFile keyFile = null;
             try
             {
-                if (privateKeyFile != null)
+                if (!string.IsNullOrWhiteSpace(privateKeyFile))
                 {
                     keyFile = new PrivateKeyFile(privateKeyFile, password);
                     PrintTime($"Using private key file: {privateKeyFile}");
