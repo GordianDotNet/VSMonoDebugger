@@ -167,8 +167,21 @@ namespace VSMonoDebugger
                 var projectFullName = startupProject.FullName;
                 if (File.Exists(projectFullName))
                 {
-                    var projectConfigFile = Path.ChangeExtension(projectFullName, ".VSMonoDebugger.config");
-                    if (File.Exists(projectConfigFile))
+                    var name = Path.GetFileNameWithoutExtension(projectFullName);
+                    var dir = Path.GetDirectoryName(projectFullName);
+                    var configFiles = new string[]
+                    {
+                        Path.Combine(dir, name + ".VSMonoDebugger.config"),
+                        Path.Combine(dir, "VSMonoDebugger.config"),
+                        Path.Combine(dir, "VSMonoDebugger.json"),
+                    };
+
+                    var projectConfigFile = configFiles.FirstOrDefault(x => File.Exists(x));
+                    if (projectConfigFile == null)
+                    {
+                        Logger.Info($"Local project config file  not found.");
+                    }
+                    else
                     {
                         Logger.Info($"Local project config file {projectConfigFile} found.");
                         var projectConfigFileContent = File.ReadAllText(projectConfigFile);
