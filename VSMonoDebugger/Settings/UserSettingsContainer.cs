@@ -86,10 +86,7 @@ namespace VSMonoDebugger.Settings
             }
             foreach (var deviceConnection in instance.DeviceConnections)
             {
-                if (deviceConnection.SSHMonoDebugPort <= 0)
-                {
-                    deviceConnection.SSHMonoDebugPort = UserSettings.DEFAULT_DEBUGGER_AGENT_PORT;
-                }
+                UserSettings.Validate(deviceConnection);
             }
         }
     }

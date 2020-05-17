@@ -67,7 +67,6 @@
     <Compile Include="Settings\UserSettingsManager.cs" />
     <Compile Include="Settings\DebugOptions.cs" />
     <Compile Include="Settings\UserSettings.cs" />
-    <Compile Include="Settings\VSMonoDebuggerProjectSettings.cs" />
     <Compile Include="Debuggers\IDebugger.cs" />
     <Compile Include="Debuggers\LocalWindowsDebugger.cs" />
     <Compile Include="Debuggers\PowershellExecuter.cs" />

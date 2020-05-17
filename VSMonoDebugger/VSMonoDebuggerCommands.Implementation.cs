@@ -268,26 +268,13 @@ namespace VSMonoDebugger
             {
                 try
                 {
-                    var localProjectConfig = _monoExtension.GetProjectSettingsFromStartupProject();
-                    if (localProjectConfig.HasValue)
-                    {
-                        if (!string.IsNullOrWhiteSpace(localProjectConfig.Value.SSHDeployPath))
-                        {
-                            Logger.Info($"SSHDeployPath = {settings.SSHDeployPath} was overwritten with local *.VSMonoDebugger.config: {localProjectConfig.Value.SSHDeployPath}");
-                            settings.SSHDeployPath = localProjectConfig.Value.SSHDeployPath;
-                        }
-                        if (!string.IsNullOrWhiteSpace(localProjectConfig.Value.WindowsDeployPath))
-                        {
-                            Logger.Info($"WindowsDeployPath = {settings.WindowsDeployPath} was overwritten with local *.VSMonoDebugger.config: {localProjectConfig.Value.WindowsDeployPath}");
-                            settings.WindowsDeployPath = localProjectConfig.Value.WindowsDeployPath;
-                        }
-                    }
+                    _monoExtension.OverwriteWithProjectSettingsFromStartupProject(ref settings);
                 }
                 catch (Exception ex)
                 {
                     Logger.Error(ex);
                 }               
-            }            
+            }
 
             debugOptions = _monoExtension.CreateDebugOptions(settings);
             options = new SshDeltaCopy.Options()

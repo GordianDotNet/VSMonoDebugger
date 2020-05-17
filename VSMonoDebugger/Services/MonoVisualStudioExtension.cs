@@ -155,7 +155,7 @@ namespace VSMonoDebugger
             return sb.StartupProjects != null && ((Array)sb.StartupProjects).Cast<string>().Count() > 0;
         }
 
-        public VSMonoDebuggerProjectSettings? GetProjectSettingsFromStartupProject()
+        public void OverwriteWithProjectSettingsFromStartupProject(ref UserSettings globalSettings)
         {
             NLogService.TraceEnteringMethod(Logger);
 
@@ -183,21 +183,39 @@ namespace VSMonoDebugger
                     }
                     else
                     {
-                        Logger.Info($"Local project config file {projectConfigFile} found.");
-                        var projectConfigFileContent = File.ReadAllText(projectConfigFile);
-                        return VSMonoDebuggerProjectSettings.DeserializeFromJson(projectConfigFileContent);
+                        try
+                        {
+                            Logger.Info($"Local project config file {projectConfigFile} found.");
+                            var projectConfigFileContent = File.ReadAllText(projectConfigFile);
+
+                            var projectSettingsByString = JsonConvert.DeserializeObject(projectConfigFileContent) as IDictionary<string, Newtonsoft.Json.Linq.JToken>;
+                            var globalSettingsByString = JsonConvert.DeserializeObject(JsonConvert.SerializeObject(globalSettings)) as IDictionary<string, Newtonsoft.Json.Linq.JToken>;
+
+                            foreach (var projectKeyValue in projectSettingsByString)
+                            {
+                                if (globalSettingsByString.TryGetValue(projectKeyValue.Key, out Newtonsoft.Json.Linq.JToken globalSettingsValue) && projectKeyValue.Value.Type == globalSettingsValue.Type)
+                                {
+                                    Logger.Info($"Setting {projectKeyValue.Key} was overwritten with local project file: {globalSettingsValue.ToString()} => {projectKeyValue.Value.ToString()}");
+                                    globalSettingsByString[projectKeyValue.Key] = projectKeyValue.Value;
+                                }
+                            }
+
+                            globalSettings = JsonConvert.DeserializeObject<UserSettings>(JsonConvert.SerializeObject(globalSettingsByString));
+                        }
+                        catch (Exception ex)
+                        {
+                            // *.VSMonoDebugger.config can contain illigal escape characters for WindowsPath "C:\Temp" => "C:\\Temp"
+                            // Don't fix it ... user has to be json conform
+                            Logger.Info("Please validate that the local project config file {projectConfigFile} conatins no illigal escape character sequences for WindowsDeployPath!");
+                            NLogService.LogError(Logger, ex);
+                        }
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception ex2)
             {
-                // *.VSMonoDebugger.config can contain illigal escape characters for WindowsPath "C:\Temp" => "C:\\Temp"
-                // Don't fix it ... user has to be json conform
-                Logger.Info("Please validate that the local project config file (*.VSMonoDebugger.config) conatins no illigal escape character sequences for WindowsDeployPath!");
-                NLogService.LogError(Logger, ex);
+                NLogService.LogError(Logger, ex2);
             }
-
-            return null;
         }
 
         private Project GetStartupProject()

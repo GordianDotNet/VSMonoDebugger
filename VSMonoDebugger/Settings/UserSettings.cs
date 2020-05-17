@@ -24,7 +24,6 @@ namespace VSMonoDebugger.Settings
             SSHPrivateKeyFile = string.Empty;
             SSHDeployPath = "./MonoDebugTemp/";
             SSHMonoDebugPort = DEFAULT_DEBUGGER_AGENT_PORT;
-            SSHPdb2mdbCommand = "mono /usr/lib/mono/4.5/pdb2mdb.exe";
 
             DeployAndDebugOnLocalWindowsSystem = false;
             WindowsDeployPath = "";
@@ -42,6 +41,14 @@ namespace VSMonoDebugger.Settings
             UseDotnetCoreDebugger = false;
             LaunchJsonContentWindows = DefaultLaunchJsonContentWindows;
             LaunchJsonContentLinux = DefaultLaunchJsonContentLinux;
+        }
+
+        public static void Validate(UserSettings userSettings)
+        {
+            if (userSettings.SSHMonoDebugPort <= 0)
+            {
+                userSettings.SSHMonoDebugPort = UserSettings.DEFAULT_DEBUGGER_AGENT_PORT;
+            }
         }
 
         #region General
@@ -113,9 +120,6 @@ namespace VSMonoDebugger.Settings
 
         private string _sSHDeployPath;
         public string SSHDeployPath { get => _sSHDeployPath; set { _sSHDeployPath = value; NotifyPropertyChanged(); } }
-
-        private string _sSHPdb2mdbCommand;
-        public string SSHPdb2mdbCommand { get => _sSHPdb2mdbCommand; set { _sSHPdb2mdbCommand = value; NotifyPropertyChanged(); } }
 
         #endregion
 
