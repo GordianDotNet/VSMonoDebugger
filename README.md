@@ -46,7 +46,7 @@ You have to save a valid SSH connection first!
 - [9] Enter the SSH password or private key file passphrase (if there is no password => leave the field empty)
 - [10] Enter/set the filepath to a private key file (if there is no ssh private key authentication => leave the field empty)
 - [11] This is where the project output is deployed
-- [12] If enabled you can create a JSON config file to overwrite the 'Remote Deploy Path'. (see below)
+- [12] If enabled you can create a JSON config file to overwrite the settings for each project. (see below)
 - [13] Mono debugger tries to connect to the mono process via this port.
 - [14] Connection attempts to a running / waiting mono process (useful for attach mode)
 - [15] Time (ms) between two connection attempts
@@ -120,7 +120,7 @@ You can run both commands in one step.
 
 - [5] If enabled local (Windows) deployment is used. If disabled SSH remote (Linux) deployment is used.
 - [2] This is where the project output is deployed on the local windows machine.
-- [3] If enabled you can create a JSON config file to overwrite the 'Remote Deploy Path'. (see below)
+- [3] If enabled you can create a JSON config file to overwrite the settings for each project. (see below)
 
 ![VSMonoDebugger Settings Windows](VSMonoDebugger/Resources/VSMonoDebugger_Settings_Windows_2.png)
 
@@ -168,16 +168,19 @@ You can build the startup project and all dependent projects. Additionally the m
 
 > Menu "Mono"/"Build Startup Project with MDB Files"
 
-### Overwrite the remote deploy path for a startup project
+### Overwrite the settings for a startup project
 1) You have to enable the option via
 
-> Menu "Mono"/"Settings..."/"Search 'Deploy Path' in 'PROJECTNAME.VSMonoDebugger.config' of the startup project."
+> Menu "Mono"/"Settings..."/"Overwrite settings with local VSMonoDebugger.(json|config) file in project folder"
 
-2) You have to create a file with name 'PROJECTNAME.VSMonoDebugger.config' in the same directory like your startup project file (PROJECTNAME have to be the name of your project). 
+2) You have to create a file with name 'VSMonoDebugger.json' or 'VSMonoDebugger.config' in the same directory like your startup project file.
 
+> In older versions (< 1.5.0) the file had to contain the project name: '[PROJECTNAME].VSMonoDebugger.config' (PROJECTNAME have to be the name of your project). 
 ex.: 'MyNewSampleProject.csproj' results in 'MyNewSampleProject.VSMonoDebugger.config'
 
-3) The file must contain a JSON object with the property "SSHDeployPath" ("WindowsDeployPath" for local Windows deployment):
+3) The file must contain a JSON object with properties from [VSMonoDebugger/Settings/UserSettings.cs](VSMonoDebugger/Settings/UserSettings.cs) 
+
+If you want change the deploy path set "SSHDeployPath" ("WindowsDeployPath" for local Windows deployment):
 
 ```
 {
@@ -216,8 +219,17 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 - [x] Support [ssh private key authentication](https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys-on-ubuntu-1604) to authenticate
 - [x] When using the ProvideAutoLoad attribute, your package (VSMonoDebugger.VSMonoDebuggerPackage) class should derive from AsyncPackage instead of Package to improve performance. Read more about using AsyncPackage here: https://aka.ms/asyncpackage.
 **Visual Studio 2019 shows a warning**
+- [x] CPU consumption when reading the output reduced
 
 # Version History
+
+## 1.5.0
+**2020-05-17**
+
+- [x] Bugfix: #20 Don't log a private key issue if we don't use it (empty string)
+- [x] Bugfix: #17 reduced cpu usage (from kptnk)
+- [x] Feature: Support shorter filenames for local project config (VSMonoDebugger.config and VSMonoDebugger.json) (from kptnk)
+- [x] Feature: Local project config file can overwrite whole UserSettings properties: [VSMonoDebugger/Settings/UserSettings.cs](VSMonoDebugger/Settings/UserSettings.cs)
 
 ## 1.2.0
 **2020-01-26**

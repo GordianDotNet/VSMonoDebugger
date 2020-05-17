@@ -136,7 +136,7 @@
 
                     <!--<TextBlock Grid.Row="9" Grid.Column="0" Text="Use Deploy Path from Startup Project file if available:" VerticalAlignment="Center" Margin="5" />-->
                     <CheckBox Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3" IsChecked="{Binding SettingsContainer.CurrentUserSettings.UseDeployPathFromProjectFileIfExists}" Margin="5" 
-                              Content="Search 'Deploy Path' in 'PROJECTNAME.VSMonoDebugger.config' of the startup project."/>
+                              Content="Overwrite settings with local VSMonoDebugger.(json|config) file in project folder"/>
                     
                     <Grid Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Visibility="{Binding SettingsContainer.CurrentUserSettings.ShowMonoOptions}">
                         <Grid.RowDefinitions>
