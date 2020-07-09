@@ -101,11 +101,12 @@ namespace VSMonoDebugger
             try
             {
                 var startProject = GetStartupProject();
-                var activeConfiguration = _dte.Solution.SolutionBuild.ActiveConfiguration;
+                var activeConfiguration = _dte.Solution.SolutionBuild.ActiveConfiguration as SolutionConfiguration2;
                 var activeConfigurationName = activeConfiguration.Name;
+                var activeConfigurationPlatform = activeConfiguration.Name;
                 var startProjectName = startProject.FullName;
-                Logger.Info($"BuildProject {startProject.FullName} {activeConfiguration.Name}");
-                sb.BuildProject(activeConfiguration.Name, startProject.FullName, true);                
+                Logger.Info($"BuildProject {startProject.FullName} {activeConfigurationName}|{activeConfigurationPlatform}");
+                sb.BuildProject($"{activeConfigurationName}|{activeConfigurationPlatform}", startProject.FullName, true);                
             }
             catch (Exception ex)
             {

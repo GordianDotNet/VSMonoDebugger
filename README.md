@@ -223,6 +223,11 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 
 # Version History
 
+## 1.5.1
+**2020-07-09**
+
+- [x] Bugfix: #14 Add the Solution Platform Configuration (AnyCPU, x86, ...) when building with extension
+
 ## 1.5.0
 **2020-05-17**
 
