@@ -22,6 +22,11 @@ namespace VSMonoDebugger.Settings
         {
             var result = new UserSettingsContainer();
 
+            if (!_settingsStore.CollectionExists(SETTINGS_STORE_NAME))
+            {
+                Save(result);
+            }
+
             if (_settingsStore.CollectionExists(SETTINGS_STORE_NAME))
             {
                 try
