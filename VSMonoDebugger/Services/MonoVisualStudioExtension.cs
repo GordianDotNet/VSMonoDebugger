@@ -103,7 +103,7 @@ namespace VSMonoDebugger
                 var startProject = GetStartupProject();
                 var activeConfiguration = _dte.Solution.SolutionBuild.ActiveConfiguration as SolutionConfiguration2;
                 var activeConfigurationName = activeConfiguration.Name;
-                var activeConfigurationPlatform = activeConfiguration.Name;
+                var activeConfigurationPlatform = activeConfiguration.PlatformName;
                 var startProjectName = startProject.FullName;
                 Logger.Info($"BuildProject {startProject.FullName} {activeConfigurationName}|{activeConfigurationPlatform}");
                 sb.BuildProject($"{activeConfigurationName}|{activeConfigurationPlatform}", startProject.FullName, true);                
