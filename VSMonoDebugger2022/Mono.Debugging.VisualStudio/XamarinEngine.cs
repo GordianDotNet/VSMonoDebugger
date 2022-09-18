@@ -14,27 +14,27 @@ using VSMonoDebugger.Settings;
 
 namespace Mono.Debugging.VisualStudio
 {
+
     [Guid(DebugEngineGuids.XamarinEngineString)]
-    public class XamarinEngine : IDebugEngine2, IDebugEngineLaunch2
+    public class XamarinEngine : IDebugEngine2, IDebugEngineLaunch2//, IDebugEngine3, IDebugBreakpointFileUpdateNotification110
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        protected IDebugEngine2 _engine;
+        protected IDebugEngine3 _engine;
         protected IDebugEngineLaunch2 _engineLaunch;
+        protected IDebugBreakpointFileUpdateNotification110 _engineBreakpointFileUpdateNotification;
 
         protected SoftDebuggerSession _session;
-        protected StartInfo _startInfo;
+        protected DebuggerStartInfo _startInfo;
+        protected DebuggerSessionOptions _debuggerSessionOptions;
 
         public static Project StartupProject { set; get; }
 
         public XamarinEngine()
         {
             //_engine = new Engine();
-            var clsid = "{C094C059-1786-49CD-8EB9-9C0EF6CA5454}";
-            var type = Type.GetTypeFromCLSID(new Guid(clsid));
-            var engine = Activator.CreateInstance(type, true);
-            _engine = engine as IDebugEngine2;
-            _engineLaunch = engine as IDebugEngineLaunch2;
+
+            _engine = XamarinAssemblyFacade.CreateEngine(out _engineLaunch, out _engineBreakpointFileUpdateNotification);
         }
 
         private string SerializeDebuggerOptions(string jsonDebugOptions)
@@ -53,8 +53,6 @@ namespace Mono.Debugging.VisualStudio
                     RegisterEventHandlers();
                 }
 
-                var connectionTimeout = 30000;
-                var evaluationTimeout = 30000;
                 var startupProject = StartupProject;
                 var softDebuggerConnectArgs = new SoftDebuggerConnectArgs(debugOptions.TargetExeFileName, debugOptions.GetHostIP(), debugOptions.GetMonoDebugPort());
 
@@ -66,26 +64,7 @@ namespace Mono.Debugging.VisualStudio
                 softDebuggerConnectArgs.TimeBetweenConnectionAttempts = (int)debugOptions.UserSettings.TimeBetweenConnectionAttemptsInMs;
                 softDebuggerConnectArgs.MaxConnectionAttempts = (int)debugOptions.UserSettings.MaxConnectionAttempts;
 
-                _startInfo = new StartInfo(
-                    softDebuggerConnectArgs,
-                    new DebuggingOptions()
-                    {
-                        EvaluationTimeout = evaluationTimeout,
-                        MemberEvaluationTimeout = evaluationTimeout,
-                        ModificationTimeout = evaluationTimeout,
-                        SocketTimeout = connectionTimeout
-                    },
-                    startupProject
-                    );
-
-                SessionMarshalling sessionMarshalling = new SessionMarshalling(_session, _startInfo);
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    BinaryFormatter bf = new BinaryFormatter();
-                    ObjRef oref = RemotingServices.Marshal(sessionMarshalling);
-                    bf.Serialize(ms, oref);
-                    return Convert.ToBase64String(ms.ToArray());
-                }
+                return XamarinAssemblyFacade.CreateSessionMarshalling(startupProject, softDebuggerConnectArgs, _session, out _startInfo, out _debuggerSessionOptions);
             }
             catch (Exception ex)
             {
@@ -234,7 +213,7 @@ namespace Mono.Debugging.VisualStudio
 
         #region IDebugEngineLaunch2
 
-        public /*override*/ int LaunchSuspended(string pszServer, IDebugPort2 pPort, string pszExe, string pszArgs, string pszDir, string bstrEnv, string pszOptions, enum_LAUNCH_FLAGS dwLaunchFlags, uint hStdInput, uint hStdOutput, uint hStdError, IDebugEventCallback2 pCallback, out IDebugProcess2 ppProcess)
+        public int LaunchSuspended(string pszServer, IDebugPort2 pPort, string pszExe, string pszArgs, string pszDir, string bstrEnv, string pszOptions, enum_LAUNCH_FLAGS dwLaunchFlags, uint hStdInput, uint hStdOutput, uint hStdError, IDebugEventCallback2 pCallback, out IDebugProcess2 ppProcess)
         {
             NLogService.TraceEnteringMethod(Logger);
             var base64Options = SerializeDebuggerOptions(pszOptions);
@@ -248,19 +227,19 @@ namespace Mono.Debugging.VisualStudio
             NLogService.TraceEnteringMethod(Logger);
         }
 
-        public /*override*/ int ResumeProcess(IDebugProcess2 pProcess)
+        public int ResumeProcess(IDebugProcess2 pProcess)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engineLaunch.ResumeProcess(pProcess);
         }
 
-        public /*override*/ int CanTerminateProcess(IDebugProcess2 pProcess)
+        public int CanTerminateProcess(IDebugProcess2 pProcess)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engineLaunch.CanTerminateProcess(pProcess);
         }
 
-        public /*override*/ int TerminateProcess(IDebugProcess2 pProcess)
+        public int TerminateProcess(IDebugProcess2 pProcess)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engineLaunch.TerminateProcess(pProcess);
@@ -270,19 +249,19 @@ namespace Mono.Debugging.VisualStudio
 
         #region IDebugEngine2
 
-        public /*override*/ int EnumPrograms(out IEnumDebugPrograms2 ppEnum)
+        public int EnumPrograms(out IEnumDebugPrograms2 ppEnum)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.EnumPrograms(out ppEnum);
         }
 
-        public /*override*/ int Attach(IDebugProgram2[] rgpPrograms, IDebugProgramNode2[] rgpProgramNodes, uint celtPrograms, IDebugEventCallback2 pCallback, enum_ATTACH_REASON dwReason)
+        public int Attach(IDebugProgram2[] rgpPrograms, IDebugProgramNode2[] rgpProgramNodes, uint celtPrograms, IDebugEventCallback2 pCallback, enum_ATTACH_REASON dwReason)
         {
             NLogService.TraceEnteringMethod(Logger);
 
             try
             {
-                _session.Run(_startInfo, _startInfo.SessionOptions);
+                _session.Run(_startInfo, _debuggerSessionOptions);
             }
             catch (Exception ex)
             {
@@ -292,31 +271,31 @@ namespace Mono.Debugging.VisualStudio
             return _engine.Attach(rgpPrograms, rgpProgramNodes, celtPrograms, pCallback, dwReason);
         }
 
-        public /*override*/ int CreatePendingBreakpoint(IDebugBreakpointRequest2 pBPRequest, out IDebugPendingBreakpoint2 ppPendingBP)
+        public int CreatePendingBreakpoint(IDebugBreakpointRequest2 pBPRequest, out IDebugPendingBreakpoint2 ppPendingBP)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.CreatePendingBreakpoint(pBPRequest, out ppPendingBP);
         }
 
-        public /*override*/ int SetException(EXCEPTION_INFO[] pException)
+        public int SetException(EXCEPTION_INFO[] pException)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.SetException(pException);
         }
 
-        public /*override*/ int RemoveSetException(EXCEPTION_INFO[] pException)
+        public int RemoveSetException(EXCEPTION_INFO[] pException)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.RemoveSetException(pException);
         }
 
-        public /*override*/ int RemoveAllSetExceptions(ref Guid guidType)
+        public int RemoveAllSetExceptions(ref Guid guidType)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.RemoveAllSetExceptions(ref guidType);
         }
 
-        public /*override*/ int GetEngineId(out Guid pguidEngine)
+        public int GetEngineId(out Guid pguidEngine)
         {
             NLogService.TraceEnteringMethod(Logger);
             var temp = _engine.GetEngineId(out pguidEngine);
@@ -324,37 +303,37 @@ namespace Mono.Debugging.VisualStudio
             return 0;
         }
 
-        public /*override*/ int DestroyProgram(IDebugProgram2 pProgram)
+        public int DestroyProgram(IDebugProgram2 pProgram)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.DestroyProgram(pProgram);
         }
 
-        public /*override*/ int ContinueFromSynchronousEvent(IDebugEvent2 pEvent)
+        public int ContinueFromSynchronousEvent(IDebugEvent2 pEvent)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.ContinueFromSynchronousEvent(pEvent);
         }
 
-        public /*override*/ int SetLocale(ushort wLangID)
+        public int SetLocale(ushort wLangID)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.SetLocale(wLangID);
         }
 
-        public /*override*/ int SetRegistryRoot(string pszRegistryRoot)
+        public int SetRegistryRoot(string pszRegistryRoot)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.SetRegistryRoot(pszRegistryRoot);
         }
 
-        public /*override*/ int SetMetric(string pszMetric, object varValue)
+        public int SetMetric(string pszMetric, object varValue)
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.SetMetric(pszMetric, varValue);
         }
 
-        public /*override*/ int CauseBreak()
+        public int CauseBreak()
         {
             NLogService.TraceEnteringMethod(Logger);
             return _engine.CauseBreak();

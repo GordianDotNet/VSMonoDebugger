@@ -106,8 +106,8 @@
       <Link>Views\DebugSettings.xaml.cs</Link>
       <DependentUpon>DebugSettings.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Mono.Debugging.VisualStudio\StartInfo.cs" />
     <Compile Include="Mono.Debugging.VisualStudio\XamarinEngine.cs" />
+    <Compile Include="Mono.Debugging.VisualStudio\XamarinAssemblyFacade.cs" />
     <Compile Include="Mono.Debugging.VisualStudio\XamarinPortSupplier.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VSMonoDebuggerPackage.cs" />
