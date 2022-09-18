@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CommandTable xmlns="http://schemas.microsoft.com/VisualStudio/2005-10-18/CommandTable" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <!--  This is the file that defines the actual layout and type of the commands.
+        It is divided in different sections (e.g. command definition, command
+        placement, ...), with each defining a specific set of properties.
+        See the comment before each section for more details about how to
+        use it. -->
+
+  <!--  The VSCT compiler (the tool that translates this file into the binary
+        format that VisualStudio will consume) has the ability to run a preprocessor
+        on the vsct file; this preprocessor is (usually) the C++ preprocessor, so
+        it is possible to define includes and macros with the same syntax used
+        in C++ files. Using this ability of the compiler here, we include some files
+        defining some of the constants that we will use inside the file. -->
+
+  <!--This is the file that defines the IDs for all the commands exposed by VisualStudio. -->
+  <Extern href="stdidcmd.h"/>
+
+  <!--This header contains the command ids for the menus provided by the shell. -->
+  <Extern href="vsshlids.h"/>
+
+  <!--The Commands section is where commands, menus, and menu groups are defined.
+      This section uses a Guid to identify the package that provides the command defined inside it. -->
+  <Commands package="guidVSMonoDebugger2022Package">
+    <!-- Inside this section we have different sub-sections: one for the menus, another
+    for the menu groups, one for the buttons (the actual commands), one for the combos
+    and the last one for the bitmaps used. Each element is identified by a command id that
+    is a unique pair of guid and numeric identifier; the guid part of the identifier is usually
+    called "command set" and is used to group different command inside a logically related
+    group; your package should define its own command set in order to avoid collisions
+    with command ids defined by other packages. -->
+
+    <!--<Menus>
+      <Menu guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenu" priority="0x200" type="Menu">
+        --><!-- Groups on the Visual Studio Menu Bar: https://msdn.microsoft.com/en-us/library/cc826118.aspx --><!--
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS" />
+        <CommandFlag>AlwaysCreate</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Strings>
+          <ButtonText>Mono</ButtonText>
+          <CommandName>Mono</CommandName>
+        </Strings>
+      </Menu>
+    </Menus>-->
+
+    <!-- In this section you can define new menu groups. A menu group is a container for
+         other menus or buttons (commands); from a visual point of view you can see the
+         group as the part of a menu contained between two lines. The parent of a group
+         must be a menu. -->
+    <Groups>
+      <!--<Group guid="guidVSMonoDebugger2022PackageCmdSet" id="MyMenuGroup" priority="0x0600">
+        <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS"/>
+      </Group>-->
+      <Group guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" priority="0x0600">
+                <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS"/>
+      </Group>
+      <Group guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel2" priority="0x0700">
+                <Parent guid="guidSHLMainMenu" id="IDM_VS_MENU_EXTENSIONS"/>
+      </Group>
+    </Groups>
+
+    <!--Buttons section. -->
+    <!--This section defines the elements the user can interact with, like a menu command or a button
+        or combo box in a toolbar. -->
+    <Buttons>
+      <!--To define a menu group you have to specify its ID, the parent menu and its display priority.
+          The command is visible and enabled by default. If you need to change the visibility, status, etc, you can use
+          the CommandFlag node.
+          You can add more than one CommandFlag node e.g.:
+              <CommandFlag>DefaultInvisible</CommandFlag>
+              <CommandFlag>DynamicVisibility</CommandFlag>
+          If you do not want an image next to your command, remove the Icon node /> -->
+      <!--<Button guid="guidVSMonoDebugger2022PackageCmdSet" id="MyMenuCommandId" priority="0x0100" type="Button">
+        <Parent guid="guidVSMonoDebugger2022PackageCmdSet" id="MyMenuGroup" />
+        <Icon guid="guidImages" id="bmpPic1" />
+        <Strings>
+          <ButtonText>New Command Test2!</ButtonText>
+        </Strings>
+      </Button>-->
+      
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDeployAndDebugOverSSH" priority="0x0400" type="Button">
+        <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
+        <Icon guid="StartRemoteDebugger_16x" id="imgDeployAndDebug" />
+        <Strings>
+          <ButtonText>Deploy, Run and Debug </ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDeployOverSSH" priority="0x0410" type="Button">
+        <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
+        <Icon guid="BatchCheckIn_16x" id="imgDeployOnly" />
+        <Strings>
+          <ButtonText>Deploy only</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdDebugOverSSH" priority="0x0420" type="Button">
+        <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
+        <Icon guid="DebugTemplate_16x" id="imgDebugOnly" />
+        <Strings>
+          <ButtonText>Run and Debug only</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdAttachToMonoDebuggerWithoutSSH" priority="0x0430" type="Button">
+        <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
+        <Icon guid="Process_16x" id="imgAttachToMonoDebuggerWithoutSSH" />
+        <Strings>
+          <ButtonText>Attach to mono debugger (without SSH)</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdBuildProjectWithMDBFiles" priority="0x0430" type="Button">
+        <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel1" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
+        <Icon guid="BuildSelection_16x" id="imgBuildProjectWithMDBFiles" />
+        <Strings>
+          <ButtonText>Build Startup Project with MDB Files</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdOpenLogFile" priority="0x0510" type="Button">
+        <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel2" />
+        <Icon guid="DownloadLog_16x" id="imgShowLogfile" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <!--<CommandFlag>DefaultDisabled</CommandFlag>-->
+        <Strings>
+          <ButtonText>Open Logfile</ButtonText>
+        </Strings>
+      </Button>
+
+      <Button guid="guidVSMonoDebuggerPackageCmdSet" id="cmdOpenDebugSettings" priority="0x0520" type="Button">
+        <Parent guid="guidVSMonoDebuggerPackageCmdSet" id="MonoMainMenuGroupLevel2" />
+        <CommandFlag>DynamicVisibility</CommandFlag>
+        <CommandFlag>TextChanges</CommandFlag>
+        <Icon guid="Settings_16x" id="imgSettings" />
+        <Strings>
+          <ButtonText>Settings...</ButtonText>
+        </Strings>
+      </Button>
+    </Buttons>
+
+    <!--The bitmaps section is used to define the bitmaps that are used for the commands.-->
+    <Bitmaps>
+      <!--  The bitmap id is defined in a way that is a little bit different from the others:
+            the declaration starts with a guid for the bitmap strip, then there is the resource id of the
+            bitmap strip containing the bitmaps and then there are the numeric ids of the elements used
+            inside a button definition. An important aspect of this declaration is that the element id
+            must be the actual index (1-based) of the bitmap inside the bitmap strip. -->
+      <!--<Bitmap guid="guidImages" href="Resources\MyMenuCommand.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough"/>-->
+      <Bitmap guid="guidImages" href="Resources\VSMonoDebuggerCommands.png" usedList="bmpPic1, bmpPic2, bmpPicSearch, bmpPicX, bmpPicArrows, bmpPicStrikethrough"/>
+      <Bitmap guid="BatchCheckIn_16x" href="Resources\BatchCheckIn_16x.png" usedList="imgDeployOnly"/>
+      <Bitmap guid="DebugTemplate_16x" href="Resources\DebugTemplate_16x.png" usedList="imgDebugOnly"/>
+      <Bitmap guid="DownloadLog_16x" href="Resources\DownloadLog_16x.png" usedList="imgShowLogfile"/>
+      <Bitmap guid="Settings_16x" href="Resources\Settings_16x.png" usedList="imgSettings"/>
+      <Bitmap guid="StartRemoteDebugger_16x" href="Resources\StartRemoteDebugger_16x.png" usedList="imgDeployAndDebug"/>
+      <Bitmap guid="Process_16x" href="Resources\Process_16x.png" usedList="imgAttachToMonoDebuggerWithoutSSH"/>
+      <Bitmap guid="BuildSelection_16x" href="Resources\BuildSelection_16x.png" usedList="imgBuildProjectWithMDBFiles"/>
+    </Bitmaps>
+  </Commands>
+
+  <Symbols>
+    <!-- This is the package guid. -->
+    <GuidSymbol name="guidVSMonoDebugger2022Package" value="{a3c26381-6026-4adc-ac25-808c42614416}" />
+
+    <!-- This is the guid used to group the menu commands together -->
+    <!--<GuidSymbol name="guidVSMonoDebugger2022PackageCmdSet" value="{9dee32ef-82c2-4708-accd-e8621ccf0124}">
+      <IDSymbol name="MyMenuGroup" value="0x1020" />
+      <IDSymbol name="MyMenuCommandId" value="0x0100" />
+    </GuidSymbol>-->
+
+    <GuidSymbol name="guidVSMonoDebuggerPackageCmdSet" value="{becf5dd2-041f-4b6e-9c6f-bb38538fc1d7}">
+      <IDSymbol name="MonoMainMenu" value="0x1000" />
+      <IDSymbol name="MonoMainMenuGroupLevel1" value="0x1100" />
+      <IDSymbol name="MonoMainMenuGroupLevel2" value="0x1200" />
+      <IDSymbol name="cmdDeployAndDebugOverSSH" value="0x1001" />
+      <IDSymbol name="cmdDeployOverSSH" value="0x1002" />
+      <IDSymbol name="cmdDebugOverSSH" value="0x1003" />
+      <IDSymbol name="cmdOpenLogFile" value="0x1004" />
+      <IDSymbol name="cmdOpenDebugSettings" value="0x1005" />
+      <IDSymbol name="cmdAttachToMonoDebuggerWithoutSSH" value="0x1006" />
+      <IDSymbol name="cmdBuildProjectWithMDBFiles" value="0x1007" />
+    </GuidSymbol>
+
+    <GuidSymbol name="BatchCheckIn_16x" value="{A6146350-5354-4ABE-B452-FB63881C9293}" >
+      <IDSymbol name="imgDeployOnly" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="DebugTemplate_16x" value="{6BEC4581-8F59-4A3F-BA52-723454EF06D4}" >
+      <IDSymbol name="imgDebugOnly" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="DownloadLog_16x" value="{E48E1F6F-B26C-460A-86DF-69904236B876}" >
+      <IDSymbol name="imgShowLogfile" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="Settings_16x" value="{F0E24D10-A061-470F-8162-892ED3BB1ABF}" >
+      <IDSymbol name="imgSettings" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="StartRemoteDebugger_16x" value="{95F6FDC3-DA9F-4266-BD63-1A02ECCCBCDF}" >
+      <IDSymbol name="imgDeployAndDebug" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="Process_16x" value="{20E883F0-E7EE-4444-B9B4-67F2892B3D0D}" >
+      <IDSymbol name="imgAttachToMonoDebuggerWithoutSSH" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="BuildSelection_16x" value="{C6D5524B-6CCF-4FC9-9BCF-A057BFB2AFA6}" >
+      <IDSymbol name="imgBuildProjectWithMDBFiles" value="1" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidImages" value="{dbc7ea16-7046-43f8-9340-6f5b33994514}" >
+      <IDSymbol name="bmpPic1" value="1" />
+      <IDSymbol name="bmpPic2" value="2" />
+      <IDSymbol name="bmpPicSearch" value="3" />
+      <IDSymbol name="bmpPicX" value="4" />
+      <IDSymbol name="bmpPicArrows" value="5" />
+      <IDSymbol name="bmpPicStrikethrough" value="6" />
+    </GuidSymbol>
+
+    <GuidSymbol name="guidSHLMainMenu" value="{d309f791-903f-11d0-9efc-00a0c911004f}">
+      <IDSymbol name="IDM_VS_MENU_EXTENSIONS" value="0x0091" />
+    </GuidSymbol>
+  </Symbols>
+</CommandTable>

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+#if UNSUPPORTED_NUGET_MISSING
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
+#endif
 using System.Threading;
 using VSMonoDebugger.Settings;
 
@@ -15,6 +17,7 @@ namespace VSMonoDebugger.Debuggers
     {
         public static void RunScript(string scriptText, string directory, Action<string> writeLineOutput, RedirectOutputOptions redirectOutputOption)
         {
+#if UNSUPPORTED_NUGET_MISSING
             using (Runspace runspace = RunspaceFactory.CreateRunspace())
             {
                 runspace.Open();
@@ -71,6 +74,7 @@ namespace VSMonoDebugger.Debuggers
                     runspace.Close();
                 }
             }
+#endif
         }
     }
 }
