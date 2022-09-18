@@ -16,7 +16,7 @@ namespace Mono.Debugging.VisualStudio
 {
 
     [Guid(DebugEngineGuids.XamarinEngineString)]
-    public class XamarinEngine : IDebugEngine2, IDebugEngineLaunch2//, IDebugEngine3, IDebugBreakpointFileUpdateNotification110
+    public class XamarinEngine : IDebugEngine2, IDebugEngineLaunch2, IDebugEngine3, IDebugBreakpointFileUpdateNotification110
     {
         protected static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -341,5 +341,54 @@ namespace Mono.Debugging.VisualStudio
 
         #endregion
 
+        #region IDebugEngine3
+
+        public int SetSymbolPath(string szSymbolSearchPath, string szSymbolCachePath, uint Flags)
+        {
+            NLogService.TraceEnteringMethod(Logger);
+            return _engine.SetSymbolPath(szSymbolSearchPath, szSymbolCachePath, Flags);
+        }
+
+        public int LoadSymbols()
+        {
+            NLogService.TraceEnteringMethod(Logger);
+            return _engine.LoadSymbols();
+        }
+
+        public int SetJustMyCodeState(int fUpdate, uint dwModules, JMC_CODE_SPEC[] rgJMCSpec)
+        {
+            NLogService.TraceEnteringMethod(Logger);
+            return _engine.SetJustMyCodeState(fUpdate, dwModules, rgJMCSpec);
+        }
+
+        public int SetEngineGuid(ref Guid guidEngine)
+        {
+            NLogService.TraceEnteringMethod(Logger);
+            return _engine.SetEngineGuid(ref guidEngine);
+        }
+
+        public int SetAllExceptions(enum_EXCEPTION_STATE dwState)
+        {
+            NLogService.TraceEnteringMethod(Logger);
+            return _engine.SetAllExceptions(dwState);
+        }
+
+        #endregion
+
+        #region IDebugBreakpointFileUpdateNotification110
+
+        public int OnBreakpointFilesUpdated(uint filePathCount, string[] filePathArray)
+        {
+            NLogService.TraceEnteringMethod(Logger);
+            return _engineBreakpointFileUpdateNotification.OnBreakpointFilesUpdated(filePathCount, filePathArray);
+        }
+
+        public int WaitForBreakpointFileUpdateProcessingComplete()
+        {
+            NLogService.TraceEnteringMethod(Logger);
+            return _engineBreakpointFileUpdateNotification.WaitForBreakpointFileUpdateProcessingComplete();
+        }
+
+        #endregion
     }
 }
