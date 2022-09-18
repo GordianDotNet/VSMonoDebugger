@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="VSMonoDebugger2022.b8896de3-291f-422a-8f9b-d519a6976c13" Version="1.20" Language="en-US" Publisher="GordianDotNet" />
+        <Identity Id="VSMonoDebugger2022.b8896de3-291f-422a-8f9b-d519a6976c13" Version="1.21" Language="en-US" Publisher="GordianDotNet" />
         <DisplayName>VSMonoDebugger2022</DisplayName>
         <Description xml:space="preserve">Enables Visual Studio 2022 to deploy and debug a .Net application on a remote Linux machine with mono or dotnet core installed over SSH.
 Local debugging on Windows with installed mono is also supported.</Description>

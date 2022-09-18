@@ -5,10 +5,7 @@ using Mono.Debugging.Soft;
 using NLog;
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Runtime.Remoting;
-using System.Runtime.Serialization.Formatters.Binary;
 using VSMonoDebugger.Services;
 using VSMonoDebugger.Settings;
 
@@ -78,8 +75,8 @@ namespace Mono.Debugging.VisualStudio
             LogAssemblyPath(typeof(Mono.Debugger.Soft.MethodMirror).Assembly);
             LogAssemblyPath(typeof(Mono.Debugging.Client.Breakpoint).Assembly);
             LogAssemblyPath(typeof(Mono.Debugging.Soft.SoftDebuggerSession).Assembly);
-            //LogAssemblyPath(typeof(Mono.Debugging.VisualStudio.DebuggerSession).Assembly);
-            //LogAssemblyPath(typeof(Mono.Debugging.VisualStudio.Engine).Assembly);
+            LogAssemblyPath(XamarinAssemblyFacade.LoadVisualStudioAssembly());
+            LogAssemblyPath(XamarinAssemblyFacade.LoadVisualStudioVsixAssembly());
         }
 
         private void LogAssemblyPath(System.Reflection.Assembly assembly)

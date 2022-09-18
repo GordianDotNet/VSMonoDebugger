@@ -17,8 +17,20 @@ namespace Mono.Debugging.VisualStudio
 
         public static string GetExtensionsXamarinMonoDebuggingPath()
         {
-            // TODO Get this path at runtime
-            return @"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Xamarin\Mono.Debugging\";
+            var assemblyMicrosoftVisualStudioDebuggerInteropADLL = typeof(IDebugEngine2).Assembly;
+            var indexOfPublicAssemblies = assemblyMicrosoftVisualStudioDebuggerInteropADLL.Location.LastIndexOf("PublicAssemblies");
+            var idePath = assemblyMicrosoftVisualStudioDebuggerInteropADLL.Location.Remove(indexOfPublicAssemblies);
+            if (!Directory.Exists(idePath))
+            {
+                throw new FileNotFoundException($"We used {assemblyMicrosoftVisualStudioDebuggerInteropADLL.Location} to get the IDE path: {idePath}. But {idePath} doesn't exists.");
+            }
+            var fullExtensionsXamarinMonoDebuggingPath = Path.Combine(idePath, @"Extensions\Xamarin\Mono.Debugging\");
+            if (!Directory.Exists(fullExtensionsXamarinMonoDebuggingPath))
+            {
+                throw new FileNotFoundException($"We found the IDE path {idePath}. But {fullExtensionsXamarinMonoDebuggingPath} doesn't exists. Did you install the Xamarin components with the Visual Studio Installer?");
+            }
+            return fullExtensionsXamarinMonoDebuggingPath;            
+            //return @"C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\IDE\Extensions\Xamarin\Mono.Debugging\";
         }
 
         public static System.Reflection.Assembly LoadVisualStudioAssembly()
