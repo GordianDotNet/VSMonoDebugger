@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("VSMonoDebugger2022")]
-[assembly: AssemblyDescription("Enables Visual Studio 2022 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH. Local debugging on Windows with installed mono is supported.")]
+[assembly: AssemblyDescription("Enables Visual Studio 2022 to deploy and debug a .Net application on a remote Linux machine with mono installed over SSH. Local debugging on Windows with installed mono and powershell 5.1 is supported.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("VSMonoDebugger2022")]
@@ -29,5 +29,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.2209.1800.0")]
-[assembly: AssemblyFileVersion("2.2209.1800.0")]
+[assembly: AssemblyVersion("2.2209.1805.0")]
+[assembly: AssemblyFileVersion("2.2209.1805.0")]

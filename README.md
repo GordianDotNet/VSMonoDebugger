@@ -1,13 +1,10 @@
 **Use at your own risk!**
 
-VSMonoDebugger
-============
-
-# VSMonoDebugger2022
+# VSMonoDebugger2022 for Visual Studio 2022
 Enables Visual Studio 2022 to deploy and debug a .Net application on a remote Linux machine with mono or dotnet core installed over SSH.
 Local debugging on Windows with installed mono is currently not supported.
 
-# VSMonoDebugger
+# VSMonoDebugger for Visual Studio 2017 and 2019
 Enables Visual Studio 2017 and 2019 to deploy and debug a .Net application on a remote Linux machine with mono or dotnet core installed over SSH.
 Local debugging on Windows with installed mono is also supported.
 
@@ -202,8 +199,7 @@ If you want change the deploy path set "SSHDeployPath" ("WindowsDeployPath" for 
 
 # Known Issues
 
-- [ ] Powershell scripts under Windows currently not supported with VSMonoDebugger2022 
-**Windows debugging not supported!**
+- [ ] Debug scripts doesn't support cancellation. Powershell scripts with ""Redirect Output on"" doesn't stop.
 
 - [ ] Support prerequisite Microsoft.VisualStudio.Component.MonoDebugger without copying the dlls (Makes problems with Xamarin's debugger)
 **If you are using Xamarin and debugging fails, please disable VSMonoDebugger!**
@@ -236,6 +232,11 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 
 # Version History for VSMonoDebugger2022
 
+## 2.2209.1805
+**2022-09-18**
+- [x] Feature: Powershell scripts and debugging with Mono under Windows is supported with VSMonoDebugger2022 
+**Windows debugging supported again!**
+
 ## 2.2209.1800
 **2022-09-18**
 
@@ -250,8 +251,8 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 - [x] [pdb2mdb source code](https://github.com/mono/mono/tree/master/mcs/tools/pdb2mdb)
 - [x] [PowerShell](https://www.nuget.org/packages/system.management.automation.dll/10.0.10586)
 - [x] [plink.exe 64Bit](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
-- [x] [Mono debugger-libs stored in directory VSMonoDebugger2022/Mono.Debugging.Soft - Debug build from commit f7085b2d81cdf1acb85189428c149ac5b98b6bbc](https://github.com/mono/debugger-libs)
-	- [x] [NRefactory requirement for debugger-libs - Debug build from commit f324292309954600222734e66471d58e338352f5](https://github.com/xamarin/NRefactory) Must be cloned side by side with debugger-libs.
+- [x] [Mono debugger-libs](https://github.com/mono/debugger-libs) stored in directory VSMonoDebugger2022/Mono.Debugging.Soft - Debug build from commit f7085b2d81cdf1acb85189428c149ac5b98b6bbc
+	- [x] [NRefactory](https://github.com/xamarin/NRefactory) requirement for debugger-libs - Debug build from commit f324292309954600222734e66471d58e338352f5 - Must be cloned side by side with debugger-libs.
 	- [x] [Nuget Mono.Cecil 0.11.4](https://www.nuget.org/packages/Mono.Cecil/)
 
 # Version History for VSMonoDebugger
