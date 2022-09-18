@@ -68,6 +68,35 @@ namespace VSMonoDebugger.Debuggers
                         }
                     }
 
+                    if (pipeline.PipelineStateInfo.State == PipelineState.Failed)
+                    {
+                        writeLineOutput("### ERROR: Powershell script failed!");
+                        writeLineOutput(pipeline.PipelineStateInfo.Reason.ToString());
+                    }
+
+                    WaitHandle.WaitAll(handles);
+
+                    while (pipeline.Output.Count > 0)
+                    {
+                        foreach (PSObject result in pipeline.Output.NonBlockingRead())
+                        {
+                            if (redirectOutputOption.HasFlag(RedirectOutputOptions.RedirectStandardOutput))
+                            {
+                                writeLineOutput(result.ToString());
+                            }
+                        }
+                    }
+                    while (pipeline.Error.Count > 0)
+                    {
+                        foreach (PSObject result in pipeline.Error.NonBlockingRead())
+                        {
+                            if (redirectOutputOption.HasFlag(RedirectOutputOptions.RedirectErrorOutput))
+                            {
+                                writeLineOutput(result.ToString());
+                            }
+                        }
+                    }
+
                     runspace.Close();
                 }
             }

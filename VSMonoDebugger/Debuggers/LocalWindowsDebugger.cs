@@ -74,11 +74,12 @@ namespace VSMonoDebugger.Debuggers
 
                         var killCommandText = debugOptions.PreDebugScript;
 
-                        errorHelpText.AppendLine($"Local: Stop previous mono processes with the PreDebugScript");
+                        errorHelpText.AppendLine($"### Local: Stop previous mono processes with the PreDebugScript");
                         errorHelpText.AppendLine(killCommandText);
                         Logger.Info($"Run PreDebugScript: {killCommandText}");
 
-                        PowershellExecuter.RunScript(killCommandText, destinationDirectory, writeLineOutput, redirectOutputOption);
+                        await writeOutput(errorHelpText.ToString());
+                        PowershellExecuter.RunScript(killCommandText, destinationDirectory, writeLineOutput, RedirectOutputOptions.RedirectAll);
 
                         // TODO
                         //if (killCommand.ExitStatus != 0 || !string.IsNullOrWhiteSpace(killCommand.Error))
@@ -90,12 +91,14 @@ namespace VSMonoDebugger.Debuggers
 
                         var monoDebugCommand = debugOptions.DebugScript;
 
-                        errorHelpText.AppendLine($"Local: Start mono debugger");
-                        errorHelpText.AppendLine(monoDebugCommand);
+                        var errorHelpText2 = new StringBuilder();
+                        errorHelpText2.AppendLine($"### Local: Start mono debugger with the DebugScript");
+                        errorHelpText2.AppendLine(monoDebugCommand);
+                        errorHelpText.AppendLine(errorHelpText2.ToString());
                         Logger.Info($"Run DebugScript: {monoDebugCommand}");
 
                         // TODO if DebugScript fails no error is shown - very bad!
-                        await writeOutput(errorHelpText.ToString());
+                        await writeOutput(errorHelpText2.ToString());
                         PowershellExecuter.RunScript(monoDebugCommand, destinationDirectory, writeLineOutput, redirectOutputOption);
 
                         // TODO
