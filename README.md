@@ -3,6 +3,11 @@
 VSMonoDebugger
 ============
 
+# VSMonoDebugger2022
+Enables Visual Studio 2022 to deploy and debug a .Net application on a remote Linux machine with mono or dotnet core installed over SSH.
+Local debugging on Windows with installed mono is currently not supported.
+
+# VSMonoDebugger
 Enables Visual Studio 2017 and 2019 to deploy and debug a .Net application on a remote Linux machine with mono or dotnet core installed over SSH.
 Local debugging on Windows with installed mono is also supported.
 
@@ -10,7 +15,12 @@ Local debugging on Windows with installed mono is also supported.
 
 # Usage
 
-## Visual Studio 2019 Support
+## Visual Studio 2022 Support with VSMonoDebugger2022
+In Visual Studio 2022, I couldn't get a submenu in the extension menus. All menu entries are in the "Extensions" menu.
+
+![Visual Studio 2022 Extensions Menu](VSMonoDebugger2022/Resources/VisualStudio2022ExtensionMenu.png)
+
+## Visual Studio 2019 Support with VSMonoDebugger
 In Visual Studio 2019, extension menus are handled differently. "Mono" can now be found in the "Extensions" menu.
 
 ![Visual Studio 2019 Extensions Menu](VSMonoDebugger/Resources/VisualStudio2019ExtensionMenu.png)
@@ -192,6 +202,9 @@ If you want change the deploy path set "SSHDeployPath" ("WindowsDeployPath" for 
 
 # Known Issues
 
+- [ ] Powershell scripts under Windows currently not supported with VSMonoDebugger2022 
+**Windows debugging not supported!**
+
 - [ ] Support prerequisite Microsoft.VisualStudio.Component.MonoDebugger without copying the dlls (Makes problems with Xamarin's debugger)
 **If you are using Xamarin and debugging fails, please disable VSMonoDebugger!**
 
@@ -221,7 +234,27 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 **Visual Studio 2019 shows a warning**
 - [x] CPU consumption when reading the output reduced
 
-# Version History
+# Version History for VSMonoDebugger2022
+
+## 2.2209.1800
+**2022-09-18**
+
+- [x] Feature: #28 Created a new project VSMonoDebugger2022 to support Visual Studio 2022
+- [x] You have to install Xamarin components with Visual Studio 2022
+- [ ] Powershell scripts under Windows currently not supported with VSMonoDebugger2022 
+**Windows debugging not supported!**
+
+# Used resources for VSMonoDebugger2022
+
+- [x] [Visual Studio Image Library 2017](https://www.microsoft.com/en-my/download/details.aspx?id=35825)
+- [x] [pdb2mdb source code](https://github.com/mono/mono/tree/master/mcs/tools/pdb2mdb)
+- [x] [PowerShell](https://www.nuget.org/packages/system.management.automation.dll/10.0.10586)
+- [x] [plink.exe 64Bit](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html)
+- [x] [Mono debugger-libs stored in directory VSMonoDebugger2022/Mono.Debugging.Soft - Debug build from commit f7085b2d81cdf1acb85189428c149ac5b98b6bbc](https://github.com/mono/debugger-libs)
+	- [x] [NRefactory requirement for debugger-libs - Debug build from commit f324292309954600222734e66471d58e338352f5](https://github.com/xamarin/NRefactory) Must be cloned side by side with debugger-libs.
+	- [x] [Nuget Mono.Cecil 0.11.4](https://www.nuget.org/packages/Mono.Cecil/)
+
+# Version History for VSMonoDebugger
 
 ## 1.5.1
 **2020-07-09**
@@ -321,7 +354,7 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 
 - [x] Start project
 
-# Used resources
+# Used resources for VSMonoDebugger
 
 - [x] [Visual Studio Image Library 2017](https://www.microsoft.com/en-my/download/details.aspx?id=35825)
 - [x] [Mono.Debugging.VisualStudio.4.9.10-pre](Mono.Debugging.VisualStudio.4.9.10-pre/README.txt)

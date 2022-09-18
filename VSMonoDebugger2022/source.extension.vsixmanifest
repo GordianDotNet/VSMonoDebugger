@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
     <Metadata>
-        <Identity Id="VSMonoDebugger2022.b8896de3-291f-422a-8f9b-d519a6976c13" Version="1.21" Language="en-US" Publisher="GordianDotNet" />
+        <Identity Id="VSMonoDebugger2022.b8896de3-291f-422a-8f9b-d519a6976c13" Version="2.2209.1800" Language="en-US" Publisher="GordianDotNet" />
         <DisplayName>VSMonoDebugger2022</DisplayName>
         <Description xml:space="preserve">Enables Visual Studio 2022 to deploy and debug a .Net application on a remote Linux machine with mono or dotnet core installed over SSH.
-Local debugging on Windows with installed mono is also supported.</Description>
+Local debugging on Windows with installed mono is currently not supported.</Description>
         <MoreInfo>https://github.com/GordianDotNet/VSMonoDebugger</MoreInfo>
         <License>LICENSE.txt</License>
         <GettingStartedGuide>https://github.com/GordianDotNet/VSMonoDebugger</GettingStartedGuide>
@@ -23,6 +23,7 @@ Local debugging on Windows with installed mono is also supported.</Description>
     </Dependencies>
     <Prerequisites>
         <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[17.0,18.0)" DisplayName="Visual Studio core editor" />
+        <Prerequisite Id="Component.Xamarin" Version="[17.3.32708.82,18.0)" DisplayName="Xamarin" />
     </Prerequisites>
     <Assets>
         <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
