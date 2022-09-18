@@ -232,7 +232,7 @@ yourUserName ALL=(ALL) NOPASSWD: /usr/bin/pkill, /usr/bin/mono
 
 # Version History for VSMonoDebugger2022
 
-## 2.2209.1805
+## 2.2209.1806
 **2022-09-18**
 - [x] Feature: Powershell scripts and debugging with Mono under Windows is supported with VSMonoDebugger2022 
 **Windows debugging supported again!**

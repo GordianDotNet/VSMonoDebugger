@@ -199,6 +199,7 @@
     </Content>
     <Content Include="MonoIcon.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
     <Content Include="plink.exe" />
     <Content Include="Resources\BatchCheckIn_16x.png" />
